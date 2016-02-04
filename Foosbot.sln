@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.UI", "Foosbot.UI\Foosbot.UI.csproj", "{DDC67EFD-E3E2-40D1-8526-CFBC50445F60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.Common", "Foosbot.Common\Foosbot.Common.csproj", "{2DE4F554-4B27-4583-98BC-6772D0652B81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.ImageProcessing", "Foosbot.ImageProcessing\Foosbot.ImageProcessing.csproj", "{07A46440-A4E8-49CC-B9A6-B0DCC4CF19BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.DecisionUnit", "Foosbot.DecisionUnit\Foosbot.DecisionUnit.csproj", "{D9A1501A-4B90-4835-96C1-B847BA54026D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Externals", "Externals", "{33FFCBD0-6414-4E64-9AFB-D1AFA146FAEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.VectorCalculation", "Foosbot.VectorCalculation\Foosbot.VectorCalculation.csproj", "{023C6C34-E785-4786-86AE-1B2D8DAA06BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.CommunicationLayer", "Foosbot.CommunicationLayer\Foosbot.CommunicationLayer.csproj", "{0629D0DC-E6CB-45A1-B0D3-02AEC535A800}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{0769A23B-9177-407E-A0A5-602D96AF517C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDC67EFD-E3E2-40D1-8526-CFBC50445F60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC67EFD-E3E2-40D1-8526-CFBC50445F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC67EFD-E3E2-40D1-8526-CFBC50445F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC67EFD-E3E2-40D1-8526-CFBC50445F60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DE4F554-4B27-4583-98BC-6772D0652B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DE4F554-4B27-4583-98BC-6772D0652B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DE4F554-4B27-4583-98BC-6772D0652B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DE4F554-4B27-4583-98BC-6772D0652B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07A46440-A4E8-49CC-B9A6-B0DCC4CF19BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07A46440-A4E8-49CC-B9A6-B0DCC4CF19BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07A46440-A4E8-49CC-B9A6-B0DCC4CF19BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07A46440-A4E8-49CC-B9A6-B0DCC4CF19BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9A1501A-4B90-4835-96C1-B847BA54026D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A1501A-4B90-4835-96C1-B847BA54026D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A1501A-4B90-4835-96C1-B847BA54026D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A1501A-4B90-4835-96C1-B847BA54026D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{023C6C34-E785-4786-86AE-1B2D8DAA06BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{023C6C34-E785-4786-86AE-1B2D8DAA06BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{023C6C34-E785-4786-86AE-1B2D8DAA06BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{023C6C34-E785-4786-86AE-1B2D8DAA06BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0629D0DC-E6CB-45A1-B0D3-02AEC535A800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0629D0DC-E6CB-45A1-B0D3-02AEC535A800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0629D0DC-E6CB-45A1-B0D3-02AEC535A800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0629D0DC-E6CB-45A1-B0D3-02AEC535A800}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
