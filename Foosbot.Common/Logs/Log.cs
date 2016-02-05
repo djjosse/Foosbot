@@ -132,7 +132,7 @@ namespace Foosbot
                             LogMessage message = _messageQ.Dequeue();
                             using (StreamWriter file = File.AppendText(String.Format("{0}.log", _type.ToString())))
                             {
-                                file.WriteLine("{0}\t{1}\t{2}", DateTime.Now.ToString("HH:mm:ss"), message.Category, message.Description);
+                                file.WriteLine("{0}\t{1}\t{2}", message.TimeStamp.ToString("HH:mm:ss.ffff"), message.Category, message.Description);
                             }
                         }
                     }
@@ -147,9 +147,10 @@ namespace Foosbot
         /// </summary>
         /// <param name="message">Message to print</param>
         /// <param name="category">Category of message</param>
-        private void Print(string message, eLogCategory category)
+        /// <param name="timeStamp">Message timestamp</param>
+        private void Print(string message, eLogCategory category, DateTime timeStamp)
         {
-            LogMessage m = new LogMessage(message, category);
+            LogMessage m = new LogMessage(message, category, timeStamp);
             lock (_token)
             {
                 _messageQ.Enqueue(m);
@@ -162,7 +163,7 @@ namespace Foosbot
         /// <param name="message">Message to print</param>
         public void Debug(string message)
         {
-            Print(message, eLogCategory.Debug);
+            Print(message, eLogCategory.Debug, DateTime.Now);
         }
 
         /// <summary>
@@ -171,7 +172,7 @@ namespace Foosbot
         /// <param name="message">Message to print</param>
         public void Info(string message)
         {
-            Print(message, eLogCategory.Info);
+            Print(message, eLogCategory.Info, DateTime.Now);
         }
 
         /// <summary>
@@ -180,7 +181,7 @@ namespace Foosbot
         /// <param name="message">Message to print</param>
         public void Warning(string message)
         {
-            Print(message, eLogCategory.Warning);
+            Print(message, eLogCategory.Warning, DateTime.Now);
         }
 
         /// <summary>
@@ -189,7 +190,7 @@ namespace Foosbot
         /// <param name="message">Message to print</param>
         public void Error(string message)
         {
-            Print(message, eLogCategory.Error);
+            Print(message, eLogCategory.Error, DateTime.Now);
         }
     }
 

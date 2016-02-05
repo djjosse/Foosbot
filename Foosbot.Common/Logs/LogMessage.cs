@@ -1,4 +1,5 @@
-﻿namespace Foosbot.Common.Logs
+﻿using System;
+namespace Foosbot.Common.Logs
 {
     /// <summary>
     /// Log Message
@@ -12,11 +13,18 @@
         /// </summary>
         /// <param name="message">Message description</param>
         /// <param name="category">Message Category</param>
-        public LogMessage(string message, eLogCategory category)
+        /// <param name="timeStamp">Message Time Stamp</param>
+        public LogMessage(string message, eLogCategory category, DateTime timeStamp)
         {
             Description = message;
             _category = category;
+            TimeStamp = timeStamp;
         }
+
+        /// <summary>
+        /// Time Stamp of message
+        /// </summary>
+        public DateTime TimeStamp { get; private set; }
 
         /// <summary>
         /// Message description
