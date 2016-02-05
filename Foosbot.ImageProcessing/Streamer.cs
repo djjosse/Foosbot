@@ -67,7 +67,7 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Get Camera Device by device hardware Id
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Capture camera device</returns>
         private Capture GetCamera()
         {
             string hardwareId = Configuration.Attributes.GetValue(HARDWARE_ID);
