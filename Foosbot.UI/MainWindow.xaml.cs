@@ -24,7 +24,7 @@ namespace Foosbot.UI
         public MainWindow()
         {
             InitializeComponent();
-            Log.Common.Info("Foosbot started!");
+            Log.Common.Info("Foosbot Application Started!");
             
         }
     }

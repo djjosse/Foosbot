@@ -12,7 +12,7 @@ namespace Foosbot
     /// </summary>
     /// <author>Joseph Gleyzer</author>
     /// <date>04.02.2016</date>
-    public sealed class Log
+    public sealed class Log : BackgroundFlow
     {
         #region Common Log
 
@@ -81,11 +81,6 @@ namespace Foosbot
         #endregion Image Processing
 
         /// <summary>
-        /// Printing Logger Thread
-        /// </summary>
-        private Thread _printerThread;
-
-        /// <summary>
         /// Log Message Queue
         /// </summary>
         private Queue<LogMessage> _messageQ;
@@ -113,33 +108,28 @@ namespace Foosbot
         {
             _type = type;
             _messageQ = new Queue<LogMessage>();
-            StartLogger();
+            Start();
         }
 
         /// <summary>
-        /// Starts Execution of logging background thread
+        /// Execution of logging background thread
         /// </summary>
-        private void StartLogger()
+        public override void Flow()
         {
-            _printerThread = new Thread(() =>
+            while (true)
             {
-                while (true)
+                if (_messageQ.Count != 0)
                 {
-                    if (_messageQ.Count != 0)
+                    lock (_token)
                     {
-                        lock (_token)
+                        LogMessage message = _messageQ.Dequeue();
+                        using (StreamWriter file = File.AppendText(String.Format("{0}.log", _type.ToString())))
                         {
-                            LogMessage message = _messageQ.Dequeue();
-                            using (StreamWriter file = File.AppendText(String.Format("{0}.log", _type.ToString())))
-                            {
-                                file.WriteLine("{0}\t{1}\t{2}", message.TimeStamp.ToString("HH:mm:ss.ffff"), message.Category, message.Description);
-                            }
+                            file.WriteLine("{0}\t{1}\t{2}", message.TimeStamp.ToString("HH:mm:ss.ffff"), message.Category, message.Description);
                         }
                     }
                 }
-            });
-            _printerThread.IsBackground = true;
-            _printerThread.Start();
+            }
         }
 
         /// <summary>
