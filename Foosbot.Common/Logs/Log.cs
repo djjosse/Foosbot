@@ -70,7 +70,7 @@ namespace Foosbot
                 {
                     lock (_imageToken)
                     {
-                        if (_common == null)
+                        if (_image == null)
                             _image = new Log(eLogType.Image);
                     }
                 }

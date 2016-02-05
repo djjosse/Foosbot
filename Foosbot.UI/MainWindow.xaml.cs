@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Foosbot.ImageProcessing;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -25,7 +26,9 @@ namespace Foosbot.UI
         {
             InitializeComponent();
             Log.Common.Info("Foosbot Application Started!");
-            
+
+            //Call the streamer to get capture from camera
+            Streamer streamer = new Streamer();
         }
     }
 }

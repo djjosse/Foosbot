@@ -101,12 +101,12 @@ namespace Foosbot
         /// Get string value for provided key
         /// </summary>
         /// <param name="key">Key for value</param>
-        /// <exception cref="KeyNotFoundException">In case key does not exist.</exception>
+        /// <exception cref="ConfigurationException">In case key does not exist.</exception>
         /// <returns>Value for given key</returns>
         public string GetValue(string key)
         {
             if (!_local.ContainsKey(key))
-                throw new KeyNotFoundException(String.Format("Key [{0}] not exist in configuration attributes.", key));
+                throw new ConfigurationException(String.Format("Key [{0}] not exist in configuration attributes.", key));
             return _local[key];
         }
 

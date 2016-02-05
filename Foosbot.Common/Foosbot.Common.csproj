@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Exceptions\ConfigurationException.cs" />
     <Compile Include="Multithreading\BackgroundFlow.cs" />
     <Compile Include="Multithreading\IFlow.cs" />
     <Compile Include="Logs\eLogCategory.cs" />

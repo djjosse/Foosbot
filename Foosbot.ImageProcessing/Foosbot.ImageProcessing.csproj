@@ -39,16 +39,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Streamer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\External\DirectShowLib\src\DirectShowLib-2008.csproj">
+      <Project>{ce009bfa-5ef6-4153-b2a1-2fa79698a9ae}</Project>
+      <Name>DirectShowLib-2008</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\External\emgucv-windows-universal 3.0.0.2157\Emgu.CV.DebuggerVisualizers\Emgu.CV.DebuggerVisualizers.csproj">
+      <Project>{e8f09998-297b-485c-b234-e5ace5f55772}</Project>
+      <Name>Emgu.CV.DebuggerVisualizers</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\External\emgucv-windows-universal 3.0.0.2157\Emgu.CV.UI\Emgu.CV.UI.csproj">
+      <Project>{90e78bbf-c7fe-4d8e-ade1-75448e866fdb}</Project>
+      <Name>Emgu.CV.UI</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\External\emgucv-windows-universal 3.0.0.2157\Emgu.CV\Emgu.CV.csproj">
+      <Project>{9a1a77fe-f01b-495e-87b7-4b16e4f8c908}</Project>
+      <Name>Emgu.CV</Name>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\External\emgucv-windows-universal 3.0.0.2157\Emgu.Util\Emgu.Util.csproj">
+      <Project>{7c2c5325-8235-4a24-9c67-6bd79a4679e2}</Project>
+      <Name>Emgu.Util</Name>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">
       <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
       <Name>Foosbot.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /Q /Y "$(SolutionDir)\External\emgucv-windows-universal 3.0.0.2157\bin\x64"  "$(TargetDir)"
+xcopy /Q /Y "$(SolutionDir)\External\emgucv-windows-universal 3.0.0.2157\bin\x86"  "$(TargetDir)"
+xcopy /Q /Y "$(SolutionDir)\External\emgucv-windows-universal 3.0.0.2157\bin\ZedGraph.dll"  "$(TargetDir)"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
