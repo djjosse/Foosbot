@@ -17,6 +17,6 @@ namespace Foosbot.Common.Logs
         /// <summary>
         /// Image Processing Logs
         /// </summary>
-        ImageProcessing
+        Image
     }
 }

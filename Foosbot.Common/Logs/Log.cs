@@ -52,29 +52,29 @@ namespace Foosbot
         /// <summary>
         /// Image Preocessing Log Synchronization Token
         /// </summary>
-        private static object _imageProcessingToken = new Object();
+        private static object _imageToken = new Object();
 
         /// <summary>
         /// Image Preocessing Log Singleton Instance
         /// </summary>
-        private static Log _imageProcessing;
+        private static Log _image;
 
         /// <summary>
         /// Image Preocessing Log Property of Singleton
         /// </summary>
-        public static Log ImageProcessing
+        public static Log Image
         {
             get
             {
-                if (_imageProcessing == null)
+                if (_image == null)
                 {
-                    lock (_imageProcessingToken)
+                    lock (_imageToken)
                     {
                         if (_common == null)
-                            _imageProcessing = new Log(eLogType.ImageProcessing);
+                            _image = new Log(eLogType.Image);
                     }
                 }
-                return _imageProcessing;
+                return _image;
             }
         }
 
