@@ -4,8 +4,6 @@ namespace Foosbot.Common.Logs
     /// <summary>
     /// Log Message
     /// </summary>
-    /// <author>Joseph Gleyzer</author>
-    /// <date>04.02.2016</date>
     public class LogMessage
     {
         /// <summary>

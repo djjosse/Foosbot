@@ -70,20 +70,28 @@ namespace Foosbot
         private void Load()
         {
             _local = new Dictionary<string, string>();
-            using(StreamReader file = new StreamReader(CONFIG_FILE_PATH, Encoding.ASCII))
+            try
             {
-                string line;
-                while ((line = file.ReadLine()) != null)
+                using (StreamReader file = new StreamReader(CONFIG_FILE_PATH, Encoding.ASCII))
                 {
-                    //ignore comments
-                    if(!line.StartsWith("#") && !String.IsNullOrEmpty(line))
+                    string line;
+                    while ((line = file.ReadLine()) != null)
                     {
-                        //replace whitespaces and split to key and value
-                        string [] split = line.Replace(" ", "").Split('=', '#');
-                        if (split.Length >= 2)
-                            _local.Add(split[0], split[1]);
+                        //ignore comments
+                        if (!line.StartsWith("#") && !String.IsNullOrEmpty(line))
+                        {
+                            //replace whitespaces and split to key and value
+                            string[] split = line.Replace(" ", "").Split('=', '#');
+                            if (split.Length >= 2)
+                                _local.Add(split[0], split[1]);
+                        }
                     }
                 }
+            }
+            catch(Exception e)
+            {
+                Log.Common.Error(String.Format("Failed to load configuration file: [{0}] Reason: {1}",
+                    CONFIG_FILE_PATH, e.Message));
             }
         }
 

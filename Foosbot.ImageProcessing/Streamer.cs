@@ -13,6 +13,8 @@ namespace Foosbot.ImageProcessing
     /// <summary>
     /// Streams frames from Camera in to Image Processing Unit
     /// </summary>
+    /// <author>Joseph Gleyzer</author>
+    /// <date>05.02.2016</date>
     public class Streamer
     {
         /// <summary>

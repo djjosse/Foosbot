@@ -3,8 +3,6 @@
     /// <summary>
     /// Enum represent log cattegories to print
     /// </summary>
-    /// <author>Joseph Gleyzer</author>
-    /// <date>04.02.2016</date>
     public enum eLogCategory
     {
         /// <summary>

@@ -50,17 +50,17 @@ namespace Foosbot
         #region Image Processing
 
         /// <summary>
-        /// Image Preocessing Log Synchronization Token
+        /// Image Processing Log Synchronization Token
         /// </summary>
         private static object _imageToken = new Object();
 
         /// <summary>
-        /// Image Preocessing Log Singleton Instance
+        /// Image Processing Log Singleton Instance
         /// </summary>
         private static Log _image;
 
         /// <summary>
-        /// Image Preocessing Log Property of Singleton
+        /// Image Processing Log Property of Singleton
         /// </summary>
         public static Log Image
         {
@@ -122,10 +122,18 @@ namespace Foosbot
                 {
                     lock (_token)
                     {
-                        LogMessage message = _messageQ.Dequeue();
-                        using (StreamWriter file = File.AppendText(String.Format("{0}.log", _type.ToString())))
+                        try
                         {
-                            file.WriteLine("{0}\t{1}\t{2}", message.TimeStamp.ToString("HH:mm:ss.ffff"), message.Category, message.Description);
+                            LogMessage message = _messageQ.Dequeue();
+                            using (StreamWriter file = File.AppendText(String.Format("{0}.log", _type.ToString())))
+                            {
+                                file.WriteLine("{0}\t{1}\t{2}", message.TimeStamp.ToString("HH:mm:ss.ffff"),
+                                    message.Category, message.Description);
+                            }
+                        }
+                        catch(Exception)
+                        {
+                            //It is only log, we don't want to fail the programm
                         }
                     }
                 }
