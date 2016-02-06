@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DirectShowLib;
+using System.Threading;
 
 namespace Foosbot.ImageProcessing
 {
@@ -30,13 +31,25 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Streamer Diagnostics metadata
         /// </summary>
-        public Diagnostics Metadata { get; set; } 
+        public Diagnostics Metadata { get; set; }
+
+        /// <summary>
+        /// Current Frame - last frame received
+        /// </summary>
+        public Frame CurrentFrame { get; set; }
+
+        /// <summary>
+        /// On new frame received reset this event
+        /// </summary>
+        private ManualResetEvent _streamerFrameEvent;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public Streamer()
+        public Streamer(ManualResetEvent streamerFrameEvent)
         {
+            _streamerFrameEvent = streamerFrameEvent;
+
             _capture = GetCamera();
 
             SetCameraConfiguration();
@@ -59,14 +72,16 @@ namespace Foosbot.ImageProcessing
                 //Get frame from camera
                 Frame frame = new Frame();
                 frame.timestamp = DateTime.Now;
-                frame.image = new Image<Gray, byte>(_capture.QueryFrame().Bitmap);
+                frame.image = new Image<Gray, byte>(_capture.QueryFrame().Clone().Bitmap);
 
-                Log.Image.Info("New frame received!");
+                CurrentFrame = frame;
 
+                //Notify all 
+                _streamerFrameEvent.Set();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Log.Image.Error("Failed to deal with frame. Reason: " + ex.Message);
             }
             finally
             {
@@ -105,6 +120,8 @@ namespace Foosbot.ImageProcessing
         private void SetCameraConfiguration()
         {
             _capture.SetCaptureProperty(CapProp.Fps, 30);
+            _capture.SetCaptureProperty(CapProp.FrameWidth, 1000);
+            _capture.SetCaptureProperty(CapProp.FrameHeight, 1000);
         }
     }
 }
