@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostics.cs" />
+    <Compile Include="Frame.cs" />
     <Compile Include="Streamer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -28,6 +28,11 @@ namespace Foosbot.ImageProcessing
         private Capture _capture;
 
         /// <summary>
+        /// Streamer Diagnostics metadata
+        /// </summary>
+        public Diagnostics Metadata { get; set; } 
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public Streamer()
@@ -51,7 +56,11 @@ namespace Foosbot.ImageProcessing
             _capture.ImageGrabbed -= ProcessFrame;
             try
             {
-                Mat frame = _capture.QueryFrame();
+                //Get frame from camera
+                Frame frame = new Frame();
+                frame.timestamp = DateTime.Now;
+                frame.image = new Image<Gray, byte>(_capture.QueryFrame().Bitmap);
+
                 Log.Image.Info("New frame received!");
 
             }
