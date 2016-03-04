@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DirectShowLib;
 using System.Threading;
+using Foosbot.Common.Multithreading;
 
 namespace Foosbot.ImageProcessing
 {
@@ -16,72 +17,67 @@ namespace Foosbot.ImageProcessing
     /// </summary>
     /// <author>Joseph Gleyzer</author>
     /// <date>05.02.2016</date>
-    public class Streamer
+    public class Streamer : Publisher<Frame>
     {
+        protected Helpers.UpdateStatisticsDelegate UpdateStatistics;
+
         /// <summary>
         /// Key of camera hardware ID in configuration
         /// </summary>
-        private const string HARDWARE_ID = "CameraHardwareId";
+        private const string HARDWARE_ID_KEY = "CameraHardwareId";
 
         /// <summary>
         /// Capture Device
         /// </summary>
-        private Capture _capture;
-
-        /// <summary>
-        /// Streamer Diagnostics metadata
-        /// </summary>
-        public Diagnostics Metadata { get; set; }
-
-        /// <summary>
-        /// Current Frame - last frame received
-        /// </summary>
-        public Frame CurrentFrame { get; set; }
-
-        /// <summary>
-        /// On new frame received reset this event
-        /// </summary>
-        private ManualResetEvent _streamerFrameEvent;
+        protected Capture _capture;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public Streamer(ManualResetEvent streamerFrameEvent)
+        public Streamer(Helpers.UpdateStatisticsDelegate onUpdateStatistics)
         {
-            _streamerFrameEvent = streamerFrameEvent;
+            UpdateStatistics = onUpdateStatistics;
 
+            //Get camera device and set configuration
             _capture = GetCamera();
-
             SetCameraConfiguration();
+        }
 
-            //Subscribe on events
+        /// <summary>
+        /// Start streaming
+        /// </summary>
+        public void Start()
+        {
+            //Subscribe on new frame event
             _capture.ImageGrabbed += ProcessFrame;
             _capture.Start();
             Log.Image.Info("Video capture started!");
         }
 
         /// <summary>
-        /// Streamer main flow
+        /// Frame Process Function called on Image Grabbed Event
         /// </summary>
-        public void ProcessFrame(object sender, EventArgs e)
+        protected void ProcessFrame(object sender, EventArgs e)
         {
             //Unsubscribe to stop receiving events
             _capture.ImageGrabbed -= ProcessFrame;
             try
             {
+                Mat f = new Mat();
+                _capture.Retrieve(f, 0);
                 //Get frame from camera
                 Frame frame = new Frame();
-                frame.timestamp = DateTime.Now;
-                frame.image = new Image<Gray, byte>(_capture.QueryFrame().Clone().Bitmap);
+                frame.Timestamp = DateTime.Now;
+                frame.Image = new Image<Gray, byte>(f.Bitmap);
 
-                CurrentFrame = frame;
-
-                //Notify all 
-                _streamerFrameEvent.Set();
+                Data = frame;
+                NotifyAll();
+                UpdateDiagnosticInfo();
             }
             catch (Exception ex)
             {
-                Log.Image.Error("Failed to deal with frame. Reason: " + ex.Message);
+                Log.Image.Error(String.Format(
+                    "Failed to deal with frame. Reason: {0}\nStackTrace: {1}", ex.Message, ex.StackTrace));
             }
             finally
             {
@@ -93,13 +89,13 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Get Camera Device by device hardware Id
         /// </summary>
-        /// <returns>Capture camera device</returns>
-        private Capture GetCamera()
+        protected Capture GetCamera()
         {
-            string hardwareId = Configuration.Attributes.GetValue(HARDWARE_ID);
+            string hardwareId = Configuration.Attributes.GetValue(HARDWARE_ID_KEY);
 
             DsDevice[] cameras = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
 
+            CvInvoke.UseOpenCL = true; 
             for (int i = 0; i< cameras.Length; i++)
             {
                 if (cameras[i].DevicePath.Contains(hardwareId))
@@ -117,11 +113,19 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Sets requested camera configuration
         /// </summary>
-        private void SetCameraConfiguration()
+        protected void SetCameraConfiguration()
         {
-            _capture.SetCaptureProperty(CapProp.Fps, 30);
-            _capture.SetCaptureProperty(CapProp.FrameWidth, 1000);
-            _capture.SetCaptureProperty(CapProp.FrameHeight, 1000);
+            //_capture.FlipHorizontal = true;
+            bool s = _capture.SetCaptureProperty(CapProp.Fps, 30);
+            bool s1 = _capture.SetCaptureProperty(CapProp.FrameHeight, 600);
+            bool s2 = _capture.SetCaptureProperty(CapProp.FrameWidth, 480);
+        }
+
+        protected void UpdateDiagnosticInfo()
+        {
+            UpdateStatistics(Helpers.eStatisticsKey.FPS, _capture.GetCaptureProperty(CapProp.Fps).ToString());
+            UpdateStatistics(Helpers.eStatisticsKey.IMAGE_WIDTH, _capture.GetCaptureProperty(CapProp.FrameWidth).ToString());
+            UpdateStatistics(Helpers.eStatisticsKey.IMAGE_HEIGHT, _capture.GetCaptureProperty(CapProp.FrameHeight).ToString());
         }
     }
 }

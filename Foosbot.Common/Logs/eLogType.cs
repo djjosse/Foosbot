@@ -7,6 +7,8 @@ namespace Foosbot.Common.Logs
     /// </summary>
     public enum eLogType
     {
+        NotDefined,
+
         /// <summary>
         /// Common and Shared parts of Foosbot
         /// </summary>

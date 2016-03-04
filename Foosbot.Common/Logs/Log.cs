@@ -80,15 +80,46 @@ namespace Foosbot
 
         #endregion Image Processing
 
+
+
         /// <summary>
-        /// Log Message Queue
+        /// 
         /// </summary>
-        private Queue<LogMessage> _messageQ;
+        private Queue<LogMessage> _outputMessageQ;
+        private object _outputMessageQtoken = new Object();
+
+        public bool HasMessages
+        {
+            get
+            {
+                lock(_outputMessageQtoken)
+                {
+                    return _outputMessageQ.Count != 0;
+                }
+            }
+        }
+        public LogMessage LastMessage
+        {
+            get
+            {
+                lock(_outputMessageQtoken)
+                {
+                    if (_outputMessageQ.Count != 0)
+                        return _outputMessageQ.Dequeue();
+                    else return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inner incomming messages log queue
+        /// </summary>
+        private Queue<LogMessage> _inputMessageQ;
 
         /// <summary>
         /// Log Queue Token
         /// </summary>
-        private object _token = new Object();
+        private object _inputMessageQtoken = new Object();
 
         /// <summary>
         /// Current Log Type
@@ -107,7 +138,8 @@ namespace Foosbot
         private Log(eLogType type)
         {
             _type = type;
-            _messageQ = new Queue<LogMessage>();
+            _inputMessageQ = new Queue<LogMessage>();
+            _outputMessageQ = new Queue<LogMessage>();
             Start();
         }
 
@@ -118,13 +150,14 @@ namespace Foosbot
         {
             while (true)
             {
-                if (_messageQ.Count != 0)
+                if (_inputMessageQ.Count != 0)
                 {
-                    lock (_token)
+                    lock (_inputMessageQtoken)
                     {
                         try
                         {
-                            LogMessage message = _messageQ.Dequeue();
+                            LogMessage message = _inputMessageQ.Dequeue();
+                            _outputMessageQ.Enqueue(message);
                             using (StreamWriter file = File.AppendText(String.Format("{0}.log", _type.ToString())))
                             {
                                 file.WriteLine("{0}\t{1}\t{2}", message.TimeStamp.ToString("HH:mm:ss.ffff"),
@@ -133,6 +166,7 @@ namespace Foosbot
                         }
                         catch(Exception)
                         {
+
                             //It is only log, we don't want to fail the programm
                         }
                     }
@@ -149,9 +183,9 @@ namespace Foosbot
         private void Print(string message, eLogCategory category, DateTime timeStamp)
         {
             LogMessage m = new LogMessage(message, category, timeStamp);
-            lock (_token)
+            lock (_inputMessageQtoken)
             {
-                _messageQ.Enqueue(m);
+                _inputMessageQ.Enqueue(m);
             }
         }
         
@@ -179,7 +213,7 @@ namespace Foosbot
         /// <param name="message">Message to print</param>
         public void Warning(string message)
         {
-            Print(message, eLogCategory.Warning, DateTime.Now);
+            Print(message, eLogCategory.Warn, DateTime.Now);
         }
 
         /// <summary>

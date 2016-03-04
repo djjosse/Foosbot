@@ -1,8 +1,35 @@
-﻿<Window x:Class="Foosbot.UI.MainWindow"
+﻿<Window DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        x:Class="Foosbot.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="678.65" Width="1021.8">
+        Title="MainWindow" Height="678.65" Width="1200">
     <Grid>
-        <Image Name="_guiImage" HorizontalAlignment="Left" Height="600" Width="800" Margin="10,10,0,0" VerticalAlignment="Top" />
+        <Canvas Name="_guiImage" HorizontalAlignment="Left" Height="480" Width="640" Margin="10,10,0,0" VerticalAlignment="Top" />
+
+        <ListView Name="_guiLog" ItemsSource="{Binding LogStream}" HorizontalAlignment="Right" Height="480" Margin="655,10,10,10" VerticalAlignment="Top" Width="527">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Message}">
+                        <TextBlock.Foreground>
+                            <SolidColorBrush Color="{Binding FontColor}"/>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Label Content="Statistics" HorizontalAlignment="Left" Margin="10,505,1021,0" VerticalAlignment="Top" Width="155" Height="25"/>
+
+        <Label Content="Width:" HorizontalAlignment="Left" Margin="10,595,1126,0" VerticalAlignment="Top" Width="50" Height="26"/>
+        <Label Name="_guiImageWidth" HorizontalAlignment="Left" Margin="110,601,0,0" VerticalAlignment="Top" Width="100" Height="26"/>
+
+        <Label Content="Height:" HorizontalAlignment="Left" Margin="10,535,1126,0" VerticalAlignment="Top" Width="50" Height="26"/>
+        <Label Name="_guiImageHeight" HorizontalAlignment="Left" Margin="110,539,0,0" VerticalAlignment="Top" Width="100" Height="26"/>
+
+        <Label Content="Fps:" HorizontalAlignment="Left" Margin="10,565,1126,0" VerticalAlignment="Top" Width="50" Height="26"/>
+        <Label Name="_guiFps" HorizontalAlignment="Left" Margin="110,570,0,0" VerticalAlignment="Top" Width="100" Height="26"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="133" Margin="10,505,0,0" VerticalAlignment="Top" Width="200"/>
+        <CheckBox Content="Autoscroll" HorizontalAlignment="Left" Margin="718,530,0,0" VerticalAlignment="Top" IsChecked="{Binding Path=AutoscrollCheckbox, Mode=TwoWay}"/>
+
     </Grid>
 </Window>

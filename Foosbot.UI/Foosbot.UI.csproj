@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -53,6 +54,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Logger\UILogger.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -61,6 +63,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Logger\UILogMessage.cs" />
+    <Compile Include="UIFrameObserver.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -97,22 +101,27 @@
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">
       <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
       <Name>Foosbot.Common</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Foosbot.CommunicationLayer\Foosbot.CommunicationLayer.csproj">
       <Project>{0629d0dc-e6cb-45a1-b0d3-02aec535a800}</Project>
       <Name>Foosbot.CommunicationLayer</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Foosbot.DecisionUnit\Foosbot.DecisionUnit.csproj">
       <Project>{d9a1501a-4b90-4835-96c1-b847ba54026d}</Project>
       <Name>Foosbot.DecisionUnit</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Foosbot.ImageProcessing\Foosbot.ImageProcessing.csproj">
       <Project>{07a46440-a4e8-49cc-b9a6-b0dcc4cf19bc}</Project>
       <Name>Foosbot.ImageProcessing</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Foosbot.VectorCalculation\Foosbot.VectorCalculation.csproj">
       <Project>{023c6c34-e785-4786-86ae-1b2d8daa06bf}</Project>
       <Name>Foosbot.VectorCalculation</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

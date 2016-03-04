@@ -19,12 +19,12 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Frame Image
         /// </summary>
-        public Image<Gray, byte> image { get; set; }
+        public Image<Gray, byte> Image { get; set; }
 
         /// <summary>
         /// Frame Timestamp
         /// </summary>
-        public DateTime timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Delete a GDI object
@@ -41,7 +41,7 @@ namespace Foosbot.ImageProcessing
         /// <returns>The equivalent BitmapSource</returns>
         public BitmapSource ToBitmapSource()
         {
-            using (System.Drawing.Bitmap source = image.Bitmap)
+            using (System.Drawing.Bitmap source = Image.Bitmap)
             {
                 IntPtr ptr = source.GetHbitmap(); //obtain the Hbitmap
 

@@ -18,7 +18,7 @@
         /// <summary>
         /// Warning Print
         /// </summary>
-        Warning,
+        Warn,
 
         /// <summary>
         /// Error Print
