@@ -1,4 +1,4 @@
 # Foosbot
 Final Project of Foosbot
 
-![Alt text](http://i64.tinypic.com/2hyyk38.png "FoosBot")
+![Alt text](http://i63.tinypic.com/21lv7ko.png "FoosBot")
