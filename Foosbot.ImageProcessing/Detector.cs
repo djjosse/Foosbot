@@ -35,11 +35,44 @@ namespace Foosbot.ImageProcessing
         public CircleF[] DetectCircles(Image<Gray, byte> image, int radius, double error, double minDistance,
             double cannyThreshold = 180.0, double circleAccumulatorThreshold = 120, double inverseRatio = 2.0)
         {
-            int minRadius = (int)Math.Round((double)(radius - error * radius));
-            int maxRadius = (int)Math.Round((double)(radius + error * radius));
+            int minRadius = (int)Math.Round((double)(radius - error * radius))-1;
+            if (minRadius < 5) minRadius = 5;
+            int maxRadius = (int)Math.Round((double)(radius + error * radius))+1;
             CircleF[] circles = CvInvoke.HoughCircles(image, HoughType.Gradient, inverseRatio,
                 minDistance, cannyThreshold, circleAccumulatorThreshold, minRadius, maxRadius);
             return circles;
+        }
+
+        public int OffsetX { get; private set; }
+        public int OffsetY { get; private set; }
+
+        public Image<Gray, byte> CropAndStoreOffset(Image<Gray, byte> image, List<PointF> points)
+        {
+            int xMax = 0;
+            OffsetX = image.Width;
+            int yMax = 0;
+            OffsetY = image.Height;
+
+            foreach (PointF point in points)
+            {
+                if (point.X > xMax)
+                    xMax = Convert.ToInt32(point.X);
+                if (point.X < OffsetX)
+                    OffsetX = Convert.ToInt32(point.X);
+                if (point.Y > yMax)
+                    yMax = Convert.ToInt32(point.Y);
+                if (point.Y < OffsetY)
+                    OffsetY = Convert.ToInt32(point.Y);
+            }
+
+            int xSize = Convert.ToInt32(xMax - OffsetX);
+            int ySize = Convert.ToInt32(yMax - OffsetY);
+
+            Rectangle frame = new Rectangle(new System.Drawing.Point(OffsetX, OffsetY), new System.Drawing.Size(xSize, ySize));
+
+            Mat cropped = new Mat(image.Clone().Mat, frame);
+            Image<Gray, byte> croppedImage = cropped.ToImage<Gray, byte>();
+            return croppedImage;
         }
 
         public Image<Gray, byte> Crop(Image<Gray, byte> image, List<PointF> points)
@@ -71,12 +104,12 @@ namespace Foosbot.ImageProcessing
             return croppedImage;
         }
 
-        public Image<Gray, byte> Crop(Image<Gray, byte> image, List<CircleF> circles)
+        public Image<Gray, byte> CropAndStoreOffset(Image<Gray, byte> image, List<CircleF> circles)
         {
             List<PointF> pointList = new List<PointF>();
             foreach (CircleF circle in circles)
                 pointList.Add(circle.Center);
-            return Crop(image, pointList);
+            return CropAndStoreOffset(image, pointList);
         }
     }
 }

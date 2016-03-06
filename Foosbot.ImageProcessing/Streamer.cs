@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DirectShowLib;
 using System.Threading;
 using Foosbot.Common.Multithreading;
+using System.Reflection;
 
 namespace Foosbot.ImageProcessing
 {
@@ -52,6 +53,7 @@ namespace Foosbot.ImageProcessing
             _capture.ImageGrabbed += ProcessFrame;
             _capture.Start();
             Log.Image.Info("Video capture started!");
+            UpdateDiagnosticInfo();
         }
 
         /// <summary>
@@ -72,12 +74,11 @@ namespace Foosbot.ImageProcessing
 
                 Data = frame;
                 NotifyAll();
-                UpdateDiagnosticInfo();
             }
             catch (Exception ex)
             {
                 Log.Image.Error(String.Format(
-                    "Failed to deal with frame. Reason: {0}\nStackTrace: {1}", ex.Message, ex.StackTrace));
+                    "[{0}] Failed to deal with frame. Reason: {1}", MethodBase.GetCurrentMethod().Name, ex.Message));
             }
             finally
             {
@@ -110,22 +111,34 @@ namespace Foosbot.ImageProcessing
             throw new ConfigurationException(error);
         }
 
+        public int FrameRate { get; private set; }
+
+        public int FrameWidth { get; private set; }
+
+        public int FrameHeight { get; private set; }
+
         /// <summary>
         /// Sets requested camera configuration
         /// </summary>
         protected void SetCameraConfiguration()
         {
+            FrameWidth = Configuration.Attributes.GetValue<int>("FrameWidth");
+            FrameHeight = Configuration.Attributes.GetValue<int>("FrameHeight");
+            FrameRate = Configuration.Attributes.GetValue<int>("FrameRate");
+
             //_capture.FlipHorizontal = true;
-            bool s = _capture.SetCaptureProperty(CapProp.Fps, 30);
-            bool s1 = _capture.SetCaptureProperty(CapProp.FrameHeight, 600);
-            bool s2 = _capture.SetCaptureProperty(CapProp.FrameWidth, 480);
+            _capture.SetCaptureProperty(CapProp.FrameWidth, FrameWidth);
+            _capture.SetCaptureProperty(CapProp.FrameHeight, FrameHeight);
+            _capture.SetCaptureProperty(CapProp.Fps, FrameRate);
         }
 
         protected void UpdateDiagnosticInfo()
         {
-            UpdateStatistics(Helpers.eStatisticsKey.FPS, _capture.GetCaptureProperty(CapProp.Fps).ToString());
-            UpdateStatistics(Helpers.eStatisticsKey.IMAGE_WIDTH, _capture.GetCaptureProperty(CapProp.FrameWidth).ToString());
-            UpdateStatistics(Helpers.eStatisticsKey.IMAGE_HEIGHT, _capture.GetCaptureProperty(CapProp.FrameHeight).ToString());
+            string frameInfo = String.Format("Frame Size: {0}x{1} F/S: {2}",
+                _capture.GetCaptureProperty(CapProp.FrameWidth).ToString(),
+                _capture.GetCaptureProperty(CapProp.FrameHeight).ToString(),
+                _capture.GetCaptureProperty(CapProp.Fps).ToString());
+            UpdateStatistics(Helpers.eStatisticsKey.FrameInfo, frameInfo);
         }
     }
 }

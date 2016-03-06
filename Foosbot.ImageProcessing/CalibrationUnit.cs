@@ -86,9 +86,9 @@ namespace Foosbot.ImageProcessing
         public int Radius { get; set; }
 
         /// <summary>
-        /// Ball Radius Error +/- Radius
+        /// Ball Radius Error Rate
         /// </summary>
-        public int Error { get; set; }
+        public double ErrorRate { get; set; }
 
         #endregion ICallibration
 
@@ -175,7 +175,7 @@ namespace Foosbot.ImageProcessing
                     //Calculate Ball Radius and Error
                     double originalBallRadius = Configuration.Attributes.GetValue<double>("BallDiameter") / 2;
                     CalculateBallRadiusAndError((float)originalBallRadius);
-                    Log.Image.Info(String.Format("Expected ball radius is {0} +/- {1}", Radius, Error));
+                    Log.Image.Info(String.Format("Expected ball radius is {0} +/- {1}", Radius, ErrorRate));
 
                     //Check Calculated Radius
                     //ToDo:
@@ -211,7 +211,7 @@ namespace Foosbot.ImageProcessing
                 Log.Image.Debug("Starting callibration Phase II...");
                 Image<Gray, byte> image = source.Clone();
 
-                Image<Gray, byte> tempImage = _phaseOneFrame.Clone();
+                Image<Gray, byte> tempImage = image.Clone();
 
                 //Remove Noise from picture
                 CvInvoke.Canny(tempImage, tempImage, 100, 60);
@@ -225,12 +225,14 @@ namespace Foosbot.ImageProcessing
                     Log.Image.Debug("Found callibration marks!");
 
                     //Extract Background
-                    Background = image.Clone().And(_phaseOneFrame);
-
+                    Background = image.Clone();//.Sub(_phaseOneFrame);
+                   // image.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "image.png");
+                    //_phaseOneFrame.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "_phaseOneFrame.png");
+                    //Background.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "back.png");
                     Log.Image.Debug("Background image extracted");
 
                     //Crop background based on callibration marks
-                    Background = Crop(Background, CallibrationMarks.Values.ToList());
+                    Background = CropAndStoreOffset(Background, CallibrationMarks.Values.ToList());
 
                     Log.Image.Debug("Background image cropped");
 
@@ -461,7 +463,8 @@ namespace Foosbot.ImageProcessing
             }
 
             Radius = Convert.ToInt32((minRadius + maxRadius) / 2);
-            Error = Convert.ToInt32((maxRadius - minRadius) / 2) + 1;
+            double possibleError = ((maxRadius - minRadius) / 2) + 1;
+            ErrorRate = possibleError / Radius;
         }
     }
 }

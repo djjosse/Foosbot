@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,6 +55,11 @@ namespace Foosbot.UI
         public MainWindow()
         {
             InitializeComponent();
+
+            //Get canvas size
+            ImageFrameWidth = _guiImage.Width;
+            ImageFrameHeight = _guiImage.Height;
+
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
             this.Loaded += OnWindowLoaded;
         }
@@ -67,6 +73,9 @@ namespace Foosbot.UI
         {
             //Start Log
             StartLogger();
+
+            //Start Diagnostics - Processor and Memory Usage
+            StartDiagnostics();
 
             Log.Common.Info("Foosbot Application Started!");
 
@@ -102,21 +111,28 @@ namespace Foosbot.UI
         {
             while (true)
             {
-                while (!_frameReceiver.Set) { }
-
-                //Get frame
-                Foosbot.ImageProcessing.Frame frame = _streamer.Data;
-                BitmapSource source = frame.ToBitmapSource();
-                source.Freeze();
-
-                //Show frame
-                Dispatcher.BeginInvoke(new ThreadStart(delegate
+                try
                 {
-                    _imageBrush.ImageSource = source;
-                    _guiImage.Background = _imageBrush;
-                }));
+                    while (!_frameReceiver.Set) { }
 
-                //Log.Common.Debug("GUI: New frame received: " + frame.Timestamp.ToString("HH:mm:ss.ffff"));
+                    //Get frame
+                    Foosbot.ImageProcessing.Frame frame = _streamer.Data;
+                    BitmapSource source = frame.ToBitmapSource();
+                    source.Freeze();
+
+                    //Show frame
+                    Dispatcher.BeginInvoke(new ThreadStart(delegate
+                    {
+                        _imageBrush.ImageSource = source;
+                        _guiImage.Background = _imageBrush;
+                    }));
+
+                    //Log.Common.Debug("GUI: New frame received: " + frame.Timestamp.ToString("HH:mm:ss.ffff"));
+                }
+                catch(Exception e)
+                {
+                    Log.Common.Error(String.Format("[{0}] Unable to show frame in GUI. Reason: {1}", MethodBase.GetCurrentMethod().Name,e.Message));
+                }
             }
         }
 
@@ -226,6 +242,9 @@ namespace Foosbot.UI
             }
         }
 
+        private double ImageFrameWidth;
+        private double ImageFrameHeight;
+
         /// <summary>
         /// On Update markup function
         /// </summary>
@@ -234,14 +253,19 @@ namespace Foosbot.UI
         /// <param name="radius">Circle radius</param>
         public void UpdateMarkupCircle(Helpers.eMarkupKey key, Point center, int radius)
         {
+            double widthRate = ImageFrameWidth / _streamer.FrameWidth;
+            double heightRate = ImageFrameHeight / _streamer.FrameHeight;
+
+            Point presentationCenter = new Point(center.X * widthRate, center.Y * heightRate);
+            int presentationRadius = Convert.ToInt32(radius*((widthRate+heightRate)/2));
+
             Dispatcher.Invoke(new ThreadStart(delegate
-            {
-                
+            {       
                 switch (key)
                 {
                     case Helpers.eMarkupKey.BALL_CIRCLE_MARK:
                         (_markups[key] as Shape).StrokeThickness = 2;
-                        (_markups[key] as Shape).Stroke = System.Windows.Media.Brushes.Yellow;
+                        (_markups[key] as Shape).Stroke = System.Windows.Media.Brushes.Red;
                         break;
                     case Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_MARK:
                     case Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_MARK:
@@ -274,10 +298,10 @@ namespace Foosbot.UI
                         break;
                 }
                 
-                _markups[key].Width = radius*2;
-                _markups[key].Height = radius*2;
-                Canvas.SetLeft(_markups[key], center.X - radius);
-                Canvas.SetTop(_markups[key], center.Y - radius);
+                _markups[key].Width = presentationRadius*2;
+                _markups[key].Height = presentationRadius*2;
+                Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
+                Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
             }));
         }
 
@@ -287,19 +311,53 @@ namespace Foosbot.UI
             {
                 switch(key)
                 {
-                    case Helpers.eStatisticsKey.IMAGE_WIDTH:
-                        _guiImageWidth.Content = info;
+                    case Helpers.eStatisticsKey.FrameInfo:
+                        _guiFrameInfo.Content = info;
                         break;
-                    case Helpers.eStatisticsKey.IMAGE_HEIGHT:
-                        _guiImageHeight.Content = info;
-                        break;
-                    case Helpers.eStatisticsKey.FPS:
-                        _guiFps.Content = info;
-                        break;
+                    case Helpers.eStatisticsKey.ProccessInfo:
+                        _guiProcessInfo.Content = info;
+                        break; 
                 }
             }));
         }
 
-        #endregion Markup, Statistics, Diagnostics related        
+        #endregion Markup, Statistics, Diagnostics related
+        
+        #region CPU and Memory Diagnostic Info
+
+        /// <summary>
+        /// CPU Performance Counter
+        /// </summary>
+        private PerformanceCounter _CPUCounter = new PerformanceCounter();
+
+        /// <summary>
+        /// Memory Performance Counter
+        /// </summary>
+        private PerformanceCounter _RAMCounter = new PerformanceCounter("Process", "Working Set", Process.GetCurrentProcess().ProcessName);
+
+        /// <summary>
+        /// Show CPU and Memory Usage
+        /// </summary>
+        private void StartDiagnostics()
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += (s, z) =>
+            {
+                _CPUCounter.CategoryName = "Processor";
+                _CPUCounter.CounterName = "% Processor Time";
+                _CPUCounter.InstanceName = "_Total";
+
+                while (true)
+                {
+                    float ramMB = _RAMCounter.NextValue() / 1048576; //Convert bytes to MB
+                    string info = String.Format("CPU: {0} % RAM: {1} MB", _CPUCounter.NextValue().ToString(), ramMB.ToString());
+                    UpdateStatistics(Helpers.eStatisticsKey.ProccessInfo, info);
+                    Thread.Sleep(1000);
+                }
+            };
+            worker.RunWorkerAsync();
+        }
+
+        #endregion CPU and Memory Diagnostic Info
     }
 }

@@ -41,9 +41,15 @@ namespace Foosbot
         /// </summary>
         public enum eStatisticsKey
         {
-            IMAGE_WIDTH = 1,
-            IMAGE_HEIGHT = 2,
-            FPS = 3
+            /// <summary>
+            /// Current FPS, Width and Heigth
+            /// </summary>
+            FrameInfo = 1,
+
+            /// <summary>
+            /// Foosbot Memory and CPU Info
+            /// </summary>
+            ProccessInfo = 2
         }
     }
 }

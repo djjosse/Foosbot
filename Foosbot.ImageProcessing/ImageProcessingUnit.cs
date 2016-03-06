@@ -38,7 +38,7 @@ namespace Foosbot.ImageProcessing
             UpdateStatistics = onUpdateStatistics;
 
             Calibrator = new CalibrationUnit(UpdateMarkup, UpdateStatistics);
-            BallTracker = new Tracker(Calibrator, UpdateMarkup, UpdateStatistics);
+            BallTracker = new Tracker(Calibrator, _publisher, UpdateMarkup, UpdateStatistics);
             BallLocationPublisher = new BallLocationPublisher(BallTracker);
 
             _lastFrameTimeStamp = DateTime.Now;
@@ -69,7 +69,7 @@ namespace Foosbot.ImageProcessing
             }
             else
             {
-                Log.Image.Error("THis happens");
+                Log.Image.Error("We received same image twice. Good to check timestamp.");
             }
             _publisher.Attach(this);
         }

@@ -33,8 +33,11 @@ namespace Foosbot.ImageProcessing
         /// </summary>
         public void UpdateAndNotify()
         {
-            Data = _coordinatesUpdater.LastBallCoordinates;
-            NotifyAll();
+            if (_coordinatesUpdater.LastBallCoordinates != null)
+            {
+                Data = _coordinatesUpdater.LastBallCoordinates;
+                NotifyAll();
+            }
         }
     }
 }

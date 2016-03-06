@@ -86,7 +86,7 @@ namespace Foosbot.UI.Logger
         /// <returns>Message as string</returns>
         private string DefineMessage(LogMessage message, eLogType type)
         {
-            return String.Format("{0}\t{1}\t{2}\t{3}", message.TimeStamp.ToString("HH:mm:ss:fff"), message.Category, type, message.Description);
+            return String.Format("{0}\t{1}\t{3}", message.TimeStamp.ToString("HH:mm:ss:fff"), message.Category, type, message.Description);
         }
 
         /// <summary>

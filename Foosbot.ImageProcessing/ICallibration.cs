@@ -43,7 +43,7 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Ball Radius Error +/- Radius
         /// </summary>
-        int Error { get; set; }
+        double ErrorRate { get; set; }
 
     }
 }
