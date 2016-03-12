@@ -90,9 +90,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /Q /Y "$(SolutionDir)\External\emgucv-windows-universal 3.0.0.2157\bin\x64"  "$(TargetDir)"
-xcopy /Q /Y "$(SolutionDir)\External\emgucv-windows-universal 3.0.0.2157\bin\x86"  "$(TargetDir)"
-xcopy /Q /Y "$(SolutionDir)\External\emgucv-windows-universal 3.0.0.2157\bin\ZedGraph.dll"  "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
