@@ -69,7 +69,7 @@ namespace Foosbot.UI
         /// <param name="e"></param>
         public void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            _isDemoMode = true;
+            _isDemoMode = false;
 
             //Init Gui Log
             AutoscrollCheckbox = true;
