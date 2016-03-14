@@ -69,43 +69,51 @@ namespace Foosbot.UI
         /// <param name="e"></param>
         public void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            _isDemoMode = false;
-
-            //Init Gui Log
-            AutoscrollCheckbox = true;
-            Log.InitializeGuiLog(UpdateLog);
-            Log.Common.Debug("Foosbot application started");
-
-            //Start Diagnostics - Processor and Memory Usage
-            StartDiagnostics();
-
-            //Call the streamer to get capture from camera
-            if (!_isDemoMode) _streamer = new RealStreamer(UpdateStatistics);
-            else _streamer = new DemoStreamer(UpdateStatistics);
-
-            //Initialize Markups to Show on Screen
-            InitializeMarkUps();
-
-            _streamer.Start();
-
-            //Call ImageProcessingUnit
-            _frameReceiver = new UIFrameObserver(_streamer);
-            _frameReceiver.Start();
-            if (!_isDemoMode) _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
-            else _ipu = new DemoImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
-            _ipu.Start();
-
-            //Show frames in diferent thread
-            _imageBrush = new ImageBrush();
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (s, z) =>
+            try
             {
-                ShowVideoStream();
-            };
-            worker.RunWorkerAsync();
+                _isDemoMode = true;
 
-            VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(UpdateMarkupLine);
-            //vectorCalcullationUnit.Start();
+                //Init Gui Log
+                AutoscrollCheckbox = true;
+                Log.InitializeGuiLog(UpdateLog);
+                Log.Common.Debug("Foosbot application started");
+
+                //Start Diagnostics - Processor and Memory Usage
+                StartDiagnostics();
+
+                //Call the streamer to get capture from camera
+                if (!_isDemoMode) _streamer = new RealStreamer(UpdateStatistics);
+                else _streamer = new DemoStreamer(UpdateStatistics);
+
+                //Initialize Markups to Show on Screen
+                InitializeMarkUps();
+
+                _streamer.Start();
+
+                //Call ImageProcessingUnit
+                _frameReceiver = new UIFrameObserver(_streamer);
+                _frameReceiver.Start();
+                if (!_isDemoMode) _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
+                else _ipu = new DemoImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
+                _ipu.Start();
+
+                //Show frames in diferent thread
+                _imageBrush = new ImageBrush();
+                BackgroundWorker worker = new BackgroundWorker();
+                worker.DoWork += (s, z) =>
+                {
+                    ShowVideoStream();
+                };
+                worker.RunWorkerAsync();
+
+                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(UpdateMarkupLine);
+                //vectorCalcullationUnit.Start();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Application can not start. Reason: " + ex.Message);
+                Close();
+            }
         }
 
         /// <summary>
