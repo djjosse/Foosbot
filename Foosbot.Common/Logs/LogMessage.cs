@@ -37,11 +37,19 @@ namespace Foosbot.Common.Logs
         /// <summary>
         /// Message Category as string in Upper Case
         /// </summary>
-        public string Category
+        public string CategoryAsString
         { 
             get
             {
                 return _category.ToString().ToUpper();
+            }
+        }
+
+        public eLogCategory Category
+        {
+            get
+            {
+                return _category;
             }
         }
     }

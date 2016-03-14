@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Foosbot.Common.Logs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,11 @@ namespace Foosbot
         /// <param name="key">Markup Key</param>
         /// <param name="center">Point to draw center of circle</param>
         /// <param name="radius">Radius of circle to draw</param>
-        public delegate void UpdateMarkupDelegate(eMarkupKey key, Point center, int radius);
+        public delegate void UpdateMarkupCircleDelegate(eMarkupKey key, Point center, int radius);
+
+        public delegate void UpdateLog(eLogType type, eLogCategory cat, DateTime timestamp, string message);
+
+        public delegate void UpdateMarkupLineDelegate(eMarkupKey key, Point startP, Point endP);
 
         /// <summary>
         /// Represents Markup Keys
@@ -33,7 +38,9 @@ namespace Foosbot
             TOP_LEFT_CALLIBRATION_TEXT = 6,
             TOP_RIGHT_CALLIBRATION_TEXT = 7,
             BUTTOM_LEFT_CALLIBRATION_TEXT = 8,
-            BUTTOM_RIGHT_CALLIBRATION_TEXT = 9
+            BUTTOM_RIGHT_CALLIBRATION_TEXT = 9,
+
+            BALL_VECTOR = 10
         }
 
         /// <summary>
@@ -49,7 +56,17 @@ namespace Foosbot
             /// <summary>
             /// Foosbot Memory and CPU Info
             /// </summary>
-            ProccessInfo = 2
+            ProccessInfo = 2,
+
+            /// <summary>
+            /// Percentage of successful ball detection and average detection time
+            /// </summary>
+            BasicImageProcessingInfo = 3,
+
+            /// <summary>
+            /// Ball Coordinates
+            /// </summary>
+            BallCoordinates = 4
         }
     }
 }

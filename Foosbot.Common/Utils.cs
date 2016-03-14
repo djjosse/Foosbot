@@ -8,8 +8,17 @@ using System.Windows;
 
 namespace Foosbot.Common
 {
-    public class Utils
+    /// <summary>
+    /// Common Utils Class
+    /// </summary>
+    public static class Utils
     {
+        /// <summary>
+        /// Distance beetween two points
+        /// </summary>
+        /// <param name="p1">Point A</param>
+        /// <param name="p2">Point B</param>
+        /// <returns>Distantce between A and B</returns>
         public static double Distance(PointF p1, PointF p2)
         {
             double dX = Math.Pow(p1.X - p2.X, 2);

@@ -5,6 +5,7 @@ using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,39 +14,60 @@ using System.Windows;
 
 namespace Foosbot.ImageProcessing
 {
-    public class ImageProcessingUnit : Observer<Frame>
-    {
-        private Helpers.UpdateMarkupDelegate UpdateMarkup;
-        private Helpers.UpdateStatisticsDelegate UpdateStatistics;
+    /// <summary>
+    /// Image Processing Unit Class
+    /// </summary>
+    public class ImageProcessingUnit : AbstractImageProcessingUnit
+    {        
+        #region private members 
 
-        public Tracker BallTracker;
+        /// <summary>
+        /// Ball Tracker Instance
+        /// </summary>
+        private Tracker _ballTracker;
 
-        public CalibrationUnit Calibrator;
-
-        public BallLocationPublisher BallLocationPublisher { get; private set; }
+        /// <summary>
+        /// Ball Callibration Unit Instance
+        /// </summary>
+        private CalibrationUnit _calibrator;
 
         /// <summary>
         /// Represents a flag for callibration
         /// </summary>
         private bool _isCallibrated;
 
-        public ImageProcessingUnit(Streamer streamer,
-            Helpers.UpdateMarkupDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics) :
-            base(streamer)
+        /// <summary>
+        /// Last Received Frame Timestamp
+        /// </summary>
+        private DateTime _lastFrameTimeStamp;
+
+        /// <summary>
+        /// Detection Analyzer to calculate statistic and diagnostic info
+        /// </summary>
+        private DetectionStatisticAnalyzer _detectionAnalyzer;
+
+        #endregion private members
+
+        /// <summary>
+        /// Image Processing Unit Constructor
+        /// </summary>
+        /// <param name="streamer">Video streamer to get frames from</param>
+        /// <param name="onUpdateMarkup">Update markup function delegate</param>
+        /// <param name="onUpdateStatistics">Update statistics delegate</param>
+        public ImageProcessingUnit(Publisher<Frame> streamer,
+            Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics) :
+            base(streamer, onUpdateMarkup, onUpdateStatistics)
         {
-            _publisher = streamer;
-            UpdateMarkup = onUpdateMarkup;
-            UpdateStatistics = onUpdateStatistics;
-
-            Calibrator = new CalibrationUnit(UpdateMarkup, UpdateStatistics);
-            BallTracker = new Tracker(Calibrator, _publisher, UpdateMarkup, UpdateStatistics);
-            BallLocationPublisher = new BallLocationPublisher(BallTracker);
-
+            _calibrator = new CalibrationUnit(UpdateMarkup, UpdateStatistics);
+            _ballTracker = new Tracker(_calibrator, _publisher, UpdateMarkup, UpdateStatistics);
+            BallLocationPublisher = new BallLocationPublisher(_ballTracker);
             _lastFrameTimeStamp = DateTime.Now;
+            _detectionAnalyzer = new DetectionStatisticAnalyzer(onUpdateStatistics);
         }
 
-        DateTime _lastFrameTimeStamp;
-
+        /// <summary>
+        /// Main Image Processing Unit Flow
+        /// </summary>
         public override void Job()
         {
             _publisher.Dettach(this);
@@ -56,15 +78,22 @@ namespace Foosbot.ImageProcessing
                 _lastFrameTimeStamp = timestamp;
                 if (_isCallibrated)
                 {
+                    //Start statisctics and stopwatch
+                    _detectionAnalyzer.Next();
+
                     //Call Tracker & Set new data to be taken by observers
-                    BallTracker.InvokeTracking(image.Clone(), timestamp);
+                    _ballTracker.InvokeTracking(image.Clone(), timestamp);
+
+                    //Stop statics and stopwatch
+                    _detectionAnalyzer.Finalize(_ballTracker.IsBallLocationFound);
+
                     //Notify Observers
                     BallLocationPublisher.UpdateAndNotify();
                 }
                 else
                 {
                     //Call Callibrator
-                    _isCallibrated = Calibrator.InvokeCallibration(image);
+                    _isCallibrated = _calibrator.InvokeCallibration(image);
                 }
             }
             else

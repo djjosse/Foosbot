@@ -55,7 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Logger\UILogger.cs" />
+    <Compile Include="UILogMessage.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -64,7 +64,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logger\UILogMessage.cs" />
     <Compile Include="UIFrameObserver.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -99,6 +98,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DevDemos\DevDemos.csproj">
+      <Project>{db02397f-544c-48b8-ad9f-a0ad4836b6e5}</Project>
+      <Name>DevDemos</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">
       <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
       <Name>Foosbot.Common</Name>

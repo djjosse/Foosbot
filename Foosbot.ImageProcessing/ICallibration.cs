@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Foosbot.ImageProcessing
 {
+    /// <summary>
+    /// Iterface for callibration implementing class
+    /// </summary>
     public interface ICallibration
     {
         /// <summary>

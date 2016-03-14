@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2DE4F554-4B27-4583-98BC-6772D0652B81}</ProjectGuid>
+    <ProjectGuid>{DB02397F-544C-48B8-AD9F-A0AD4836B6E5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Foosbot.Common</RootNamespace>
-    <AssemblyName>Foosbot.Common</AssemblyName>
+    <RootNamespace>DevDemos</RootNamespace>
+    <AssemblyName>DevDemos</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -16,27 +16,22 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,24 +40,20 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\Configuration.cs" />
-    <Compile Include="Helpers.cs" />
-    <Compile Include="Exceptions\ConfigurationException.cs" />
-    <Compile Include="Multithreading\BackgroundFlow.cs" />
-    <Compile Include="Multithreading\BackgroundFlowPublisher.cs" />
-    <Compile Include="Multithreading\IFlow.cs" />
-    <Compile Include="Logs\eLogCategory.cs" />
-    <Compile Include="Logs\eLogType.cs" />
-    <Compile Include="Logs\Log.cs" />
-    <Compile Include="Logs\LogMessage.cs" />
-    <Compile Include="Multithreading\Observer.cs" />
-    <Compile Include="Multithreading\Publisher.cs" />
+    <Compile Include="DemoImageProcessingUnit.cs" />
+    <Compile Include="DemoLastBallCoordinatesUpdater.cs" />
+    <Compile Include="DemoStreamer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocols\DefinableCartesianCoordinate.cs" />
-    <Compile Include="Protocols\BallCoordinates.cs" />
-    <Compile Include="Protocols\eRod.cs" />
-    <Compile Include="Protocols\Vector2D.cs" />
-    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">
+      <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
+      <Name>Foosbot.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Foosbot.ImageProcessing\Foosbot.ImageProcessing.csproj">
+      <Project>{07a46440-a4e8-49cc-b9a6-b0dcc4cf19bc}</Project>
+      <Name>Foosbot.ImageProcessing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

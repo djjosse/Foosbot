@@ -15,6 +15,10 @@ using System.Windows.Shapes;
 
 namespace Foosbot.ImageProcessing
 {
+    /// <summary>
+    /// Callibration Unit Class
+    /// Responsible for camera and Image Callibration in Image Processing Unit
+    /// </summary>
     public class CalibrationUnit : Detector, ICallibration
     {
         #region Callibration Constants
@@ -39,16 +43,28 @@ namespace Foosbot.ImageProcessing
         /// </summary>
         public const double DISTANCE_ERROR = 0.1;
 
+        /// <summary>
+        /// Frames to skip in case of unsucessfull calibration before retry
+        /// </summary>
         public const int FRAMES_TO_SKIP = 10;
 
         #endregion Callibration Constants
 
         #region private members
 
+        /// <summary>
+        /// Callibration mark coordinates on table by names in dictionary
+        /// </summary>
         private Dictionary<eCallibrationMark, System.Drawing.PointF> _markCoordinates;
 
+        /// <summary>
+        /// First Callibration Phase Frame Stored
+        /// </summary>
         private Image<Gray, byte> _phaseOneFrame;
 
+        /// <summary>
+        /// Frames to skip counter in case of unsuccessful callibration
+        /// </summary>
         private int _skipFrames = 0;
 
         #endregion private members
@@ -97,7 +113,7 @@ namespace Foosbot.ImageProcessing
         /// </summary>
         /// <param name="onUpdateMarkup">Delegate for updating markups</param>
         /// <param name="onUpdateStatistics">Delegate for updating statistics</param>
-        public CalibrationUnit(Helpers.UpdateMarkupDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics)
+        public CalibrationUnit(Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics)
             : base(onUpdateMarkup, onUpdateStatistics) { }
 
         /// <summary>
@@ -170,6 +186,9 @@ namespace Foosbot.ImageProcessing
                     TransformationMatrix = FindTransformationMatrix(axeXLength, axeYLength);
                     InvertMatrix = new Matrix<double>(3, 3);
                     CvInvoke.Invert(TransformationMatrix, InvertMatrix, DecompMethod.LU);
+
+                    Transformation.Initialize(TransformationMatrix, InvertMatrix);
+
                     Log.Image.Info("Homography matrix calculated.");
 
                     //Calculate Ball Radius and Error
@@ -451,8 +470,8 @@ namespace Foosbot.ImageProcessing
 
                 double check = Utils.Distance(start, end);
 
-                System.Drawing.PointF transformedStart = ImageProcessingHelpers.ApplyTransfromation(InvertMatrix, start);
-                System.Drawing.PointF transformedEnd = ImageProcessingHelpers.ApplyTransfromation(InvertMatrix, end);
+                System.Drawing.PointF transformedStart = Transformation.ApplyTransfromation(InvertMatrix, start);
+                System.Drawing.PointF transformedEnd = Transformation.ApplyTransfromation(InvertMatrix, end);
 
                 double radius = Utils.Distance(transformedStart, transformedEnd);
 

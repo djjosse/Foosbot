@@ -81,35 +81,23 @@ namespace Foosbot
         #endregion Image Processing
 
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private Queue<LogMessage> _outputMessageQ;
-        private object _outputMessageQtoken = new Object();
-
-        public bool HasMessages
+        private static bool isGuiLogInitialzed = false;
+        private static Helpers.UpdateLog UpdateLogCall;
+        public static void InitializeGuiLog(Helpers.UpdateLog onLogUpdate)
         {
-            get
+            if (!isGuiLogInitialzed)
             {
-                lock(_outputMessageQtoken)
-                {
-                    return _outputMessageQ.Count != 0;
-                }
+                UpdateLogCall = onLogUpdate;
+                isGuiLogInitialzed = true;
             }
         }
-        public LogMessage LastMessage
+
+        private static void TryUpdateLog(eLogType type, LogMessage message)
         {
-            get
-            {
-                lock(_outputMessageQtoken)
-                {
-                    if (_outputMessageQ.Count != 0)
-                        return _outputMessageQ.Dequeue();
-                    else return null;
-                }
-            }
+            if (isGuiLogInitialzed)
+                UpdateLogCall(type, message.Category, message.TimeStamp, message.Description);
         }
+        
 
         /// <summary>
         /// Inner incomming messages log queue
@@ -139,7 +127,6 @@ namespace Foosbot
         {
             _type = type;
             _inputMessageQ = new Queue<LogMessage>();
-            _outputMessageQ = new Queue<LogMessage>();
             Start();
         }
 
@@ -157,11 +144,11 @@ namespace Foosbot
                         try
                         {
                             LogMessage message = _inputMessageQ.Dequeue();
-                            _outputMessageQ.Enqueue(message);
+                            TryUpdateLog(_type, message);
                             using (StreamWriter file = File.AppendText(String.Format("{0}.log", _type.ToString())))
                             {
                                 file.WriteLine("{0}\t{1}\t{2}", message.TimeStamp.ToString("HH:mm:ss.ffff"),
-                                    message.Category, message.Description);
+                                    message.CategoryAsString, message.Description);
                             }
                         }
                         catch(Exception)

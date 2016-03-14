@@ -15,6 +15,21 @@ namespace Foosbot
     public sealed class Configuration
     {
         /// <summary>
+        /// Configuration Names Static Inner Class
+        /// </summary>
+        public static class Names
+        {
+            public const string TABLE_WIDTH = "Width";
+            public const string TABLE_HEIGHT = "Height";
+            public const string BALL_DIAMETR = "BallDiameter";
+            public const string FOOSBOT_WIDTH = "axeX";
+            public const string FOOSBOT_HEIGHT = "axeY";
+            public const string TABLE_RODS_DIST = "MinSectorWidth";
+            public const string SECTOR_FACTOR = "SectorFactor";
+            public const string FOOSBOT_DELAY = "TimeDelay";
+        }
+
+        /// <summary>
         /// Configuration File Path Const
         /// </summary>
         private const string CONFIG_FILE_PATH = "config.ini";

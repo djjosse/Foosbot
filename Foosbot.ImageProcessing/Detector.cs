@@ -11,19 +11,37 @@ using System.Windows;
 
 namespace Foosbot.ImageProcessing
 {
+    /// <summary>
+    /// Abstract Circle Detector Class
+    /// </summary>
     public abstract class Detector
     {
-        protected Helpers.UpdateMarkupDelegate UpdateMarkup;
+        /// <summary>
+        /// Update Markup Delegate
+        /// </summary>
+        protected Helpers.UpdateMarkupCircleDelegate UpdateMarkup;
+
+        /// <summary>
+        /// Update Statistics Delegate
+        /// </summary>
         protected Helpers.UpdateStatisticsDelegate UpdateStatistics;
 
-        public Detector(Helpers.UpdateMarkupDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="onUpdateMarkup">On update markup method delegate</param>
+        /// <param name="onUpdateStatistics">On update statistics method delegate</param>
+        public Detector(Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics)
         {
             UpdateMarkup = onUpdateMarkup;
             UpdateStatistics = onUpdateStatistics;
         }
 
-
-
+        /// <summary>
+        /// Noise remove from image method
+        /// </summary>
+        /// <param name="image">Image to remove noise</param>
+        /// <returns>Image without noise</returns>
         public Image<Gray, byte> NoiseRemove(Image<Gray, byte> image)
         {
             UMat pyrDown = new UMat();
@@ -32,6 +50,17 @@ namespace Foosbot.ImageProcessing
             return image;
         }
 
+        /// <summary>
+        /// Detect circles method
+        /// </summary>
+        /// <param name="image">Image to detect circles on</param>
+        /// <param name="radius">Expected circle radius</param>
+        /// <param name="error">Expected circle error rate</param>
+        /// <param name="minDistance">Minimal distance beetween possible circle coordinates</param>
+        /// <param name="cannyThreshold">Canny Threshold</param>
+        /// <param name="circleAccumulatorThreshold">Circle Accumulator Threashold</param>
+        /// <param name="inverseRatio">Inverse Ratio</param>
+        /// <returns>Found circles in circle array</returns>
         public CircleF[] DetectCircles(Image<Gray, byte> image, int radius, double error, double minDistance,
             double cannyThreshold = 180.0, double circleAccumulatorThreshold = 120, double inverseRatio = 2.0)
         {
@@ -43,9 +72,22 @@ namespace Foosbot.ImageProcessing
             return circles;
         }
 
+        /// <summary>
+        /// Offset on axe X callculated and set in case of CropAndStoreOffset method called
+        /// </summary>
         public int OffsetX { get; private set; }
+
+        /// <summary>
+        /// Offset on axe Y callculated and set in case of CropAndStoreOffset method called
+        /// </summary>
         public int OffsetY { get; private set; }
 
+        /// <summary>
+        /// Crops image by given point, callculates and stores offset
+        /// </summary>
+        /// <param name="image">Image to crop</param>
+        /// <param name="points">Points to crop image by</param>
+        /// <returns>Cropped image</returns>
         public Image<Gray, byte> CropAndStoreOffset(Image<Gray, byte> image, List<PointF> points)
         {
             int xMax = 0;
@@ -75,6 +117,12 @@ namespace Foosbot.ImageProcessing
             return croppedImage;
         }
 
+        /// <summary>
+        /// Crop image without storing/changing any offset data
+        /// </summary>
+        /// <param name="image">Image to crop</param>
+        /// <param name="points">Points to crop image by</param>
+        /// <returns>Cropped image</returns>
         public Image<Gray, byte> Crop(Image<Gray, byte> image, List<PointF> points)
         {
             int xMax = 0;
@@ -104,6 +152,12 @@ namespace Foosbot.ImageProcessing
             return croppedImage;
         }
 
+        /// <summary>
+        /// Crop and store offset based on given circle center points
+        /// </summary>
+        /// <param name="image">Image to crop</param>
+        /// <param name="circles">Circles to crop image based on those circle centers</param>
+        /// <returns>Cropped image</returns>
         public Image<Gray, byte> CropAndStoreOffset(Image<Gray, byte> image, List<CircleF> circles)
         {
             List<PointF> pointList = new List<PointF>();

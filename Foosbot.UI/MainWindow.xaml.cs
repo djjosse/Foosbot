@@ -1,8 +1,9 @@
-﻿using Foosbot.Common;
+﻿using DevDemos;
+using Foosbot.Common;
 using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
 using Foosbot.ImageProcessing;
-using Foosbot.UI.Logger;
+using Foosbot.VectorCalculation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -44,7 +45,7 @@ namespace Foosbot.UI
         /// <summary>
         /// Image Processing Unit to work with
         /// </summary>
-        private ImageProcessingUnit _ipu;
+        private AbstractImageProcessingUnit _ipu;
 
         /// <summary>
         /// Used to draw frame as canvas background
@@ -52,14 +53,11 @@ namespace Foosbot.UI
         private ImageBrush _imageBrush;
 
 
+        private bool _isDemoMode = false;
+
         public MainWindow()
         {
             InitializeComponent();
-
-            //Get canvas size
-            ImageFrameWidth = _guiImage.Width;
-            ImageFrameHeight = _guiImage.Height;
-
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
             this.Loaded += OnWindowLoaded;
         }
@@ -71,25 +69,30 @@ namespace Foosbot.UI
         /// <param name="e"></param>
         public void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            //Start Log
-            StartLogger();
+            _isDemoMode = true;
+
+            //Init Gui Log
+            AutoscrollCheckbox = true;
+            Log.InitializeGuiLog(UpdateLog);
+            Log.Common.Debug("Foosbot application started");
 
             //Start Diagnostics - Processor and Memory Usage
             StartDiagnostics();
 
-            Log.Common.Info("Foosbot Application Started!");
+            //Call the streamer to get capture from camera
+            if (!_isDemoMode) _streamer = new RealStreamer(UpdateStatistics);
+            else _streamer = new DemoStreamer(UpdateStatistics);
 
             //Initialize Markups to Show on Screen
             InitializeMarkUps();
-            
-            //Call the streamer to get capture from camera
-            _streamer = new Streamer(UpdateStatistics);
+
             _streamer.Start();
 
             //Call ImageProcessingUnit
             _frameReceiver = new UIFrameObserver(_streamer);
             _frameReceiver.Start();
-            _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
+            if (!_isDemoMode) _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
+            else _ipu = new DemoImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
             _ipu.Start();
 
             //Show frames in diferent thread
@@ -100,6 +103,9 @@ namespace Foosbot.UI
                 ShowVideoStream();
             };
             worker.RunWorkerAsync();
+
+            VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(UpdateMarkupLine);
+            //vectorCalcullationUnit.Start();
         }
 
         /// <summary>
@@ -126,7 +132,6 @@ namespace Foosbot.UI
                         _imageBrush.ImageSource = source;
                         _guiImage.Background = _imageBrush;
                     }));
-
                     //Log.Common.Debug("GUI: New frame received: " + frame.Timestamp.ToString("HH:mm:ss.ffff"));
                 }
                 catch(Exception e)
@@ -137,6 +142,58 @@ namespace Foosbot.UI
         }
 
         #region LOGGER
+
+        /// <summary>
+        /// Update Log function to be passed as delegate
+        /// </summary>
+        /// <param name="type">Log type</param>
+        /// <param name="category">Log category</param>
+        /// <param name="timestamp">Log timestamp</param>
+        /// <param name="message">Log message</param>
+        public void UpdateLog(eLogType type, eLogCategory category, DateTime timestamp, string message)
+        {
+            UILogMessage logmessage = new UILogMessage();
+            logmessage.FontColor = DefineColor(category);
+            logmessage.Message = DefineMessage(type, category, timestamp, message);
+            logmessage.Type = type;
+            Dispatcher.BeginInvoke(new ThreadStart(delegate
+            {
+                _logMessageList.Add(logmessage);
+                if (AutoscrollCheckbox)
+                    _guiLog.ScrollIntoView(_logMessageList.Last());
+            }));
+        }
+
+        /// <summary>
+        /// Message to printable format
+        /// </summary>
+        /// <param name="message">Message to format</param>
+        /// <param name="type">Type of log</param>
+        /// <returns>Message as string</returns>
+        private string DefineMessage(eLogType type, eLogCategory category, DateTime timestamp, string message)
+        {
+            return String.Format("{0}\t{1}\t{3}", timestamp.ToString("HH:mm:ss:fff"), category, type, message);
+        }
+
+        /// <summary>
+        /// Defines color for specific message category
+        /// </summary>
+        /// <param name="category">Message Category as string</param>
+        /// <returns></returns>
+        private Color DefineColor(eLogCategory category)
+        {
+            switch (category)
+            {
+                case eLogCategory.Error:
+                    return Colors.Red;
+                case eLogCategory.Info:
+                    return Colors.DarkGreen;
+                case eLogCategory.Warn:
+                    return Colors.DarkOrange;
+                default:
+                    return Colors.Black;
+            }
+        }
 
         /// <summary>
         /// Log Autoscrolling checkbox value
@@ -155,11 +212,6 @@ namespace Foosbot.UI
              typeof(MainWindow), new UIPropertyMetadata(false));
 
         /// <summary>
-        /// Log Manager
-        /// </summary>
-        private UILogManager logger;
-
-        /// <summary>
         /// LogStream - list of messages to display
         /// This property is Binded to GUI
         /// </summary>
@@ -170,42 +222,12 @@ namespace Foosbot.UI
         /// </summary>
         public ObservableCollection<UILogMessage> _logMessageList = new ObservableCollection<UILogMessage>();
         
-        /// <summary>
-        /// Starts Logger in background thread
-        /// </summary>
-        private void StartLogger()
-        {
-            logger = new UILogManager();
-            AutoscrollCheckbox = true;
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (s, z) =>
-            {
-                //get current filter
-                logger.CurrentFilter = eLogType.NotDefined;
-                while (true)
-                {
-                    //Wait and get last message process it if it's not null
-                    UILogMessage message = logger.WaitForMessage();
-                    if (message!=null) 
-                    {
-                        if (logger.CurrentFilter.Equals(message.Type) || logger.CurrentFilter.Equals(eLogType.NotDefined))
-                        {
-                            Dispatcher.BeginInvoke(new ThreadStart(delegate
-                            {
-                                _logMessageList.Add(message);
-                                if (AutoscrollCheckbox)
-                                    _guiLog.ScrollIntoView(_logMessageList.Last());
-                            }));
-                        }
-                    }
-                }
-            };
-            worker.RunWorkerAsync();
-        }
-
         #endregion LOGGER
 
         #region Markup, Statistics, Diagnostics related
+
+        double _actualWidthRate;
+        double _actualHeightRate;
 
         /// <summary>
         /// Markup shape dictionary
@@ -218,6 +240,12 @@ namespace Foosbot.UI
         /// </summary>
         private void InitializeMarkUps()
         {
+            Dispatcher.Invoke(new ThreadStart(delegate
+            {
+                _actualWidthRate = _guiImage.Width / _streamer.FrameWidth;
+                _actualHeightRate = _guiImage.Height / _streamer.FrameHeight;
+            }));
+
             _markups = new Dictionary<Helpers.eMarkupKey, FrameworkElement>();
 
             foreach (Helpers.eMarkupKey key in Enum.GetValues(typeof(Helpers.eMarkupKey)))
@@ -237,13 +265,13 @@ namespace Foosbot.UI
                     case Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_TEXT:
                         _markups.Add(key, new TextBlock());
                         break;
+                    case Helpers.eMarkupKey.BALL_VECTOR:
+                        _markups.Add(key, new Line());
+                        break;
                 }
                 _guiImage.Children.Add(_markups[key]);
             }
         }
-
-        private double ImageFrameWidth;
-        private double ImageFrameHeight;
 
         /// <summary>
         /// On Update markup function
@@ -253,11 +281,8 @@ namespace Foosbot.UI
         /// <param name="radius">Circle radius</param>
         public void UpdateMarkupCircle(Helpers.eMarkupKey key, Point center, int radius)
         {
-            double widthRate = ImageFrameWidth / _streamer.FrameWidth;
-            double heightRate = ImageFrameHeight / _streamer.FrameHeight;
-
-            Point presentationCenter = new Point(center.X * widthRate, center.Y * heightRate);
-            int presentationRadius = Convert.ToInt32(radius*((widthRate+heightRate)/2));
+            Point presentationCenter = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
+            int presentationRadius = Convert.ToInt32(radius*((_actualWidthRate+_actualHeightRate)/2));
 
             Dispatcher.Invoke(new ThreadStart(delegate
             {       
@@ -295,13 +320,40 @@ namespace Foosbot.UI
                         (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
                         break;
                     default:
-                        break;
+                        return;
                 }
                 
                 _markups[key].Width = presentationRadius*2;
                 _markups[key].Height = presentationRadius*2;
                 Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
                 Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
+            }));
+        }
+
+        public void UpdateMarkupLine(Helpers.eMarkupKey key, Point startP, Point endP)
+        {
+            Point presentationStart = new Point(startP.X * _actualWidthRate, startP.Y * _actualHeightRate);
+            Point presentationEnd = new Point(endP.X * _actualWidthRate, endP.Y * _actualHeightRate);
+
+            Dispatcher.Invoke(new ThreadStart(delegate
+            {
+                switch (key)
+                {
+                    case Helpers.eMarkupKey.BALL_VECTOR:
+                        (_markups[key] as Line).StrokeThickness = 2;
+                        (_markups[key] as Line).Stroke = System.Windows.Media.Brushes.Aqua;
+                        (_markups[key] as Line).X1 = presentationStart.X;
+                        (_markups[key] as Line).Y1 = presentationStart.Y;
+                        (_markups[key] as Line).X2 = presentationEnd.X;
+                        (_markups[key] as Line).Y2 = presentationEnd.Y;
+                        break;
+                    default:
+                        return;
+                }
+
+
+                Canvas.SetLeft(_markups[key], Math.Min(presentationStart.X, presentationEnd.X));
+                Canvas.SetTop(_markups[key], Math.Min(presentationStart.Y, presentationEnd.Y));
             }));
         }
 
@@ -317,6 +369,12 @@ namespace Foosbot.UI
                     case Helpers.eStatisticsKey.ProccessInfo:
                         _guiProcessInfo.Content = info;
                         break; 
+                    case Helpers.eStatisticsKey.BasicImageProcessingInfo:
+                        _guiIpBasicInfo.Content = info;
+                        break;
+                    case Helpers.eStatisticsKey.BallCoordinates:
+                        _guiIpBallCoordinates.Content = info;
+                        break;
                 }
             }));
         }

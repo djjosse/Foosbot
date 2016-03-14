@@ -90,5 +90,17 @@ namespace Foosbot.Common.Multithreading
                 }
             }
         }
+
+        protected void Notify(Observer<T> desiredObserver)
+        {
+            lock (_observerListModificationToken)
+            {
+                foreach (Observer<T> observer in _observerList)
+                {
+                    if (observer == desiredObserver)
+                        observer.Update();
+                }
+            }
+        }
     }
 }

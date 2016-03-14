@@ -38,7 +38,7 @@ namespace Foosbot.Common.Protocols
         /// <summary>
         /// Definition property [true] if coordinates defined, [false] otherwise
         /// </summary>
-        public bool IsDefined { get; private set; }
+        public bool IsDefined { get; protected set; }
 
         
         /// <summary>

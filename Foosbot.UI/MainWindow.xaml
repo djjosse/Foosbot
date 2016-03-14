@@ -18,7 +18,9 @@
             </ListView.ItemTemplate>
         </ListView>
         <Label Name="_guiFrameInfo" HorizontalAlignment="Right" Margin="0,495,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
-        <Label Name="_guiProcessInfo" HorizontalAlignment="Right" Margin="0,525,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
+        <Label Name="_guiProcessInfo" HorizontalAlignment="Right" Margin="0,605,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
+        <Label Name="_guiIpBasicInfo" HorizontalAlignment="Right" Margin="0,525,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
+        <Label Name="_guiIpBallCoordinates" HorizontalAlignment="Right" Margin="0,555,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
         <CheckBox Content="Autoscroll" HorizontalAlignment="Right" Margin="0,495,390,0" VerticalAlignment="Top" IsChecked="{Binding Path=AutoscrollCheckbox, Mode=TwoWay}"/>
 
     </Grid>
