@@ -76,7 +76,8 @@ namespace Foosbot.UI
                 //Init Gui Log
                 AutoscrollCheckbox = true;
                 Log.InitializeGuiLog(UpdateLog);
-                Log.Common.Debug("Foosbot application started");
+                string startMessage = Configuration.Attributes.GetValue<string>("startMessage");
+                Log.Common.Debug(startMessage);
 
                 //Start Diagnostics - Processor and Memory Usage
                 StartDiagnostics();

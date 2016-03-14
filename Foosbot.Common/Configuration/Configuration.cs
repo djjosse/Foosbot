@@ -32,7 +32,7 @@ namespace Foosbot
         /// <summary>
         /// Configuration File Path Const
         /// </summary>
-        private const string CONFIG_FILE_PATH = "config.ini";
+        private const string CONFIG_FILE_PATH = "..//config.ini";
 
         /// <summary>
         /// Singleton instance
