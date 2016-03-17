@@ -328,7 +328,7 @@ namespace Foosbot.UI
                         (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
                         break;
                     case Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 12;;
+                        (_markups[key] as TextBlock).FontSize = 12;
                         (_markups[key] as TextBlock).Text = String.Format("TL:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
                         (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
                         break;

@@ -29,9 +29,9 @@ namespace DevDemos
 
             System.Drawing.PointF[] originalPoints = new System.Drawing.PointF[4];
             originalPoints[0] = new System.Drawing.PointF(0, 0);
-            originalPoints[1] = new System.Drawing.PointF(Convert.ToSingle(720), 0);
-            originalPoints[2] = new System.Drawing.PointF(0, Convert.ToSingle(1280));
-            originalPoints[3] = new System.Drawing.PointF(Convert.ToSingle(720), Convert.ToSingle(1280));
+            originalPoints[1] = new System.Drawing.PointF(Convert.ToSingle((streamer as Streamer).FrameHeight), 0);
+            originalPoints[2] = new System.Drawing.PointF(0, Convert.ToSingle((streamer as Streamer).FrameWidth));
+            originalPoints[3] = new System.Drawing.PointF(Convert.ToSingle((streamer as Streamer).FrameHeight), Convert.ToSingle((streamer as Streamer).FrameWidth));
 
             System.Drawing.PointF[] transformedPoints = new System.Drawing.PointF[4];
             transformedPoints[0] = new System.Drawing.PointF(0, 0);
@@ -76,15 +76,22 @@ namespace DevDemos
         private double _richisheFactor = 0.7;
         private double _borderX = 544;
         private double _borderY = 960;
+        private double _startX = 0;
+        private double _startY = 0;
         private volatile int _x = 0;
         private volatile int _y = 0;
+
+        private int _ballRadius = 10;
 
         public void GenerateLocation()
         {
             Thread t = new Thread(() =>
             {
-
-                _x = Convert.ToInt32(_borderY/2);
+                _borderY -= _ballRadius;
+                _borderX -= _ballRadius;
+                _startY += _ballRadius;
+                _startX += _ballRadius;
+                _x = Convert.ToInt32(_borderY / 2);
                 _y = Convert.ToInt32(_borderX / 2);
 
                 random = new Random();
@@ -95,16 +102,17 @@ namespace DevDemos
                     {
                         Thread.Sleep(1000);
                         _stepX = random.Next(-10, 10);
-                        _stepX *= 2;
+                        _stepX *= 4;
                         _stepY = random.Next(-10, 10);
-                        _stepY *= 2;
+                        _stepY *= 4;
                     }
 
                     //check if we passed the border
                     double tempX = _x + _stepX;
-                    if (tempX <= 0)
+                    if (tempX <= _startY)
                     {
-                        _x = Convert.ToInt32((_stepX * (-1) - _x) * _richisheFactor);
+                        _x = Convert.ToInt32((2 * _startY - _x - _stepX) + (_startY - _x) * _richisheFactor);
+                        //_x = Convert.ToInt32((_stepX * (-1) - _x) * _richisheFactor);
                         _stepX = _stepX * (-1) * _richisheFactor;
                         _stepY *= _richisheFactor;
                     }
@@ -120,9 +128,10 @@ namespace DevDemos
                     }
 
                     double tempY = _y + _stepY;
-                    if (tempY <= 0)
+                    if (tempY <= _startX)
                     {
-                        _y = Convert.ToInt32((_stepY * (-1) - _y) * _richisheFactor);
+                        _y = Convert.ToInt32((2 * _startX - _y - _stepY) + (_startX - _y) * _richisheFactor);
+                        //_y = Convert.ToInt32((_stepY * (-1) - _y) * _richisheFactor);
                         _stepY = _stepY * (-1) * _richisheFactor;
                         _stepX *= _richisheFactor;
                     }

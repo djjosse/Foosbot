@@ -20,8 +20,8 @@ namespace DevDemos
             : base(onUpdateStatistics)
         {
             //you can use if you want
-            FrameWidth = Configuration.Attributes.GetValue<int>("FrameWidth");
-            FrameHeight = Configuration.Attributes.GetValue<int>("FrameHeight");
+            FrameWidth = 1280;// Configuration.Attributes.GetValue<int>("FrameWidth");
+            FrameHeight = 755;// Configuration.Attributes.GetValue<int>("FrameHeight");
             FrameRate = Configuration.Attributes.GetValue<int>("FrameRate");
             
 
