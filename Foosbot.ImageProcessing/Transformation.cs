@@ -1,4 +1,5 @@
 ﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -80,6 +81,15 @@ namespace Foosbot.ImageProcessing
 
             //Return calculated location as point
             return new PointF((float)Y.Data[0, 0] / (float)Y.Data[2, 0], (float)Y.Data[1, 0] / (float)Y.Data[2, 0]);
+        }
+
+        public static void CalculateAndSetHomographyMatrix(PointF[] transformedPoints, PointF[] originalPoints)
+        {
+            _isInitialized = true;
+            Matrix = new Matrix<double>(3, 3);
+            CvInvoke.FindHomography(transformedPoints, originalPoints, Matrix, HomographyMethod.Default);
+            InvertMatrix = new Matrix<double>(3, 3);
+            CvInvoke.Invert(Matrix, InvertMatrix, DecompMethod.LU);
         }
     }
 }

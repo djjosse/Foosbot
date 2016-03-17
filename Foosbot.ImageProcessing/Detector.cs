@@ -44,9 +44,10 @@ namespace Foosbot.ImageProcessing
         /// <returns>Image without noise</returns>
         public Image<Gray, byte> NoiseRemove(Image<Gray, byte> image)
         {
-            UMat pyrDown = new UMat();
-            CvInvoke.PyrDown(image, pyrDown);
-            CvInvoke.PyrUp(pyrDown, image);
+            image._SmoothGaussian(9);
+            //UMat pyrDown = new UMat();
+            //CvInvoke.PyrDown(image.Clone(), pyrDown);
+            //CvInvoke.PyrUp(pyrDown, image);
             return image;
         }
 

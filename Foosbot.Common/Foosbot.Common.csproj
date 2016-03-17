@@ -60,7 +60,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocols\DefinableCartesianCoordinate.cs" />
     <Compile Include="Protocols\BallCoordinates.cs" />
+    <Compile Include="Protocols\eLinearMove.cs" />
     <Compile Include="Protocols\eRod.cs" />
+    <Compile Include="Protocols\eRotationalMove.cs" />
+    <Compile Include="Protocols\RodAction.cs" />
     <Compile Include="Protocols\Vector2D.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>

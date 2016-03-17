@@ -32,6 +32,8 @@ namespace Foosbot.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string KEY_IS_DEMO_MODE = "IsDemoMode";
+
         /// <summary>
         /// Streamer to get frames from
         /// </summary>
@@ -71,7 +73,11 @@ namespace Foosbot.UI
         {
             try
             {
-                _isDemoMode = true;
+                //get operation mode from configuration file
+                _isDemoMode = Configuration.Attributes.GetValue<bool>(KEY_IS_DEMO_MODE);
+
+                //Set canvas background as green image
+                _guiImage.Background = System.Windows.Media.Brushes.Green;
 
                 //Init Gui Log
                 AutoscrollCheckbox = true;
@@ -89,6 +95,7 @@ namespace Foosbot.UI
                 //Initialize Markups to Show on Screen
                 InitializeMarkUps();
 
+                //Start streamer after marks initialized
                 _streamer.Start();
 
                 //Call ImageProcessingUnit
@@ -298,6 +305,8 @@ namespace Foosbot.UI
                 switch (key)
                 {
                     case Helpers.eMarkupKey.BALL_CIRCLE_MARK:
+                        if (_isDemoMode)
+                            (_markups[key] as Shape).Fill = System.Windows.Media.Brushes.White;
                         (_markups[key] as Shape).StrokeThickness = 2;
                         (_markups[key] as Shape).Stroke = System.Windows.Media.Brushes.Red;
                         break;
@@ -309,24 +318,24 @@ namespace Foosbot.UI
                         (_markups[key] as Shape).Stroke = System.Windows.Media.Brushes.Green;
                         break;
                     case Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 9;
+                        (_markups[key] as TextBlock).FontSize = 12;
                         (_markups[key] as TextBlock).Text = String.Format("BL:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
                         break;
                     case Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 9;
+                        (_markups[key] as TextBlock).FontSize = 12;
                         (_markups[key] as TextBlock).Text = String.Format("BR:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
                         break;
                     case Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 9;
+                        (_markups[key] as TextBlock).FontSize = 12;;
                         (_markups[key] as TextBlock).Text = String.Format("TL:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
                         break;
                     case Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 9;
+                        (_markups[key] as TextBlock).FontSize = 12;
                         (_markups[key] as TextBlock).Text = String.Format("TR:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
                         break;
                     default:
                         return;
@@ -426,5 +435,14 @@ namespace Foosbot.UI
         }
 
         #endregion CPU and Memory Diagnostic Info
+
+        #region Sliders
+
+        private void OnBrightnessChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            //_streamer.VideoBrightness = _guiSlBright.Value;
+        }
+
+        #endregion Sliders
     }
 }

@@ -74,6 +74,7 @@ namespace Foosbot.ImageProcessing
             {
                 Mat f = new Mat();
                 _capture.Retrieve(f, 0);
+
                 //Get frame from camera
                 Frame frame = new Frame();
                 frame.Timestamp = DateTime.Now;

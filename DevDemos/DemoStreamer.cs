@@ -20,10 +20,11 @@ namespace DevDemos
             : base(onUpdateStatistics)
         {
             //you can use if you want
-            FrameWidth = 1280;
-            FrameHeight = 960;
-            FrameRate = 15;
-              
+            FrameWidth = Configuration.Attributes.GetValue<int>("FrameWidth");
+            FrameHeight = Configuration.Attributes.GetValue<int>("FrameHeight");
+            FrameRate = Configuration.Attributes.GetValue<int>("FrameRate");
+            
+
         }
 
         public override void Start()
