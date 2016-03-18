@@ -102,7 +102,7 @@ namespace Foosbot.UI
                 _frameReceiver = new UIFrameObserver(_streamer);
                 _frameReceiver.Start();
                 if (!_isDemoMode) _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
-                else _ipu = new DemoImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
+                else _ipu = new DemoImageProcessingUnit(_streamer as DemoStreamer, UpdateMarkupCircle, UpdateStatistics);
                 _ipu.Start();
 
                 //Show frames in diferent thread

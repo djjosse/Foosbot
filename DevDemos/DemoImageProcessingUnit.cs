@@ -3,149 +3,166 @@ using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessing;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace DevDemos
 {
     public class DemoImageProcessingUnit : AbstractImageProcessingUnit
     {
-        private DemoLastBallCoordinatesUpdater updater;
+        #region private members
 
-        public DemoImageProcessingUnit(Publisher<Frame> streamer,
+        private Random _random;
+        private double _velocityX = 0;
+        private double _velocityY = 0;
+        private double _ricochetVelocityFactor = 0.7;
+        private double _buttomBorder = 544;
+        private double _rightBorder = 960;
+        private double _upeerBorder = 0;
+        private double _leftBorder = 0;
+        private volatile int _x = 0;
+        private volatile int _y = 0;
+        private int _ballRadius = 10;
+        private DemoLastBallCoordinatesUpdater _coordinatesUpdater;
+
+        #endregion private members
+
+        /// <summary>
+        /// Demo Image Processing Unit constructor
+        /// </summary>
+        /// <param name="streamer">DemoStreamer instance</param>
+        /// <param name="onUpdateMarkup">On Update Markup delegate</param>
+        /// <param name="onUpdateStatistics">On Update Statistics delegate</param>
+        public DemoImageProcessingUnit(DemoStreamer streamer,
             Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics) :
             base(streamer, onUpdateMarkup, onUpdateStatistics)
         {
-            
+            //Set Foosbot world sizes - axe X x axe Y
+            _rightBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+            _buttomBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
 
-            _borderX = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_HEIGHT);
-            _borderY = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_WIDTH);
+            //Create Transfomation Matrix - to present coordinates of a Ball in GUI
+            InitializeTransformation(Convert.ToSingle(streamer.FrameWidth),
+                Convert.ToSingle(streamer.FrameHeight), Convert.ToSingle(_rightBorder),
+                    Convert.ToSingle(_buttomBorder));
 
-            System.Drawing.PointF[] originalPoints = new System.Drawing.PointF[4];
-            originalPoints[0] = new System.Drawing.PointF(0, 0);
-            originalPoints[1] = new System.Drawing.PointF(Convert.ToSingle((streamer as Streamer).FrameHeight), 0);
-            originalPoints[2] = new System.Drawing.PointF(0, Convert.ToSingle((streamer as Streamer).FrameWidth));
-            originalPoints[3] = new System.Drawing.PointF(Convert.ToSingle((streamer as Streamer).FrameHeight), Convert.ToSingle((streamer as Streamer).FrameWidth));
+            //Set this Demo Image Processing Unit as observer for Demo Streamer
+            streamer.DemoImageProcessingUnit = this;
 
-            System.Drawing.PointF[] transformedPoints = new System.Drawing.PointF[4];
-            transformedPoints[0] = new System.Drawing.PointF(0, 0);
-            transformedPoints[1] = new System.Drawing.PointF(Convert.ToSingle(_borderX), 0);
-            transformedPoints[2] = new System.Drawing.PointF(0, Convert.ToSingle(_borderY));
-            transformedPoints[3] = new System.Drawing.PointF(Convert.ToSingle(_borderX), Convert.ToSingle(_borderY));
+            //Create Ball Location Publisher for Observers
+            _coordinatesUpdater = new DemoLastBallCoordinatesUpdater();
+            BallLocationPublisher = new BallLocationPublisher(_coordinatesUpdater);
 
-            Transformation.CalculateAndSetHomographyMatrix(transformedPoints, originalPoints);
+            //Set borders of frame to include ball radius
+            _rightBorder -= _ballRadius;
+            _buttomBorder -= _ballRadius;
+            _leftBorder += _ballRadius;
+            _upeerBorder += _ballRadius;
 
-            (streamer as DemoStreamer).DemoImageProcessingUnit = this;
+            //Set start ball coordinates
+            _x = Convert.ToInt32(_rightBorder / 2);
+            _y = Convert.ToInt32(_buttomBorder / 2);
 
-            updater = new DemoLastBallCoordinatesUpdater();
-            BallLocationPublisher = new BallLocationPublisher(updater);
+            //Instantiate random generator
+            _random = new Random();
 
-            GenerateLocation();
+            //Start Generating Locations in separate Thread
+            BeginInvokeGenerateLocation();
         }
 
+        /// <summary>
+        /// Initialize Transformation and Invert Matrices for transforming 
+        /// points from frame to Foosbot World and Back
+        /// </summary>
+        /// <param name="frameWidth">Frame width</param>
+        /// <param name="frameHeight">Frame height</param>
+        /// <param name="worldWidth">Foosbot world width</param>
+        /// <param name="worldHeight">Foosbot world height</param>
+        private void InitializeTransformation(float frameWidth, float frameHeight, float worldWidth, float worldHeight)
+        {
+            //Create corners of frame
+            System.Drawing.PointF[] originalPoints = new System.Drawing.PointF[4];
+            originalPoints[0] = new System.Drawing.PointF(0, 0);
+            originalPoints[1] = new System.Drawing.PointF(frameWidth, 0);
+            originalPoints[2] = new System.Drawing.PointF(0, frameHeight);
+            originalPoints[3] = new System.Drawing.PointF(frameWidth, frameHeight);
+
+            //Create corners of foosbot world
+            System.Drawing.PointF[] transformedPoints = new System.Drawing.PointF[4];
+            transformedPoints[0] = new System.Drawing.PointF(0, 0);
+            transformedPoints[1] = new System.Drawing.PointF(worldWidth, 0);
+            transformedPoints[2] = new System.Drawing.PointF(0, worldHeight);
+            transformedPoints[3] = new System.Drawing.PointF(worldWidth, worldHeight);
+
+            //Calculate trabsformation matrix and store in static class
+            Transformation.CalculateAndSetHomographyMatrix(originalPoints, transformedPoints);
+        }
        
+        /// <summary>
+        /// Get and notify new ball coordinates
+        /// </summary>
         public override void Job()
         {
+            //Detach from streamer
             _publisher.Dettach(this);
-            //UpdateStatistics(Helpers.eStatisticsKey.BasicImageProcessingInfo, 
-            //    String.Format("New frame received, generate location: {0}", DateTime.Now.ToString("ss:ffff")));
-
+           
+            //get current ball coordinates
             BallCoordinates coordinates = SampleCoordinates();
-            System.Drawing.PointF p = Transformation.Transform(new System.Drawing.PointF(_x, _y));
-            UpdateMarkup(Helpers.eMarkupKey.BALL_CIRCLE_MARK, new Point(p.X, p.Y), 20);
+
+            //show current ball coordinates on screen and GUI
+            System.Drawing.PointF p = Transformation.InvertTransform(new System.Drawing.PointF(_x, _y));
+            UpdateMarkup(Helpers.eMarkupKey.BALL_CIRCLE_MARK, new Point(p.X, p.Y), _ballRadius*2);
             UpdateStatistics(Helpers.eStatisticsKey.BasicImageProcessingInfo,
-                String.Format("Generated location: {0}x{1}", _x, _y));
+                                String.Format("Generated coordinates: {0}x{1}", _x, _y));
 
-            Log.Common.Debug(String.Format("{0}x{1} => {2}x{3}", _x, _y, p.X, p.Y));
-            //BallCoordinates coordinates = GenerateLocation();
-            //updater.LastBallCoordinates = coordinates;
+            //set current coordinates to update
+            _coordinatesUpdater.LastBallCoordinates = coordinates;
 
+            //publish new ball coordinates
             BallLocationPublisher.UpdateAndNotify();
+
+            //attach back to streamer
             _publisher.Attach(this);
         }
 
-        private Random random;
-        private double _stepX = 0;
-        private double _stepY = 0;
-        private double _richisheFactor = 0.7;
-        private double _borderX = 544;
-        private double _borderY = 960;
-        private double _startX = 0;
-        private double _startY = 0;
-        private volatile int _x = 0;
-        private volatile int _y = 0;
-
-        private int _ballRadius = 10;
-
-        public void GenerateLocation()
+        /// <summary>
+        /// Running in separate thread and generate ball locations
+        /// </summary>
+        private void BeginInvokeGenerateLocation()
         {
             Thread t = new Thread(() =>
             {
-                _borderY -= _ballRadius;
-                _borderX -= _ballRadius;
-                _startY += _ballRadius;
-                _startX += _ballRadius;
-                _x = Convert.ToInt32(_borderY / 2);
-                _y = Convert.ToInt32(_borderX / 2);
-
-                random = new Random();
                 while(true)
                 {
-                    //generate steps if previous are 0
-                    if (Convert.ToInt32(_stepX) == 0 && Convert.ToInt32(_stepY) == 0)
+                    //generate vector if previous are 0
+                    if (Convert.ToInt32(_velocityX) == 0 && Convert.ToInt32(_velocityY) == 0)
                     {
                         Thread.Sleep(1000);
-                        _stepX = random.Next(-10, 10);
-                        _stepX *= 4;
-                        _stepY = random.Next(-10, 10);
-                        _stepY *= 4;
+                        _velocityX = _random.Next(-10, 10);
+                        _velocityX *= 4;
+                        _velocityY = _random.Next(-10, 10);
+                        _velocityY *= 4;
                     }
 
-                    //check if we passed the border
-                    double tempX = _x + _stepX;
-                    if (tempX <= _startY)
-                    {
-                        _x = Convert.ToInt32((2 * _startY - _x - _stepX) + (_startY - _x) * _richisheFactor);
-                        //_x = Convert.ToInt32((_stepX * (-1) - _x) * _richisheFactor);
-                        _stepX = _stepX * (-1) * _richisheFactor;
-                        _stepY *= _richisheFactor;
-                    }
-                    else if (tempX >= _borderY)
-                    {
-                        _x = Convert.ToInt32((2 * _borderY - _x - _stepX) + (_borderY - _x) * _richisheFactor);
-                        _stepX = _stepX * (-1) * _richisheFactor;
-                        _stepY *= _richisheFactor;
-                    }
+                    //check if we passed the border and set new X coordinate
+                    double tempX = _x + _velocityX;
+                    if (tempX <= _leftBorder)
+                        _x = Ricochet(_x, ref _leftBorder, ref _velocityX, ref _velocityY);
+                    else if (tempX >= _rightBorder)
+                        _x = Ricochet(_x, ref _rightBorder, ref _velocityX, ref _velocityY);
                     else
-                    {
                         _x = Convert.ToInt32(tempX);
-                    }
 
-                    double tempY = _y + _stepY;
-                    if (tempY <= _startX)
-                    {
-                        _y = Convert.ToInt32((2 * _startX - _y - _stepY) + (_startX - _y) * _richisheFactor);
-                        //_y = Convert.ToInt32((_stepY * (-1) - _y) * _richisheFactor);
-                        _stepY = _stepY * (-1) * _richisheFactor;
-                        _stepX *= _richisheFactor;
-                    }
-                    else if (tempY >= _borderX)
-                    {
-                        _y = Convert.ToInt32((2 * _borderX - _y - _stepY) + (_borderX - _y) * _richisheFactor);
-                        _stepY = _stepY * (-1) * _richisheFactor;
-                        _stepX *= _richisheFactor;
-                    }
+                    //check if we passed the border and set new Y coordinate
+                    double tempY = _y + _velocityY;
+                    if (tempY <= _upeerBorder)
+                        _y = Ricochet(_y, ref _upeerBorder, ref _velocityY, ref _velocityX);
+                    else if (tempY >= _buttomBorder)
+                        _y = Ricochet(_y, ref _buttomBorder, ref _velocityY, ref _velocityX);
                     else
-                    {
                         _y = Convert.ToInt32(tempY);
-                    }
 
+                    //Sleep before next generation
                     Thread.Sleep(10);
                 }
             });
@@ -153,10 +170,31 @@ namespace DevDemos
             t.Start();
         }
 
+        /// <summary>
+        /// Get sample coordinates
+        /// </summary>
+        /// <returns>Current coordinates of the ball</returns>
         private BallCoordinates SampleCoordinates()
         {
             return new BallCoordinates(_x, _y, DateTime.Now);
         }
 
+        /// <summary>
+        /// Switch direction and set new velocity in case we reached the border
+        /// </summary>
+        /// <param name="coordinate">Coordinate to change</param>
+        /// <param name="currentBorder">Border we meet</param>
+        /// <param name="directVelocity">Vector coordinate to change direction</param>
+        /// <param name="secondVelocity">Other vector coordinate</param>
+        /// <returns>New coordinate after applying the changes</returns>
+        private int Ricochet(int coordinate, ref double currentBorder,
+            ref double directVelocity, ref double secondVelocity)
+        {
+            coordinate = Convert.ToInt32((2 * currentBorder - coordinate - directVelocity) 
+                + (currentBorder - coordinate) * _ricochetVelocityFactor);
+            directVelocity = directVelocity * (-1) * _ricochetVelocityFactor;
+            secondVelocity *= _ricochetVelocityFactor;
+            return coordinate;
+        }
     }
 }

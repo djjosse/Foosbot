@@ -66,8 +66,8 @@ namespace Foosbot.DecisionUnit
 
             //Set constants from configuration file
             DELAYS = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
-            XMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_WIDTH);
-            YMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_HEIGHT);
+            XMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+            YMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
         }
 
         /// <summary>

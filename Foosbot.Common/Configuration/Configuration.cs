@@ -22,8 +22,8 @@ namespace Foosbot
             public const string TABLE_WIDTH = "Width";
             public const string TABLE_HEIGHT = "Height";
             public const string BALL_DIAMETR = "BallDiameter";
-            public const string FOOSBOT_WIDTH = "axeX";
-            public const string FOOSBOT_HEIGHT = "axeY";
+            public const string FOOSBOT_AXE_X_SIZE = "axeX";
+            public const string FOOSBOT_AXE_Y_SIZE = "axeY";
             public const string TABLE_RODS_DIST = "MinSectorWidth";
             public const string SECTOR_FACTOR = "SectorFactor";
             public const string FOOSBOT_DELAY = "TimeDelay";

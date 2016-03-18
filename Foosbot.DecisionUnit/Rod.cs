@@ -100,7 +100,7 @@ namespace Foosbot.DecisionUnit
             //Calculate Rod Location
             int actualRodXCoordinate = Configuration.Attributes.GetValue<int>(_rodType.ToString());
             int tableWidth = Configuration.Attributes.GetValue<int>(Configuration.Names.TABLE_WIDTH);
-            int foosbotWidth = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_WIDTH);
+            int foosbotWidth = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
             _rodXCoordinate = actualRodXCoordinate * foosbotWidth / tableWidth;
 
             //Calculate Rod Minimal Sector
