@@ -101,8 +101,10 @@ namespace Foosbot.UI
                 //Call ImageProcessingUnit
                 _frameReceiver = new UIFrameObserver(_streamer);
                 _frameReceiver.Start();
-                if (!_isDemoMode) _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
-                else _ipu = new DemoImageProcessingUnit(_streamer as DemoStreamer, UpdateMarkupCircle, UpdateStatistics);
+                if (!_isDemoMode) 
+                    _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
+                else 
+                    _ipu = new DemoImageProcessingUnit(_streamer as DemoStreamer, UpdateMarkupCircle, UpdateStatistics);
                 _ipu.Start();
 
                 //Show frames in diferent thread
@@ -114,8 +116,8 @@ namespace Foosbot.UI
                 };
                 worker.RunWorkerAsync();
 
-                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(UpdateMarkupLine);
-                //vectorCalcullationUnit.Start();
+                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.BallLocationPublisher, UpdateMarkupLine, UpdateMarkupCircle);
+                vectorCalcullationUnit.Start();
             }
             catch(Exception ex)
             {
@@ -350,8 +352,8 @@ namespace Foosbot.UI
 
         public void UpdateMarkupLine(Helpers.eMarkupKey key, Point startP, Point endP)
         {
-            Point presentationStart = new Point(startP.X * _actualWidthRate, startP.Y * _actualHeightRate);
-            Point presentationEnd = new Point(endP.X * _actualWidthRate, endP.Y * _actualHeightRate);
+            Point presentationStartPoint = new Point(startP.X * _actualWidthRate, startP.Y * _actualHeightRate);
+            Point presentationEndPoint = new Point(endP.X * _actualWidthRate, endP.Y * _actualHeightRate);
 
             Dispatcher.Invoke(new ThreadStart(delegate
             {
@@ -360,18 +362,17 @@ namespace Foosbot.UI
                     case Helpers.eMarkupKey.BALL_VECTOR:
                         (_markups[key] as Line).StrokeThickness = 2;
                         (_markups[key] as Line).Stroke = System.Windows.Media.Brushes.Aqua;
-                        (_markups[key] as Line).X1 = presentationStart.X;
-                        (_markups[key] as Line).Y1 = presentationStart.Y;
-                        (_markups[key] as Line).X2 = presentationEnd.X;
-                        (_markups[key] as Line).Y2 = presentationEnd.Y;
+                        (_markups[key] as Line).X1 = presentationStartPoint.X;
+                        (_markups[key] as Line).Y1 = presentationStartPoint.Y;
+                        (_markups[key] as Line).X2 = presentationEndPoint.X;
+                        (_markups[key] as Line).Y2 = presentationEndPoint.Y;
                         break;
                     default:
                         return;
                 }
 
-
-                Canvas.SetLeft(_markups[key], Math.Min(presentationStart.X, presentationEnd.X));
-                Canvas.SetTop(_markups[key], Math.Min(presentationStart.Y, presentationEnd.Y));
+                Canvas.SetLeft(_markups[key], 0);
+                Canvas.SetTop(_markups[key], 0);
             }));
         }
 
