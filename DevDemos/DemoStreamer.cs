@@ -16,15 +16,12 @@ namespace DevDemos
     {
         public Observer<Frame> DemoImageProcessingUnit { get; set; }
 
-        public DemoStreamer(Helpers.UpdateStatisticsDelegate onUpdateStatistics) 
-            : base(onUpdateStatistics)
+        public DemoStreamer()
         {
             //you can use if you want
-            FrameWidth = 1280;// Configuration.Attributes.GetValue<int>("FrameWidth");
-            FrameHeight = 755;// Configuration.Attributes.GetValue<int>("FrameHeight");
+            FrameWidth = Configuration.Attributes.GetValue<int>("FrameWidth");
+            FrameHeight = Configuration.Attributes.GetValue<int>("FrameHeight");
             FrameRate = Configuration.Attributes.GetValue<int>("FrameRate");
-            
-
         }
 
         public override void Start()
@@ -65,7 +62,7 @@ namespace DevDemos
         protected override void UpdateDiagnosticInfo()
         {
             //you can use if you want
-            UpdateStatistics(Helpers.eStatisticsKey.FrameInfo, String.Format(
+            Statistics.UpdateFrameInfo(String.Format(
                 "Generating frames in DevDemo: {0}", DateTime.Now.ToString("ss:ffff")));
         }
     }

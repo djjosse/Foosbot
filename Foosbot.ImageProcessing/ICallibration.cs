@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,16 +23,6 @@ namespace Foosbot.ImageProcessing
         /// Sorted Callibration Marks Coordinates on original image
         /// </summary>
         Dictionary<eCallibrationMark, CircleF> CallibrationMarks { get; set; }
-
-        /// <summary>
-        /// Transformation Matrix calcullated on callibration
-        /// </summary>
-        Matrix<double> TransformationMatrix { get; set; }
-
-        /// <summary>
-        /// Invert Matrix for Transformation Matrix calcullated on callibration
-        /// </summary>
-        Matrix<double> InvertMatrix { get; set; }
 
         /// <summary>
         /// Background Image Found in callibration

@@ -15,16 +15,6 @@ namespace Foosbot.ImageProcessing
     public abstract class AbstractImageProcessingUnit : Observer<Frame>
     {
         /// <summary>
-        /// Update Markup delegate function
-        /// </summary>
-        protected Helpers.UpdateMarkupCircleDelegate UpdateMarkup;
-
-        /// <summary>
-        /// Update Statics delegate function
-        /// </summary>
-        protected Helpers.UpdateStatisticsDelegate UpdateStatistics;
-
-        /// <summary>
         /// Ball Location Publisher
         /// This inner object is a publisher for vector calculation unit 
         /// </summary>
@@ -34,15 +24,10 @@ namespace Foosbot.ImageProcessing
         /// Constructor
         /// </summary>
         /// <param name="streamer">Streamer to get video stream from</param>
-        /// <param name="onUpdateMarkup">On Update Markup function delegate</param>
-        /// <param name="onUpdateStatistics">On Update Statics function delegate</param>
-        public AbstractImageProcessingUnit(Publisher<Frame> streamer,
-            Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics) :
+        public AbstractImageProcessingUnit(Publisher<Frame> streamer) :
             base(streamer)
         {
             _publisher = streamer;
-            UpdateMarkup = onUpdateMarkup;
-            UpdateStatistics = onUpdateStatistics;
         }
 
         /// <summary>

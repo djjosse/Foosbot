@@ -2,6 +2,7 @@
 using Foosbot.Common;
 using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
+using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessing;
 using Foosbot.VectorCalculation;
 using System;
@@ -32,7 +33,7 @@ namespace Foosbot.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const string KEY_IS_DEMO_MODE = "IsDemoMode";
+        #region private members
 
         /// <summary>
         /// Streamer to get frames from
@@ -54,9 +55,16 @@ namespace Foosbot.UI
         /// </summary>
         private ImageBrush _imageBrush;
 
-
+        /// <summary>
+        /// Current Foosbot mode
+        /// </summary>
         private bool _isDemoMode = false;
 
+        #endregion private members
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -73,8 +81,9 @@ namespace Foosbot.UI
         {
             try
             {
+                InitializeStatistics();
                 //get operation mode from configuration file
-                _isDemoMode = Configuration.Attributes.GetValue<bool>(KEY_IS_DEMO_MODE);
+                _isDemoMode = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_DEMO_MODE);
 
                 //Set canvas background as green image
                 _guiImage.Background = System.Windows.Media.Brushes.Green;
@@ -89,22 +98,20 @@ namespace Foosbot.UI
                 StartDiagnostics();
 
                 //Call the streamer to get capture from camera
-                if (!_isDemoMode) _streamer = new RealStreamer(UpdateStatistics);
-                else _streamer = new DemoStreamer(UpdateStatistics);
+                if (!_isDemoMode) _streamer = new RealStreamer();
+                else _streamer = new DemoStreamer();
 
-                //Initialize Markups to Show on Screen
-                InitializeMarkUps();
-
-                //Start streamer after marks initialized
+                
+                Marks.Initialize(Dispatcher, _guiImage, _guiImage.Width / _streamer.FrameWidth, _guiImage.Height / _streamer.FrameHeight);
                 _streamer.Start();
 
                 //Call ImageProcessingUnit
                 _frameReceiver = new UIFrameObserver(_streamer);
                 _frameReceiver.Start();
                 if (!_isDemoMode) 
-                    _ipu = new ImageProcessingUnit(_streamer, UpdateMarkupCircle, UpdateStatistics);
+                    _ipu = new ImageProcessingUnit(_streamer);
                 else 
-                    _ipu = new DemoImageProcessingUnit(_streamer as DemoStreamer, UpdateMarkupCircle, UpdateStatistics);
+                    _ipu = new DemoImageProcessingUnit(_streamer as DemoStreamer);
                 _ipu.Start();
 
                 //Show frames in diferent thread
@@ -116,7 +123,7 @@ namespace Foosbot.UI
                 };
                 worker.RunWorkerAsync();
 
-                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.BallLocationPublisher, UpdateMarkupLine, UpdateMarkupCircle);
+                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.BallLocationPublisher);
                 vectorCalcullationUnit.Start();
             }
             catch(Exception ex)
@@ -150,7 +157,6 @@ namespace Foosbot.UI
                         _imageBrush.ImageSource = source;
                         _guiImage.Background = _imageBrush;
                     }));
-                    //Log.Common.Debug("GUI: New frame received: " + frame.Timestamp.ToString("HH:mm:ss.ffff"));
                 }
                 catch(Exception e)
                 {
@@ -242,164 +248,22 @@ namespace Foosbot.UI
         
         #endregion LOGGER
 
-        #region Markup, Statistics, Diagnostics related
+        #region Statistics
 
-        double _actualWidthRate;
-        double _actualHeightRate;
-
-        /// <summary>
-        /// Markup shape dictionary
-        /// Contains markup key and related shape
-        /// </summary>
-        Dictionary<Helpers.eMarkupKey, FrameworkElement> _markups;
-
-        /// <summary>
-        /// Must be called to use markups
-        /// </summary>
-        private void InitializeMarkUps()
+        public void InitializeStatistics()
         {
-            Dispatcher.Invoke(new ThreadStart(delegate
+            Dictionary<eStatisticsKey, Label> allStatisticElements = new Dictionary<eStatisticsKey, Label>()
             {
-                _actualWidthRate = _guiImage.Width / _streamer.FrameWidth;
-                _actualHeightRate = _guiImage.Height / _streamer.FrameHeight;
-            }));
-
-            _markups = new Dictionary<Helpers.eMarkupKey, FrameworkElement>();
-
-            foreach (Helpers.eMarkupKey key in Enum.GetValues(typeof(Helpers.eMarkupKey)))
-            {
-                switch (key)
-                {
-                    case Helpers.eMarkupKey.BALL_CIRCLE_MARK:
-                    case Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_MARK:
-                    case Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_MARK:
-                    case Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_MARK:
-                    case Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_MARK:
-                        _markups.Add(key, new Ellipse());
-                        break;
-                    case Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_TEXT:
-                    case Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_TEXT:
-                    case Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_TEXT:
-                    case Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_TEXT:
-                        _markups.Add(key, new TextBlock());
-                        break;
-                    case Helpers.eMarkupKey.BALL_VECTOR:
-                        _markups.Add(key, new Line());
-                        break;
-                }
-                _guiImage.Children.Add(_markups[key]);
-            }
+                { eStatisticsKey.FrameInfo, _guiFrameInfo },
+                { eStatisticsKey.ProccessInfo, _guiProcessInfo },
+                { eStatisticsKey.BasicImageProcessingInfo, _guiIpBasicInfo },
+                { eStatisticsKey.BallCoordinates, _guiIpBallCoordinates }
+            };
+            Statistics.Initialize(Dispatcher, allStatisticElements);
         }
 
-        /// <summary>
-        /// On Update markup function
-        /// </summary>
-        /// <param name="key">Markup key</param>
-        /// <param name="center">Circle center point</param>
-        /// <param name="radius">Circle radius</param>
-        public void UpdateMarkupCircle(Helpers.eMarkupKey key, Point center, int radius)
-        {
-            Point presentationCenter = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
-            int presentationRadius = Convert.ToInt32(radius*((_actualWidthRate+_actualHeightRate)/2));
+        #endregion Statistics
 
-            Dispatcher.Invoke(new ThreadStart(delegate
-            {       
-                switch (key)
-                {
-                    case Helpers.eMarkupKey.BALL_CIRCLE_MARK:
-                        if (_isDemoMode)
-                            (_markups[key] as Shape).Fill = System.Windows.Media.Brushes.White;
-                        (_markups[key] as Shape).StrokeThickness = 2;
-                        (_markups[key] as Shape).Stroke = System.Windows.Media.Brushes.Red;
-                        break;
-                    case Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_MARK:
-                    case Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_MARK:
-                    case Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_MARK:
-                    case Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_MARK:
-                        (_markups[key] as Shape).StrokeThickness = 2;
-                        (_markups[key] as Shape).Stroke = System.Windows.Media.Brushes.Green;
-                        break;
-                    case Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 12;
-                        (_markups[key] as TextBlock).Text = String.Format("BL:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
-                        break;
-                    case Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 12;
-                        (_markups[key] as TextBlock).Text = String.Format("BR:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
-                        break;
-                    case Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 12;
-                        (_markups[key] as TextBlock).Text = String.Format("TL:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
-                        break;
-                    case Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_TEXT:
-                        (_markups[key] as TextBlock).FontSize = 12;
-                        (_markups[key] as TextBlock).Text = String.Format("TR:{0}x{1}", Convert.ToInt32(center.X), Convert.ToInt32(center.Y));
-                        (_markups[key] as TextBlock).Foreground = new SolidColorBrush(Color.FromRgb(255, 150, 100));
-                        break;
-                    default:
-                        return;
-                }
-                
-                _markups[key].Width = presentationRadius*2;
-                _markups[key].Height = presentationRadius*2;
-                Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
-                Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
-            }));
-        }
-
-        public void UpdateMarkupLine(Helpers.eMarkupKey key, Point startP, Point endP)
-        {
-            Point presentationStartPoint = new Point(startP.X * _actualWidthRate, startP.Y * _actualHeightRate);
-            Point presentationEndPoint = new Point(endP.X * _actualWidthRate, endP.Y * _actualHeightRate);
-
-            Dispatcher.Invoke(new ThreadStart(delegate
-            {
-                switch (key)
-                {
-                    case Helpers.eMarkupKey.BALL_VECTOR:
-                        (_markups[key] as Line).StrokeThickness = 2;
-                        (_markups[key] as Line).Stroke = System.Windows.Media.Brushes.Aqua;
-                        (_markups[key] as Line).X1 = presentationStartPoint.X;
-                        (_markups[key] as Line).Y1 = presentationStartPoint.Y;
-                        (_markups[key] as Line).X2 = presentationEndPoint.X;
-                        (_markups[key] as Line).Y2 = presentationEndPoint.Y;
-                        break;
-                    default:
-                        return;
-                }
-
-                Canvas.SetLeft(_markups[key], 0);
-                Canvas.SetTop(_markups[key], 0);
-            }));
-        }
-
-        public void UpdateStatistics(Helpers.eStatisticsKey key, string info)
-        {
-            Dispatcher.Invoke(new ThreadStart(delegate
-            {
-                switch(key)
-                {
-                    case Helpers.eStatisticsKey.FrameInfo:
-                        _guiFrameInfo.Content = info;
-                        break;
-                    case Helpers.eStatisticsKey.ProccessInfo:
-                        _guiProcessInfo.Content = info;
-                        break; 
-                    case Helpers.eStatisticsKey.BasicImageProcessingInfo:
-                        _guiIpBasicInfo.Content = info;
-                        break;
-                    case Helpers.eStatisticsKey.BallCoordinates:
-                        _guiIpBallCoordinates.Content = info;
-                        break;
-                }
-            }));
-        }
-
-        #endregion Markup, Statistics, Diagnostics related
-        
         #region CPU and Memory Diagnostic Info
 
         /// <summary>
@@ -428,7 +292,7 @@ namespace Foosbot.UI
                 {
                     float ramMB = _RAMCounter.NextValue() / 1048576; //Convert bytes to MB
                     string info = String.Format("CPU: {0} % RAM: {1} MB", _CPUCounter.NextValue().ToString(), ramMB.ToString());
-                    UpdateStatistics(Helpers.eStatisticsKey.ProccessInfo, info);
+                    Statistics.UpdateProccessInfo(info);
                     Thread.Sleep(1000);
                 }
             };
@@ -437,13 +301,5 @@ namespace Foosbot.UI
 
         #endregion CPU and Memory Diagnostic Info
 
-        #region Sliders
-
-        private void OnBrightnessChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            //_streamer.VideoBrightness = _guiSlBright.Value;
-        }
-
-        #endregion Sliders
     }
 }

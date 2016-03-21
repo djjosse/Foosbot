@@ -67,12 +67,10 @@
     <Compile Include="BallLocationPublisher.cs" />
     <Compile Include="CalibrationUnit.cs" />
     <Compile Include="Detector.cs" />
-    <Compile Include="eCallibrationMark.cs" />
-    <Compile Include="eCallibrationState.cs" />
+    <Compile Include="Enums\eCallibrationState.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="ICallibration.cs" />
     <Compile Include="ILastBallCoordinatesUpdater.cs" />
-    <Compile Include="Transformation.cs" />
     <Compile Include="ImageProcessingUnit.cs" />
     <Compile Include="RealStreamer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

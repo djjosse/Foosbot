@@ -13,11 +13,6 @@ namespace Foosbot.ImageProcessing
     public abstract class Streamer : Publisher<Frame>
     {
         /// <summary>
-        /// Update statistics delegate
-        /// </summary>
-        protected Helpers.UpdateStatisticsDelegate UpdateStatistics;
-
-        /// <summary>
         /// Frame Rate 
         /// </summary>
         public int FrameRate { get; protected set; }
@@ -35,10 +30,7 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Constructor
         /// </summary>
-        public Streamer(Helpers.UpdateStatisticsDelegate onUpdateStatistics)
-        {
-            UpdateStatistics = onUpdateStatistics;
-        }
+        public Streamer() { }
 
         /// <summary>
         /// Start streaming

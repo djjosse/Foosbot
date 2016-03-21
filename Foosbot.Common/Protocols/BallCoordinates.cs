@@ -40,5 +40,20 @@ namespace Foosbot.Common.Protocols
         /// Vector of current ball location - TBD in VectorCalculationUnit
         /// </summary>
         public Vector2D Vector { get; set; }
+
+        /// <summary>
+        /// Distance between current coordinates and given coordinates
+        /// </summary>
+        /// <param name="coordinates">Coordinates</param>
+        /// <returns>Distance as double</returns>
+        public double Distance(BallCoordinates coordinates)
+        {
+            return Math.Sqrt(Math.Pow((coordinates.X - X), 2) + Math.Pow((coordinates.Y - Y), 2));
+        }
+
+        public string ToString()
+        {
+            return String.Format("Coordinates: {0}x{1} Time: {2} Vector: {3}", X, Y, Timestamp.ToString("HH:mm:ss.ff"), Vector.ToString());
+        }
     }
 }

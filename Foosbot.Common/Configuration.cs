@@ -19,6 +19,11 @@ namespace Foosbot
         /// </summary>
         public static class Names
         {
+            /// <summary>
+            /// Key for current mode in configuration file
+            /// </summary>
+            public const string KEY_IS_DEMO_MODE = "IsDemoMode";
+
             public const string TABLE_WIDTH = "Width";
             public const string TABLE_HEIGHT = "Height";
             public const string BALL_DIAMETR = "BallDiameter";
@@ -27,6 +32,8 @@ namespace Foosbot
             public const string TABLE_RODS_DIST = "MinSectorWidth";
             public const string SECTOR_FACTOR = "SectorFactor";
             public const string FOOSBOT_DELAY = "TimeDelay";
+            public const string VECTOR_CALC_DISTANCE_ERROR = "DistanceErrorTh";
+            public const string VECTOR_CALC_ANGLE_ERROR = "AngleErrorTh";
         }
 
         /// <summary>

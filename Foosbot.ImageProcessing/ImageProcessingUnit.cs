@@ -52,17 +52,13 @@ namespace Foosbot.ImageProcessing
         /// Image Processing Unit Constructor
         /// </summary>
         /// <param name="streamer">Video streamer to get frames from</param>
-        /// <param name="onUpdateMarkup">Update markup function delegate</param>
-        /// <param name="onUpdateStatistics">Update statistics delegate</param>
-        public ImageProcessingUnit(Publisher<Frame> streamer,
-            Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics) :
-            base(streamer, onUpdateMarkup, onUpdateStatistics)
+        public ImageProcessingUnit(Publisher<Frame> streamer) : base(streamer)
         {
-            _calibrator = new CalibrationUnit(UpdateMarkup, UpdateStatistics);
-            _ballTracker = new Tracker(_calibrator, _publisher, UpdateMarkup, UpdateStatistics);
+            _calibrator = new CalibrationUnit();
+            _ballTracker = new Tracker(_calibrator, _publisher);
             BallLocationPublisher = new BallLocationPublisher(_ballTracker);
             _lastFrameTimeStamp = DateTime.Now;
-            _detectionAnalyzer = new DetectionStatisticAnalyzer(onUpdateStatistics);
+            _detectionAnalyzer = new DetectionStatisticAnalyzer(/*onUpdateStatistics*/);
         }
 
         /// <summary>

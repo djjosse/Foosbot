@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Foosbot.ImageProcessing
+﻿namespace Foosbot.Common.Protocols
 {
     /// <summary>
     /// Callibration Mark Enum
@@ -14,21 +8,21 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Buttom Left Callibration Mark
         /// </summary>
-        ButtomLeft = 0,
+        BL = 0,
 
         /// <summary>
         /// Top Left Callibration Mark
         /// </summary>
-        TopLeft = 1,
+        TL = 1,
 
         /// <summary>
         /// Top Right Callibration Mark
         /// </summary>
-        TopRight = 2,
+        TR = 2,
 
         /// <summary>
         /// Buttom Right Callibration Mark
         /// </summary>
-        ButtomRight = 3,
+        BR = 3,
     }
 }

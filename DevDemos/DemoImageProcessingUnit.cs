@@ -16,8 +16,8 @@ namespace DevDemos
         private double _velocityX = 0;
         private double _velocityY = 0;
         private double _ricochetVelocityFactor = 0.7;
-        private double _buttomBorder = 544;
-        private double _rightBorder = 960;
+        private double _buttomBorder = 0;
+        private double _rightBorder = 0;
         private double _upeerBorder = 0;
         private double _leftBorder = 0;
         private volatile int _x = 0;
@@ -31,11 +31,7 @@ namespace DevDemos
         /// Demo Image Processing Unit constructor
         /// </summary>
         /// <param name="streamer">DemoStreamer instance</param>
-        /// <param name="onUpdateMarkup">On Update Markup delegate</param>
-        /// <param name="onUpdateStatistics">On Update Statistics delegate</param>
-        public DemoImageProcessingUnit(DemoStreamer streamer,
-            Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics) :
-            base(streamer, onUpdateMarkup, onUpdateStatistics)
+        public DemoImageProcessingUnit(DemoStreamer streamer) : base(streamer)
         {
             //Set Foosbot world sizes - axe X x axe Y
             _rightBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
@@ -95,7 +91,8 @@ namespace DevDemos
             transformedPoints[3] = new System.Drawing.PointF(worldWidth, worldHeight);
 
             //Calculate trabsformation matrix and store in static class
-            Transformation.CalculateAndSetHomographyMatrix(originalPoints, transformedPoints);
+            Transformation transformer = new Transformation();
+            transformer.FindHomographyMatrix(originalPoints, transformedPoints);
         }
        
         /// <summary>
@@ -110,11 +107,11 @@ namespace DevDemos
             BallCoordinates coordinates = SampleCoordinates();
 
             //show current ball coordinates on screen and GUI
-            System.Drawing.PointF p = Transformation.InvertTransform(new System.Drawing.PointF(_x, _y));
-            UpdateMarkup(Helpers.eMarkupKey.BALL_CIRCLE_MARK, new Point(p.X, p.Y), _ballRadius*2);
-            UpdateStatistics(Helpers.eStatisticsKey.BasicImageProcessingInfo,
-                                String.Format("Generated coordinates: {0}x{1}", _x, _y));
-
+            Transformation transfromer = new Transformation();
+            System.Drawing.PointF p = transfromer.InvertTransform(new System.Drawing.PointF(_x, _y));
+            Marks.DrawBall(new Point(p.X, p.Y), _ballRadius * 2, true);
+            Statistics.UpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
+            
             //set current coordinates to update
             _coordinatesUpdater.LastBallCoordinates = coordinates;
 

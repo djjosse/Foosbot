@@ -41,8 +41,7 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Constructor
         /// </summary>
-        public RealStreamer(Helpers.UpdateStatisticsDelegate onUpdateStatistics)
-            : base(onUpdateStatistics)
+        public RealStreamer()
         {
             //Get camera device and set configuration
             _capture = GetCamera();
@@ -143,7 +142,7 @@ namespace Foosbot.ImageProcessing
                 _capture.GetCaptureProperty(CapProp.FrameWidth).ToString(),
                 _capture.GetCaptureProperty(CapProp.FrameHeight).ToString(),
                 _capture.GetCaptureProperty(CapProp.Fps).ToString());
-            UpdateStatistics(Helpers.eStatisticsKey.FrameInfo, frameInfo);
+            Statistics.UpdateFrameInfo(frameInfo);
         }
 
         #endregion protected member functions

@@ -39,20 +39,13 @@ namespace Foosbot.ImageProcessing
         /// </summary>
         private Stopwatch detectionWatch;
 
-        /// <summary>
-        /// Update Statistics Delegate
-        /// </summary>
-        private Helpers.UpdateStatisticsDelegate UpdateStatistics;
-
         #endregion Private Members
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="onUpdateStatistics">Update statistics delegate function</param>
-        public DetectionStatisticAnalyzer(Helpers.UpdateStatisticsDelegate onUpdateStatistics)
-        {
-            UpdateStatistics = onUpdateStatistics;
+        public DetectionStatisticAnalyzer()
+        { 
             _currenWorkingSecond = DateTime.Now;
         }
 
@@ -69,8 +62,7 @@ namespace Foosbot.ImageProcessing
             {
                 double rate = (_totalFramesPerSecond < 1) ? 100 : 100 * _successDetectionFrame / _totalFramesPerSecond;
                 double aveDetectTime = (_totalFramesPerSecond < 1) ? 0 : _spentOnDetectionInSecond.Milliseconds / _totalFramesPerSecond;
-                UpdateStatistics(Helpers.eStatisticsKey.BasicImageProcessingInfo,
-                    String.Format("Detection: Rate {0}% ({1}/{2}) Average T {3}(ms)",
+                Statistics.UpdateBasicImageProcessingInfo(String.Format("Detection: Rate {0}% ({1}/{2}) Average T {3}(ms)",
                         rate, _successDetectionFrame, _totalFramesPerSecond, aveDetectTime));
                 _totalFramesPerSecond = 0;
                 _successDetectionFrame = 0;

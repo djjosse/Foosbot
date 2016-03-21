@@ -2,6 +2,7 @@
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Foosbot.Common;
+using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,16 +83,6 @@ namespace Foosbot.ImageProcessing
         public Dictionary<eCallibrationMark, CircleF> CallibrationMarks { get; set; }
 
         /// <summary>
-        /// Transformation Matrix calcullated on callibration
-        /// </summary>
-        public Matrix<double> TransformationMatrix { get; set; }
-
-        /// <summary>
-        /// Invert Matrix for Transformation Matrix calcullated on callibration
-        /// </summary>
-        public Matrix<double> InvertMatrix { get; set; }
-
-        /// <summary>
         /// Background Image Found in callibration
         /// </summary>
         public Image<Gray, Byte> Background { get; set; }
@@ -111,10 +102,7 @@ namespace Foosbot.ImageProcessing
         /// <summary>
         /// Callibration Unit Constructor
         /// </summary>
-        /// <param name="onUpdateMarkup">Delegate for updating markups</param>
-        /// <param name="onUpdateStatistics">Delegate for updating statistics</param>
-        public CalibrationUnit(Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics)
-            : base(onUpdateMarkup, onUpdateStatistics) { }
+        public CalibrationUnit() { }
 
         /// <summary>
         /// Start callibration process
@@ -183,12 +171,8 @@ namespace Foosbot.ImageProcessing
                     //Calculate Homography Matrix
                     int axeXLength = Configuration.Attributes.GetValue<int>("axeX");
                     int axeYLength = Configuration.Attributes.GetValue<int>("axeY");
-                    TransformationMatrix = FindTransformationMatrix(axeXLength, axeYLength);
-                    InvertMatrix = new Matrix<double>(3, 3);
-                    CvInvoke.Invert(TransformationMatrix, InvertMatrix, DecompMethod.LU);
-
-                    Transformation.Initialize(TransformationMatrix, InvertMatrix);
-
+                    
+                    SetTransformationMatrix(axeXLength, axeYLength);
                     Log.Image.Info("Homography matrix calculated.");
 
                     //Calculate Ball Radius and Error
@@ -321,13 +305,13 @@ namespace Foosbot.ImageProcessing
                 CircleF right = (key.Center.X > diagonalPairs[key].Center.X) ? key : diagonalPairs[key];
 
                 if (buttom.Equals(left))
-                    CallibrationMarks.Add(eCallibrationMark.ButtomLeft, left);
+                    CallibrationMarks.Add(eCallibrationMark.BL, left);
                 if (top.Equals(left))
-                    CallibrationMarks.Add(eCallibrationMark.TopLeft, left);
+                    CallibrationMarks.Add(eCallibrationMark.TL, left);
                 if (top.Equals(right))
-                    CallibrationMarks.Add(eCallibrationMark.TopRight, right);
+                    CallibrationMarks.Add(eCallibrationMark.TR, right);
                 if (buttom.Equals(right))
-                    CallibrationMarks.Add(eCallibrationMark.ButtomRight, right);
+                    CallibrationMarks.Add(eCallibrationMark.BR, right);
             }
         }
 
@@ -381,32 +365,27 @@ namespace Foosbot.ImageProcessing
             return pairs;
         }
 
-        /// <summary>
-        /// Find Homography matrix based on callibration marks
-        /// </summary>
-        /// <param name="axeXlength">Length of X axe in world of Foosbot</param>
-        /// <param name="axeYlength">Length of Y axe in world of Foosbot</param>
-        /// <returns>Homograpgy Matrix</returns>
-        private Matrix<double> FindTransformationMatrix(int axeXlength, int axeYlength)
+        private void SetTransformationMatrix(int axeXlength, int axeYlength)
         {
             _markCoordinates = new Dictionary<eCallibrationMark, System.Drawing.PointF>();
-            _markCoordinates.Add(eCallibrationMark.ButtomLeft, new System.Drawing.PointF(0, axeYlength));             //ButtomLeft
-            _markCoordinates.Add(eCallibrationMark.TopLeft, new System.Drawing.PointF(0, 0));                         //TopLeft
-            _markCoordinates.Add(eCallibrationMark.TopRight, new System.Drawing.PointF(axeXlength, 0));               //TopRight
-            _markCoordinates.Add(eCallibrationMark.ButtomRight, new System.Drawing.PointF(axeXlength, axeYlength));   //ButtomRight
+            _markCoordinates.Add(eCallibrationMark.BL, new System.Drawing.PointF(0, axeYlength));             //ButtomLeft
+            _markCoordinates.Add(eCallibrationMark.TL, new System.Drawing.PointF(0, 0));                         //TopLeft
+            _markCoordinates.Add(eCallibrationMark.TR, new System.Drawing.PointF(axeXlength, 0));               //TopRight
+            _markCoordinates.Add(eCallibrationMark.BR, new System.Drawing.PointF(axeXlength, axeYlength));   //ButtomRight
 
             System.Drawing.PointF[] orriginalPointArray = _markCoordinates.Values.ToArray();
             System.Drawing.PointF[] arrangedPoints = new System.Drawing.PointF[4];
 
-            arrangedPoints[0] = CallibrationMarks[eCallibrationMark.ButtomLeft].Center;
-            arrangedPoints[1] = CallibrationMarks[eCallibrationMark.TopLeft].Center;
-            arrangedPoints[2] = CallibrationMarks[eCallibrationMark.TopRight].Center;
-            arrangedPoints[3] = CallibrationMarks[eCallibrationMark.ButtomRight].Center;
+            arrangedPoints[0] = CallibrationMarks[eCallibrationMark.BL].Center;
+            arrangedPoints[1] = CallibrationMarks[eCallibrationMark.TL].Center;
+            arrangedPoints[2] = CallibrationMarks[eCallibrationMark.TR].Center;
+            arrangedPoints[3] = CallibrationMarks[eCallibrationMark.BR].Center;
 
-            Matrix<double> matrix = new Matrix<double>(3, 3);
-            CvInvoke.FindHomography(arrangedPoints, orriginalPointArray, matrix, HomographyMethod.Default);
-            return matrix;
+            _transformer = new Transformation();
+            _transformer.FindHomographyMatrix(arrangedPoints, orriginalPointArray);
         }
+
+        Transformation _transformer;
 
         /// <summary>
         /// Show all callibration marks on screen
@@ -428,29 +407,21 @@ namespace Foosbot.ImageProcessing
         {
             switch (key)
             {
-                case eCallibrationMark.ButtomLeft:
-                    UpdateMarkup(Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_MARK,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
-                    UpdateMarkup(Helpers.eMarkupKey.BUTTOM_LEFT_CALLIBRATION_TEXT,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
+                case eCallibrationMark.BL:
+                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL,
+                        new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
-                case eCallibrationMark.TopLeft:
-                    UpdateMarkup(Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_MARK,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
-                    UpdateMarkup(Helpers.eMarkupKey.TOP_LEFT_CALLIBRATION_TEXT,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
+                case eCallibrationMark.TL:
+                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.TL,
+                        new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
-                case eCallibrationMark.TopRight:
-                    UpdateMarkup(Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_MARK,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
-                    UpdateMarkup(Helpers.eMarkupKey.TOP_RIGHT_CALLIBRATION_TEXT,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
+                case eCallibrationMark.TR:
+                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.TR,
+                        new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
-                case eCallibrationMark.ButtomRight:
-                    UpdateMarkup(Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_MARK,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
-                    UpdateMarkup(Helpers.eMarkupKey.BUTTOM_RIGHT_CALLIBRATION_TEXT,
-                            new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
+                case eCallibrationMark.BR:
+                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BR,
+                        new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
             }
 
@@ -470,8 +441,8 @@ namespace Foosbot.ImageProcessing
 
                 double check = Utils.Distance(start, end);
 
-                System.Drawing.PointF transformedStart = Transformation.ApplyTransfromation(InvertMatrix, start);
-                System.Drawing.PointF transformedEnd = Transformation.ApplyTransfromation(InvertMatrix, end);
+                System.Drawing.PointF transformedStart = _transformer.InvertTransform(start);
+                System.Drawing.PointF transformedEnd = _transformer.InvertTransform(end);
 
                 double radius = Utils.Distance(transformedStart, transformedEnd);
 

@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Decision.cs" />
     <Compile Include="DecisionTree.cs" />
-    <Compile Include="eBallRelativePos.cs" />
+    <Compile Include="Enums\eBallRelativePos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rod.cs" />
   </ItemGroup>

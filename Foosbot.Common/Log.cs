@@ -80,10 +80,11 @@ namespace Foosbot
 
         #endregion Image Processing
 
+        public delegate void UpdateLog(eLogType type, eLogCategory cat, DateTime timestamp, string message);
 
         private static bool isGuiLogInitialzed = false;
-        private static Helpers.UpdateLog UpdateLogCall;
-        public static void InitializeGuiLog(Helpers.UpdateLog onLogUpdate)
+        private static UpdateLog UpdateLogCall;
+        public static void InitializeGuiLog(UpdateLog onLogUpdate)
         {
             if (!isGuiLogInitialzed)
             {

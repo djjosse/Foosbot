@@ -17,25 +17,9 @@ namespace Foosbot.ImageProcessing
     public abstract class Detector
     {
         /// <summary>
-        /// Update Markup Delegate
-        /// </summary>
-        protected Helpers.UpdateMarkupCircleDelegate UpdateMarkup;
-
-        /// <summary>
-        /// Update Statistics Delegate
-        /// </summary>
-        protected Helpers.UpdateStatisticsDelegate UpdateStatistics;
-
-        /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="onUpdateMarkup">On update markup method delegate</param>
-        /// <param name="onUpdateStatistics">On update statistics method delegate</param>
-        public Detector(Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics)
-        {
-            UpdateMarkup = onUpdateMarkup;
-            UpdateStatistics = onUpdateStatistics;
-        }
+        public Detector() { }
 
         /// <summary>
         /// Noise remove from image method

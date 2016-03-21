@@ -71,10 +71,7 @@ namespace Foosbot.ImageProcessing
         /// </summary>
         /// <param name="callibrator">Calibrator Unit Instance</param>
         /// <param name="streamer">Streamer Unit Instance</param>
-        /// <param name="onUpdateMarkup">Update Markup Delegate</param>
-        /// <param name="onUpdateStatistics">Update Statistics Delegate</param>
-        public Tracker(CalibrationUnit callibrator, Publisher<Frame> streamer, Helpers.UpdateMarkupCircleDelegate onUpdateMarkup, Helpers.UpdateStatisticsDelegate onUpdateStatistics)
-            : base(onUpdateMarkup, onUpdateStatistics)
+        public Tracker(CalibrationUnit callibrator, Publisher<Frame> streamer)
         {
             _calibrator = callibrator;
             _streamer = streamer;
@@ -203,30 +200,21 @@ namespace Foosbot.ImageProcessing
 
                 Log.Image.Info(String.Format("[{0}] Possible ball location in {1} area: {2}x{3}",
                     MethodBase.GetCurrentMethod().Name, area, x, y));
-                UpdateMarkup(Helpers.eMarkupKey.BALL_CIRCLE_MARK, new System.Windows.Point(x, y), Convert.ToInt32(pos[0].Radius));
-
-                System.Drawing.PointF coordinates = Transformation.Transform(new System.Drawing.PointF(x, y));
-
+                Marks.DrawBall(new System.Windows.Point(x, y), Convert.ToInt32(pos[0].Radius));
+                
+                Transformation transformer = new Transformation();
+                System.Drawing.PointF coordinates = transformer.Transform(new System.Drawing.PointF(x, y));
+                
                 this.LastBallCoordinates = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), imageTimestamp);
                 IsBallLocationFound = true;
-                UpdateStatistics(Helpers.eStatisticsKey.BallCoordinates,
+                Statistics.UpdateBallCoordinates(
                     String.Format("Ball coordinates: {0}x{1}", LastBallCoordinates.X, LastBallCoordinates.Y));
-
+                
                 return true;
             }
             Log.Image.Debug(String.Format("[{0}] Ball not found in {1} area", MethodBase.GetCurrentMethod().Name, area));
             IsBallLocationFound = false;
             return false;
-        }
-
-        /// <summary>
-        /// Get coordinates from x, y location coordinates by appliying transfromation
-        /// </summary>
-        /// <param name="x">X location coordinate</param>
-        /// <param name="y">Y location coordinate</param>
-        private void GetCoordinates(int x, int y)
-        {
-            System.Drawing.PointF coordinates = Transformation.ApplyTransfromation(_calibrator.TransformationMatrix, new System.Drawing.PointF(x, y));
         }
     }
 }

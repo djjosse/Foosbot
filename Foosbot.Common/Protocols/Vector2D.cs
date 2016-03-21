@@ -30,7 +30,7 @@ namespace Foosbot.Common.Protocols
         /// <returns>Vector speed</returns>
         public double Velocity()
         {
-            throw new NotImplementedException();
+            return (IsDefined) ? Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2)) : 0;
         }
 
         /// <summary>
@@ -40,7 +40,19 @@ namespace Foosbot.Common.Protocols
         /// <returns>Vector angle</returns>
         public double Angle()
         {
-            throw new NotImplementedException();
+            if(IsDefined)
+                return Math.Atan(Y / X);
+            throw new Exception("Vector coordinates is undefined, no value stored in X and Y to define angle");
+        }
+
+        public double ScalarProduct(DefinableCartesianCoordinate<double> coord)
+        {
+            return X * coord.X + Y * coord.Y;
+        }
+
+        public string ToString()
+        {
+            return String.Format("{0}x{1}", X, Y);
         }
     }
 }
