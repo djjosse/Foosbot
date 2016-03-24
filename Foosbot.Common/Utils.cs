@@ -25,5 +25,18 @@ namespace Foosbot.Common
             double dY = Math.Pow(p1.Y - p2.Y, 2);
             return Math.Sqrt(dX + dY);
         }
+
+        /// <summary>
+        /// Convert radians to degrees
+        /// </summary>
+        /// <param name="radians"></param>
+        /// <returns></returns>
+        public static double ToDegrees(this double radians, int decimals = -1)
+        {
+            double degrees = radians * 180 / Math.PI;
+            if (decimals >= 0)
+                degrees = Math.Round(degrees, decimals);
+            return degrees;
+        }
     }
 }

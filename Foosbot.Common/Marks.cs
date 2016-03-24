@@ -68,8 +68,22 @@ namespace Foosbot
                 _canvas.Children.Add(element);
         }
 
-        public static void DrawRicochetMark(int x, int y, SolidColorBrush circleColor = null)
+        private static void ConvertToLocation(ref int x, ref int y)
         {
+            double outX, outY;
+            Transformation transformer = new Transformation();
+            transformer.InvertTransform(x, y, out outX, out outY);
+            x = Convert.ToInt32(outX);
+            y = Convert.ToInt32(outY);
+        }
+
+        public static void DrawRicochetMark(int x, int y, bool isLocation = false, SolidColorBrush circleColor = null)
+        {
+            if (isLocation)
+            {
+                ConvertToLocation(ref x, ref y);
+            }
+
             const int radius = 10;
             const int key = (int)eMarks.RicochetMark;
             Point presentationCenter = new Point(x * _actualWidthRate, y * _actualHeightRate);
@@ -153,8 +167,21 @@ namespace Foosbot
             }));
         }
 
-        public static void DrawBallVector(Point center, Point vector, SolidColorBrush color = null)
+        public static void DrawBallVector(Point center, Point vector, bool isLocation = false, SolidColorBrush color = null)
         {
+            if (isLocation)
+            {
+                int x = Convert.ToInt32(center.X);
+                int y = Convert.ToInt32(center.Y);
+                ConvertToLocation(ref x, ref y);
+                center = new Point(x, y);
+
+                x = Convert.ToInt32(vector.X);
+                y = Convert.ToInt32(vector.Y);
+                ConvertToLocation(ref x, ref y);
+                vector = new Point(x, y);
+            }
+
             Point presentationStartPoint = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
             Point presentationVector = new Point(vector.X * _actualWidthRate, vector.Y * _actualHeightRate);
             Point presentationEndPoint = new Point(presentationStartPoint.X + presentationVector.X,

@@ -46,9 +46,12 @@ namespace Foosbot.Common.Protocols
         /// </summary>
         /// <param name="coordinates">Coordinates</param>
         /// <returns>Distance as double</returns>
-        public double Distance(BallCoordinates coordinates)
+        public double Distance<T>(DefinableCartesianCoordinate<T> coordinates)
+            where T : struct, IComparable
         {
-            return Math.Sqrt(Math.Pow((coordinates.X - X), 2) + Math.Pow((coordinates.Y - Y), 2));
+            dynamic x = (dynamic)coordinates.X;
+            dynamic y = (dynamic)coordinates.Y;
+            return Math.Sqrt(Math.Pow((x - X), 2) + Math.Pow((y - Y), 2));
         }
 
         public string ToString()
