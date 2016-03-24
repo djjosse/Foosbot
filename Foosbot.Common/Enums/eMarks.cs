@@ -21,5 +21,10 @@ namespace Foosbot.Common.Enums
         ButtomRightText = 104,
         TopLeftText = 106,
         TopRightText = 108,
+
+        GoalKeeper = 200,
+        Defence = 201,
+        Midfield = 202,
+        Attack = 203
     }
 }

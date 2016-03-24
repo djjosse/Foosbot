@@ -87,7 +87,7 @@ namespace Foosbot.DecisionUnit
         /// <returns>Rod Action to be performed</returns>
         private RodAction SubTreeBallInSector(eRod rodType, BallCoordinates bfc)
         {
-
+            return null;
         }
 
         private eBallRelativePos IsBallInSector(int ballXcoordinate)

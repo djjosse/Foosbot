@@ -5,6 +5,7 @@ using Foosbot.ImageProcessing;
 using System;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 
 namespace DevDemos
 {
@@ -16,6 +17,7 @@ namespace DevDemos
         private double _velocityX = 0;
         private double _velocityY = 0;
         private readonly double RICOCHET_FACTOR;
+        private double _actualButtomBorder = 0;
         private double _buttomBorder = 0;
         private double _rightBorder = 0;
         private double _upeerBorder = 0;
@@ -37,6 +39,8 @@ namespace DevDemos
             _rightBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
             _buttomBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
             RICOCHET_FACTOR = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
+
+            _actualButtomBorder = _buttomBorder;
 
             //Create Transfomation Matrix - to present coordinates of a Ball in GUI
             InitializeTransformation(Convert.ToSingle(streamer.FrameWidth),
@@ -93,7 +97,7 @@ namespace DevDemos
 
             //Calculate trabsformation matrix and store in static class
             Transformation transformer = new Transformation();
-            transformer.FindHomographyMatrix(originalPoints, transformedPoints);
+            transformer.FindHomographyMatrix(originalPoints, transformedPoints);  
         }
        
         /// <summary>
@@ -103,14 +107,18 @@ namespace DevDemos
         {
             //Detach from streamer
             _publisher.Dettach(this);
-           
+    
             //get current ball coordinates
             BallCoordinates coordinates = SampleCoordinates();
+   
+            //draw rods
+            Marks.DrawRodtMark(new Point(50, 0), new Point(0, _actualButtomBorder), 10, true, System.Windows.Media.Brushes.White);
 
             //show current ball coordinates on screen and GUI
             Transformation transfromer = new Transformation();
             System.Drawing.PointF p = transfromer.InvertTransform(new System.Drawing.PointF(_x, _y));
             Marks.DrawBall(new Point(p.X, p.Y), _ballRadius * 2, true);
+
             Statistics.UpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
             
             //set current coordinates to update
@@ -118,6 +126,8 @@ namespace DevDemos
 
             //publish new ball coordinates
             BallLocationPublisher.UpdateAndNotify();
+
+
 
             //attach back to streamer
             _publisher.Attach(this);

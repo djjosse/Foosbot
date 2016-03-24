@@ -54,7 +54,8 @@ namespace DevDemos
                 catch (Exception ex)
                 {
                     Log.Image.Error(String.Format(
-                        "[{0}] Error generating frame in demo streamer. Reason: {1}", MethodBase.GetCurrentMethod().Name, ex.Message));
+                        "[{0}] Error generating frame in demo streamer. Reason: {1}",
+                        MethodBase.GetCurrentMethod().Name, ex.Message));
                 }
             }
         }

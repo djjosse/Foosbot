@@ -56,10 +56,16 @@ namespace Foosbot
                     case eMarks.TopRightText:
                         _markups.Add((int)mark, new TextBlock());
                         break;
-                    case eMarks.BallVectorArrow:
+                    case eMarks.BallVectorArrow:                  
                         _markups.Add((int)mark, new Line());
                         _markups.Add((int)eMarks.BallVectorArrow + 1, new Line());
                         _markups.Add((int)eMarks.BallVectorArrow + 2, new Line());
+                        break;
+                    case eMarks.GoalKeeper:
+                    case eMarks.Defence:
+                    case eMarks.Midfield:
+                    case eMarks.Attack:
+                        _markups.Add((int)mark, new Line());
                         break;
                 }
             }
@@ -97,6 +103,51 @@ namespace Foosbot
                 _markups[key].Height = presentationRadius * 2;
                 Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
                 Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
+            }));
+        }
+
+
+        public static void DrawRodtMark(Point start, Point end, int thickness, bool isLocation = false, SolidColorBrush color = null)
+        {
+            if (isLocation)
+            {
+                int x = Convert.ToInt32(start.X);
+                int y = Convert.ToInt32(start.Y);
+
+                ConvertToLocation(ref x, ref y);
+                start = new Point(x, y);
+
+                x = 0;
+                y = Convert.ToInt32(end.Y);
+
+                ConvertToLocation(ref x, ref y);
+                end = new Point(x, y);
+            }
+
+            Point presentationStartPoint = new Point(start.X * _actualWidthRate, start.Y * _actualHeightRate);
+            Point presentationVector = new Point(end.X * _actualWidthRate, end.Y * _actualHeightRate);
+            Point presentationEndPoint = new Point(presentationStartPoint.X + presentationVector.X,
+                presentationStartPoint.Y + presentationVector.Y);
+
+            const int key = (int)eMarks.GoalKeeper;
+
+            _dispatcher.Invoke(new ThreadStart(delegate
+            {
+                int deltaX = 0;
+                for (int i = 0; i < 4; i++)
+                {
+                    (_markups[key+i] as Shape).StrokeThickness = thickness;
+                    (_markups[key + i] as Shape).Stroke = (color == null) ? Brushes.Chocolate : color;
+
+                    (_markups[key + i] as Line).X1 = presentationStartPoint.X + deltaX;
+                    (_markups[key + i] as Line).Y1 = presentationStartPoint.Y;
+                    (_markups[key + i] as Line).X2 = presentationEndPoint.X + deltaX;
+                    (_markups[key + i] as Line).Y2 = presentationEndPoint.Y;
+
+                    Canvas.SetLeft(_markups[key + i], 0);
+                    Canvas.SetTop(_markups[key + i], 0);
+                    deltaX += 200;
+                }         
             }));
         }
 

@@ -55,6 +55,10 @@
       <Project>{0629d0dc-e6cb-45a1-b0d3-02aec535a800}</Project>
       <Name>Foosbot.CommunicationLayer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Foosbot.VectorCalculation\Foosbot.VectorCalculation.csproj">
+      <Project>{023c6c34-e785-4786-86ae-1b2d8daa06bf}</Project>
+      <Name>Foosbot.VectorCalculation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
