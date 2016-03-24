@@ -47,5 +47,16 @@ namespace Foosbot
             return Configuration.Attributes.GetValue<int>(
                 String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_DISTANCE));
         }
+
+        /// <summary>
+        /// Get X Coordinate of current rod
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        /// <param name="rodType">Current Rod Type</param>
+        /// <returns>Distance from X min to current rod</returns>
+        public static int GetRodXCoordinate(this Configuration configuration, eRod rodType)
+        {
+            return Configuration.Attributes.GetValue<int>(rodType.ToString());
+        }
     }
 }

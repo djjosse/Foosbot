@@ -8,6 +8,7 @@ namespace Foosbot.Common.Enums
 {
     public enum eMarks : int
     {
+        NA = 0,
         BallMark = 1,
 
         BallVectorArrow = 11, //12,13 - reserved

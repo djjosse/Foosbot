@@ -21,6 +21,8 @@ namespace Foosbot
         private static Canvas _canvas;
         private static Dispatcher _dispatcher;
 
+        private static Dictionary<eMarks, int> _rods;
+
         /// <summary>
         /// Markup shape dictionary
         /// Contains markup key and related shape
@@ -32,6 +34,16 @@ namespace Foosbot
         /// </summary>
         public static void Initialize(Dispatcher dispatcher, Canvas canvas, double actualWidthRate, double actualHeightRate)
         {
+            _rods = new Dictionary<eMarks,int>();
+            foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
+	        {
+                int x = Configuration.Attributes.GetRodXCoordinate(rodType);
+                eMarks mark;
+                Enum.TryParse<eMarks>(rodType.ToString(), out mark);
+                if (!mark.Equals(eMarks.NA))
+                    _rods.Add(mark, x);
+	        }
+
             _canvas = canvas;
             _actualWidthRate = actualWidthRate;
             _actualHeightRate = actualHeightRate;
@@ -136,12 +148,13 @@ namespace Foosbot
                 int deltaX = 0;
                 for (int i = 0; i < 4; i++)
                 {
+                    int x = _rods[(eMarks)(i + eMarks.GoalKeeper)];
                     (_markups[key+i] as Shape).StrokeThickness = thickness;
                     (_markups[key + i] as Shape).Stroke = (color == null) ? Brushes.Chocolate : color;
 
-                    (_markups[key + i] as Line).X1 = presentationStartPoint.X + deltaX;
+                    (_markups[key + i] as Line).X1 = presentationStartPoint.X + x;
                     (_markups[key + i] as Line).Y1 = presentationStartPoint.Y;
-                    (_markups[key + i] as Line).X2 = presentationEndPoint.X + deltaX;
+                    (_markups[key + i] as Line).X2 = presentationEndPoint.X + x;
                     (_markups[key + i] as Line).Y2 = presentationEndPoint.Y;
 
                     Canvas.SetLeft(_markups[key + i], 0);
