@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 namespace Foosbot.DecisionUnit
 {
     /// <summary>
-    /// Ball position relative to current rod
+    /// Ball Relative Position to Current Rod's sector
     /// </summary>
-    public enum eXPositionRodRelative
+    public enum eXPositionSectorRelative
     {
         /// <summary>
-        /// Ball is in Front of Current Rod
+        /// Ball is Behind Current Sector
         /// </summary>
-        FRONT,
+        BEHIND_SECTOR,
 
         /// <summary>
-        /// Ball and Rod X are Identical
+        /// Ball is In Current Sector
         /// </summary>
-        CENTER,
+        IN_SECTOR,
 
         /// <summary>
-        /// Ball is Behind Current Rod
+        /// Ball is Ahead of Current Sector
         /// </summary>
-        BACK
+        AHEAD_SECTOR
     }
 }

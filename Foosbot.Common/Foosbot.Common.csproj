@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="ConfigurationExtension.cs" />
     <Compile Include="Enums\eMarks.cs" />
     <Compile Include="Exceptions\ConfigurationException.cs" />
     <Compile Include="Multithreading\BackgroundFlow.cs" />

@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 namespace Foosbot.DecisionUnit
 {
     /// <summary>
-    /// Ball position relative to current rod
+    /// Ball Y Relative Position to Player in Current Rod
     /// </summary>
-    public enum eXPositionRodRelative
+    public enum eYPositionPlayerRelative
     {
         /// <summary>
-        /// Ball is in Front of Current Rod
+        /// Y ball coordinate less than Y Player coordinate
         /// </summary>
-        FRONT,
+        LEFT,
 
         /// <summary>
-        /// Ball and Rod X are Identical
+        /// Y ball coordinate is equal to Y Player coordinate
         /// </summary>
         CENTER,
 
         /// <summary>
-        /// Ball is Behind Current Rod
+        /// Y ball coordinate greater than Y Player coordinate
         /// </summary>
-        BACK
+        RIGHT
     }
 }
