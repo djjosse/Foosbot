@@ -13,16 +13,19 @@ namespace Foosbot.DecisionUnit
     {
         /// <summary>
         /// Y ball coordinate less than Y Player coordinate
+        /// (needs negative movement)
         /// </summary>
         LEFT,
 
         /// <summary>
         /// Y ball coordinate is equal to Y Player coordinate
+        /// (no need to move)
         /// </summary>
         CENTER,
 
         /// <summary>
         /// Y ball coordinate greater than Y Player coordinate
+        /// (needs positive movement)
         /// </summary>
         RIGHT
     }

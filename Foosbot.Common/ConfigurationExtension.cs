@@ -58,5 +58,17 @@ namespace Foosbot
         {
             return Configuration.Attributes.GetValue<int>(rodType.ToString());
         }
+
+        /// <summary>
+        /// Get distance between stoppers on current rod
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        /// <param name="rodType">Current Rod Type</param>
+        /// <returns>Distance between stoppers</returns>
+        public static int GetRodDistanceBetweenStoppers(this Configuration configuration, eRod rodType)
+        {
+            return Configuration.Attributes.GetValue<int>(
+                String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_STOPPER_DIST));
+        }
     }
 }

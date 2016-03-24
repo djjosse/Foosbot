@@ -38,6 +38,11 @@ namespace Foosbot.DecisionUnit
         private readonly int _offsetY;
 
         /// <summary>
+        /// Distance between stoppers of current rod
+        /// </summary>
+        private readonly int _stopperDistance;
+
+        /// <summary>
         /// Rod X coordinate in Foosbot world private readonly member
         /// </summary>
         private readonly int _rodXCoordinate;
@@ -117,6 +122,17 @@ namespace Foosbot.DecisionUnit
         }
 
         /// <summary>
+        /// Distance between stoppers of current rod
+        /// </summary>
+        public int StopperDistance
+        {
+            get
+            {
+                return _stopperDistance;
+            }
+        }
+
+        /// <summary>
         /// Sector Intersection Time get property
         /// </summary>
         public DateTime SectorIntersectionTime
@@ -163,8 +179,7 @@ namespace Foosbot.DecisionUnit
             _playerDistance = Configuration.Attributes.GetPlayersDistancePerRod(_rodType);
             _playersCount = Configuration.Attributes.GetPlayersCountPerRod(_rodType);
             _offsetY = Configuration.Attributes.GetPlayersOffsetYPerRod(_rodType);
-            //_playersCount = 
-            //_offsetY = 
+            _stopperDistance = Configuration.Attributes.GetRodDistanceBetweenStoppers(_rodType);
         }
 
         /// <summary>

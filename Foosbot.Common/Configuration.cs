@@ -36,9 +36,15 @@ namespace Foosbot
             public const string VECTOR_CALC_ANGLE_ERROR = "AngleErrorTh";
             public const string KEY_RICOCHET_FACTOR = "RicochetFactor";
 
+            public const string KEY_ROD_START_Y = "RodStartY";
+            public const string KEY_ROD_END_Y = "RodEndY";
+
+            public const string KEY_PLAYER_WIDTH = "PlayerWidth";
+
             public const string SUBKEY_DISTANCE = "_Distance";
             public const string SUBKEY_COUNT = "_Count";
             public const string SUBKEY_OFFSET_Y = "_OffsetY";
+            public const string SUBKEY_STOPPER_DIST = "_StopperDistance";
         }
 
         /// <summary>
