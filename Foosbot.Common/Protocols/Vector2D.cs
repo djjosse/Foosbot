@@ -14,7 +14,7 @@ namespace Foosbot.Common.Protocols
     {
         /// <summary>
         /// Constructor for defined vector
-        /// </summary>
+        /// </sumary>
         /// <param name="x">X coordinate</param>
         /// <param name="y">Y coordinate</param>
         public Vector2D(double x, double y) : base(x, y) { }
@@ -40,8 +40,18 @@ namespace Foosbot.Common.Protocols
         /// <returns>Vector angle</returns>
         public double Angle()
         {
-            if(IsDefined)
-                return Math.Atan(Y / X);
+            if (IsDefined)
+            {
+                if (X == 0 && Y > 0) return Math.PI / 2;
+                else if (X == 0 && Y < 0) return 1.5* Math.PI;
+                else if (X > 0 && Y == 0) return 0;
+                else if (X < 0 && Y == 0) return Math.PI;
+                else if (X > 0 && Y > 0) return Math.Atan(Y / X);
+                else if (X > 0 && Y < 0) return 2 * Math.PI + Math.Atan(Y / X);
+                else if (X < 0 && Y > 0) return Math.PI + Math.Atan(Y / X);
+                else if (X < 0 && Y < 0) return Math.PI + Math.Atan(Y / X);
+                else return 0; //(X == 0 && Y == 0)
+            }
             throw new Exception("Vector coordinates is undefined, no value stored in X and Y to define angle");
         }
 

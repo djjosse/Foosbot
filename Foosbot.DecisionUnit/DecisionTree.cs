@@ -36,9 +36,8 @@ namespace Foosbot.DecisionUnit
                 
                 //Ball is in Current Rod Sector
                 case eBallRelativePos.IN_SECTOR:
-                    //The Big Tree
-
-
+                    //The Big Sub Tree
+                    action = SubTreeBallInSector(rod.RodType, bfc);
                     break;
                 //Ball is ahead of Current Rod Sector
                 case eBallRelativePos.AHEAD_SECTOR:
@@ -79,6 +78,16 @@ namespace Foosbot.DecisionUnit
             }
 
             return action;
+        }
+
+        /// <summary>
+        /// Sub Tree used to decide on action in case ball is in sector
+        /// Stage 4 in SDD document
+        /// </summary>
+        /// <returns>Rod Action to be performed</returns>
+        private RodAction SubTreeBallInSector(eRod rodType, BallCoordinates bfc)
+        {
+
         }
 
         private eBallRelativePos IsBallInSector(int ballXcoordinate)

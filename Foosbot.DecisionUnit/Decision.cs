@@ -1,4 +1,5 @@
 ﻿using Foosbot.Common.Protocols;
+using Foosbot.VectorCalculation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,11 @@ namespace Foosbot.DecisionUnit
         /// </summary>
         private Dictionary<eRod, Rod> _rods;
 
+        /// <summary>
+        /// Ricochet callculations
+        /// </summary>
+        private VectorUtils _vectorUtils;
+
         #endregion private members
 
         /// <summary>
@@ -63,6 +69,9 @@ namespace Foosbot.DecisionUnit
 
             //Create decision tree instance
             _decisionTree = new DecisionTree();
+
+            //Used for Ricochet callculations
+            _vectorUtils = new VectorUtils();
 
             //Set constants from configuration file
             DELAYS = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
@@ -118,9 +127,7 @@ namespace Foosbot.DecisionUnit
                 }
                 else
                 {
-                    //ToDo: Call ricoshet algorithm with:
-                    BallCoordinates ricoshetCoordiantes = null;
-                    //ricoshetCoordiantes = RicoshetAlgorithm(currentCoordinates);
+                    BallCoordinates ricoshetCoordiantes = _vectorUtils.Ricochet(currentCoordinates);
                     FindBallFutureCoordinates(ricoshetCoordiantes, actionTime);
                 }
             }
@@ -175,9 +182,7 @@ namespace Foosbot.DecisionUnit
                 }
                 else
                 {
-                    //ToDo: Call ricoshet algorithm with:
-                    BallCoordinates ricoshetCoordiantes = null;
-                    //ricoshetCoordiantes = RicoshetAlgorithm(currentCoordinates);
+                    BallCoordinates ricoshetCoordiantes = _vectorUtils.Ricochet(currentCoordinates);
                     CalculateSectorIntersection(rod, ricoshetCoordiantes);
                 }
             }

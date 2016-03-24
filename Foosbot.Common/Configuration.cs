@@ -34,6 +34,7 @@ namespace Foosbot
             public const string FOOSBOT_DELAY = "TimeDelay";
             public const string VECTOR_CALC_DISTANCE_ERROR = "DistanceErrorTh";
             public const string VECTOR_CALC_ANGLE_ERROR = "AngleErrorTh";
+            public const string KEY_RICOCHET_FACTOR = "RicochetFactor";
         }
 
         /// <summary>
