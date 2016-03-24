@@ -1,4 +1,5 @@
-﻿using Foosbot.Common.Protocols;
+﻿using Foosbot;
+using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,21 @@ namespace Foosbot.DecisionUnit
         /// Rod type private readonly member
         /// </summary>
         private readonly eRod _rodType;
+
+        /// <summary>
+        /// Distance between each 2 player on current rod
+        /// </summary>
+        private readonly int _playerDistance;
+
+        /// <summary>
+        /// Number of players in current rod
+        /// </summary>
+        private readonly int _playersCount;
+
+        /// <summary>
+        /// Distance from table border (Y min) to head of first player
+        /// </summary>
+        private readonly int _offsetY;
 
         /// <summary>
         /// Rod X coordinate in Foosbot world private readonly member
@@ -68,6 +84,39 @@ namespace Foosbot.DecisionUnit
         }
 
         /// <summary>
+        /// Distance between each 2 player on current rod
+        /// </summary>
+        public int PlayerDistance
+        {
+            get
+            {
+                return _playerDistance;
+            }
+        }
+
+        /// <summary>
+        /// Number of players in current rod
+        /// </summary>
+        public int PlayersCount
+        {
+            get
+            {
+                return _playersCount;
+            }
+        }
+
+        /// <summary>
+        /// Distance from table border (Y min) to head of first player
+        /// </summary>
+        public int OffsetY
+        {
+            get
+            {
+                return _offsetY;
+            }
+        }
+
+        /// <summary>
         /// Sector Intersection Time get property
         /// </summary>
         public DateTime SectorIntersectionTime
@@ -109,6 +158,13 @@ namespace Foosbot.DecisionUnit
 
             //Set sector factor to calculate dynamic sector based ball velocity
             _sectorFactor = Configuration.Attributes.GetValue<double>(Configuration.Names.SECTOR_FACTOR);
+
+
+            _playerDistance = Configuration.Attributes.GetPlayersDistancePerRod(_rodType);
+            _playersCount = Configuration.Attributes.GetPlayersCountPerRod(_rodType);
+            _offsetY = Configuration.Attributes.GetPlayersOffsetYPerRod(_rodType);
+            //_playersCount = 
+            //_offsetY = 
         }
 
         /// <summary>

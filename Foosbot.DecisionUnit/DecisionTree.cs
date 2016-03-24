@@ -13,6 +13,14 @@ namespace Foosbot.DecisionUnit
     public class DecisionTree
     {
         /// <summary>
+        /// Dictionary initialized from configuration file in constructor
+        /// This dictionary contains X coordinates of each rod
+        /// </summary>
+        private Dictionary<eRod, int> _rodXCoordinate;
+
+
+
+        /// <summary>
         /// Sector Start Coordinate X
         /// </summary>
         private int sectorStart;
@@ -22,6 +30,25 @@ namespace Foosbot.DecisionUnit
         /// </summary>
         private int sectorEnd;
 
+        /// <summary>
+        /// Ball Radius
+        /// ToDo: Calculate Dynamically
+        /// </summary>
+        private readonly int BALL_RADIUS = 15;
+
+        /// <summary>
+        /// Decision Tree Constructor
+        /// </summary>
+        public DecisionTree()
+        {
+            //get all rod X coordinates from configuration and store
+            _rodXCoordinate = new Dictionary<eRod, int>();
+            foreach(eRod rodType in Enum.GetValues(typeof(eRod)))
+            {
+                int xCoord = Configuration.Attributes.GetValue<int>(rodType.ToString());
+                _rodXCoordinate.Add(rodType, xCoord);
+            }
+        }
 
         public RodAction Decide(Rod rod, BallCoordinates bfc)
         {
@@ -35,13 +62,12 @@ namespace Foosbot.DecisionUnit
             {
                 
                 //Ball is in Current Rod Sector
-                case eBallRelativePos.IN_SECTOR:
-                    //The Big Tree
-
-
+                case eXPositionSectorRelative.IN_SECTOR:
+                    //The Big Sub Tree
+                    action = SubTreeBallInSector(rod.RodType, bfc);
                     break;
                 //Ball is ahead of Current Rod Sector
-                case eBallRelativePos.AHEAD_SECTOR:
+                case eXPositionSectorRelative.AHEAD_SECTOR:
                     if (IsBallVectorToRod(bfc.Vector))
                         //Ball Vector Direction is TO Current Rod
                         action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.VECTOR_BASED);
@@ -50,7 +76,7 @@ namespace Foosbot.DecisionUnit
                         action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.BEST_EFFORT);
                     break;
                 //Ball is behind Current Rod Sector
-                case eBallRelativePos.BEHIND_SECTOR:
+                case eXPositionSectorRelative.BEHIND_SECTOR:
                     action = new RodAction(rod.RodType, eRotationalMove.RISE, eLinearMove.BEST_EFFORT);
                     break;
             }
@@ -81,14 +107,50 @@ namespace Foosbot.DecisionUnit
             return action;
         }
 
-        private eBallRelativePos IsBallInSector(int ballXcoordinate)
+        /// <summary>
+        /// Sub Tree used to decide on action in case ball is in sector
+        /// Stage 4 and further in SDD document
+        /// </summary>
+        /// <returns>Rod Action to be performed</returns>
+        private RodAction SubTreeBallInSector(eRod rodType, BallCoordinates bfc)
+        {
+            //Stage 4 - get current ball relative position to rod
+            eXPositionRodRelative xRelative = XPositionToRodXPostion(bfc.X, rodType);
+
+            eYPositionPlayerRelative yRelative = YPositionToPlayerYPosition(bfc.Y, rodType);
+
+            return null;
+        }
+
+        private eYPositionPlayerRelative YPositionToPlayerYPosition(int yBallPosition, eRod currentRod)
+        {
+            return eYPositionPlayerRelative.CENTER;
+        }
+
+        /// <summary>
+        /// Get Current Ball Position relative to current rod in Axe X
+        /// </summary>
+        /// <param name="xBallPosition">X ball coordinate</param>
+        /// <param name="currentRod">Current rod</param>
+        /// <returns>X position relative to current rod</returns>
+        private eXPositionRodRelative XPositionToRodXPostion(int xBallPosition, eRod currentRod)
+        {
+            int xRodPosition = _rodXCoordinate[currentRod];
+            if (xBallPosition + BALL_RADIUS > xRodPosition)
+                return eXPositionRodRelative.FRONT;
+            if (xBallPosition - BALL_RADIUS < xRodPosition)
+                return eXPositionRodRelative.BACK;
+            return eXPositionRodRelative.CENTER;
+        }
+
+        private eXPositionSectorRelative IsBallInSector(int ballXcoordinate)
         {
             if (ballXcoordinate < sectorStart)
-                return eBallRelativePos.BEHIND_SECTOR;
+                return eXPositionSectorRelative.BEHIND_SECTOR;
             else if (ballXcoordinate > sectorEnd)
-                return eBallRelativePos.AHEAD_SECTOR;
+                return eXPositionSectorRelative.AHEAD_SECTOR;
             else
-                return eBallRelativePos.IN_SECTOR;
+                return eXPositionSectorRelative.IN_SECTOR;
         }
 
         private bool IsBallVectorToRod(Vector2D vector)

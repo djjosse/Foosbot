@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Foosbot.Common;
 
 namespace Foosbot.VectorCalculation
 {
@@ -41,9 +42,8 @@ namespace Foosbot.VectorCalculation
             {
                 try
                 {
-                    UpdateLineInUI(ballCoordinates.X, ballCoordinates.Y,
-                            ballCoordinates.X + Convert.ToInt32(ballCoordinates.Vector.X),
-                            ballCoordinates.Y + Convert.ToInt32(ballCoordinates.Vector.Y));
+                    //Marks.DrawBallVector(new Point(ballCoordinates.X, ballCoordinates.Y), 
+                    //    new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)), true);
                 }
                 catch(Exception e)
                 {
@@ -86,7 +86,7 @@ namespace Foosbot.VectorCalculation
         private Vector2D CalculateVector(BallCoordinates ballCoordinates)
         {
 
-            double deltaT = (ballCoordinates.Timestamp - _storedBallCoordinates.Timestamp).TotalMilliseconds / 100;
+            double deltaT = (ballCoordinates.Timestamp - _storedBallCoordinates.Timestamp).TotalSeconds;// / 100;
             double x = ballCoordinates.X - _storedBallCoordinates.X;
             double y = ballCoordinates.Y - _storedBallCoordinates.Y;
             ballCoordinates.Vector = new Vector2D(x / deltaT, y / deltaT);
@@ -94,44 +94,29 @@ namespace Foosbot.VectorCalculation
             if (_storedBallCoordinates.Vector.IsDefined &&
                 ballCoordinates.Vector.Velocity() > 0)
             {
-                double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X
-                                    + _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y)
-                                    / (_storedBallCoordinates.Vector.Velocity() * ballCoordinates.Vector.Velocity());
-                //if (!((1 - ALPHA_ERR < cosAlpha) && (cosAlpha < 1 + ALPHA_ERR)))
-                //{
-                //    Log.Common.Warning("NEED RICOSHET");
-                //    VectorUtils utils = new VectorUtils();
-                //    utils.Ricochet(_storedBallCoordinates);
-                //    return new Vector2D();
-                //}
+                double velocity = _storedBallCoordinates.Vector.Velocity() * ballCoordinates.Vector.Velocity();
+                if (velocity != 0)
+                {
+                    double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X
+                                        + _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) / velocity;
+
+                    if (!((1 - ALPHA_ERR < cosAlpha) && (cosAlpha < 1 + ALPHA_ERR)))
+                    {
+                        Log.Common.Debug(String.Format("[{0}] Current angle is {1}",
+                            MethodBase.GetCurrentMethod().Name, Math.Acos(cosAlpha).ToDegrees(2)));
+                        VectorUtils utils = new VectorUtils();
+                        BallCoordinates intersection = utils.Ricochet(_storedBallCoordinates);
+                        if (intersection != null && intersection.Vector != null)
+                            return intersection.Vector;
+                        else return new Vector2D();
+                         //return new Vector2D();
+                    }
+                }
             }
             _storedBallCoordinates.Vector = ballCoordinates.Vector;
+            Log.Common.Debug(String.Format("[{0}] Ball speed is {1} p/s {2} degrees", MethodBase.GetCurrentMethod().Name,
+                    Math.Round(ballCoordinates.Vector.Velocity(), 2), ballCoordinates.Vector.Angle().ToDegrees(2)));
             return ballCoordinates.Vector;
-        }
-
-        /// <summary>
-        /// Updates UI after transfroming point
-        /// </summary>
-        /// <param name="startX">Vector start point X</param>
-        /// <param name="startY">Vector start point Y</param>
-        /// <param name="endX">Vector end point X</param>
-        /// <param name="endY">Vector end point Y</param>
-        public void UpdateLineInUI(float startX, float startY, float endX, float endY)
-        {
-            System.Drawing.PointF startPoint = new System.Drawing.PointF(startX, startY);
-            System.Drawing.PointF endPoint = new System.Drawing.PointF(endX, endY);
-
-            Transformation transformer = new Transformation();
-            System.Drawing.PointF guiStartPoint = transformer.InvertTransform(startPoint);
-            System.Drawing.PointF guiEndPoint = transformer.InvertTransform(endPoint);
-
-            Marks.DrawBallVector(new System.Windows.Point(guiStartPoint.X, guiStartPoint.Y),
-                new System.Windows.Point(guiEndPoint.X - guiStartPoint.X, guiEndPoint.Y - guiStartPoint.Y));
-           
-
-            //UpdateMarkupLineRealWorld(Helpers.eMarkupKey.BALL_VECTOR,
-            //        new System.Windows.Point(guiStartPoint.X, guiStartPoint.Y),
-            //          new System.Windows.Point(guiEndPoint.X, guiEndPoint.Y));
         }
     }
 }

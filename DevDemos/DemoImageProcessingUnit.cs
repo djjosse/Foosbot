@@ -15,7 +15,7 @@ namespace DevDemos
         private Random _random;
         private double _velocityX = 0;
         private double _velocityY = 0;
-        private double _ricochetVelocityFactor = 0.7;
+        private readonly double RICOCHET_FACTOR;
         private double _buttomBorder = 0;
         private double _rightBorder = 0;
         private double _upeerBorder = 0;
@@ -36,6 +36,7 @@ namespace DevDemos
             //Set Foosbot world sizes - axe X x axe Y
             _rightBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
             _buttomBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+            RICOCHET_FACTOR = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
 
             //Create Transfomation Matrix - to present coordinates of a Ball in GUI
             InitializeTransformation(Convert.ToSingle(streamer.FrameWidth),
@@ -188,9 +189,9 @@ namespace DevDemos
             ref double directVelocity, ref double secondVelocity)
         {
             coordinate = Convert.ToInt32((2 * currentBorder - coordinate - directVelocity) 
-                + (currentBorder - coordinate) * _ricochetVelocityFactor);
-            directVelocity = directVelocity * (-1) * _ricochetVelocityFactor;
-            secondVelocity *= _ricochetVelocityFactor;
+                + (currentBorder - coordinate) * RICOCHET_FACTOR);
+            directVelocity = directVelocity * (-1) * RICOCHET_FACTOR;
+            secondVelocity *= RICOCHET_FACTOR;
             return coordinate;
         }
     }
