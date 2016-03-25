@@ -20,8 +20,11 @@ namespace Foosbot
         private static double _actualHeightRate;
         private static Canvas _canvas;
         private static Dispatcher _dispatcher;
-
+        private static double _buttomBorder;
         private static Dictionary<eMarks, int> _rods;
+        private static Dictionary<eMarks, int> _players;
+
+        
 
         /// <summary>
         /// Markup shape dictionary
@@ -34,6 +37,8 @@ namespace Foosbot
         /// </summary>
         public static void Initialize(Dispatcher dispatcher, Canvas canvas, double actualWidthRate, double actualHeightRate)
         {
+            _buttomBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+
             _rods = new Dictionary<eMarks,int>();
             foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
 	        {
@@ -41,8 +46,11 @@ namespace Foosbot
                 eMarks mark;
                 Enum.TryParse<eMarks>(rodType.ToString(), out mark);
                 if (!mark.Equals(eMarks.NA))
+                {
                     _rods.Add(mark, x);
+                }
 	        }
+
 
             _canvas = canvas;
             _actualWidthRate = actualWidthRate;
@@ -60,7 +68,31 @@ namespace Foosbot
                     case eMarks.TopLeftMark:
                     case eMarks.TopRightMark:
                     case eMarks.RicochetMark:
+                    case eMarks.GoalKeeperPlayer:
+                    case eMarks.DefencePlayer1:
+                    case eMarks.DefencePlayer2:
+                    case eMarks.MidfieldPlayer1:
+                    case eMarks.MidfieldPlayer2:
+                    case eMarks.MidfieldPlayer3:
+                    case eMarks.MidfieldPlayer4:
+                    case eMarks.MidfieldPlayer5:
+                    case eMarks.AttackPlayer1:
+                    case eMarks.AttackPlayer2:
+                    case eMarks.AttackPlayer3:
                         _markups.Add((int)mark, new Ellipse());
+                        break;
+                    case eMarks.GoalKeeperPlayerRect:
+                    case eMarks.DefencePlayer1Rect:
+                    case eMarks.DefencePlayer2Rect:
+                    case eMarks.MidfieldPlayer1Rect:
+                    case eMarks.MidfieldPlayer2Rect:
+                    case eMarks.MidfieldPlayer3Rect:
+                    case eMarks.MidfieldPlayer4Rect:
+                    case eMarks.MidfieldPlayer5Rect:
+                    case eMarks.AttackPlayer1Rect:
+                    case eMarks.AttackPlayer2Rect:
+                    case eMarks.AttackPlayer3Rect:
+                        _markups.Add((int)mark, new Rectangle());
                         break;
                     case eMarks.ButtomLeftText:
                     case eMarks.ButtomRightText:
@@ -83,7 +115,9 @@ namespace Foosbot
             }
 
             foreach (FrameworkElement element in _markups.Values)
+            {
                 _canvas.Children.Add(element);
+            }
         }
 
         private static void ConvertToLocation(ref int x, ref int y)
@@ -95,6 +129,22 @@ namespace Foosbot
             y = Convert.ToInt32(outY);
         }
 
+        private static void ConvertToCoord(ref int x, ref int y)
+        {
+            double outX, outY;
+            Transformation transformer = new Transformation();
+            transformer.Transform(x, y, out outX, out outY);
+            x = Convert.ToInt32(outX);
+            y = Convert.ToInt32(outY);
+        }
+
+        /// <summary>
+        /// draw the ricochet point of the ball on the border of the table 
+        /// </summary>
+        /// <param name="x">x coord of the ricochet on the canvas</param>
+        /// <param name="y">y coord of the ricochet on the canvas</param>
+        /// <param name="isLocation">bool that convert between location and coord : optional</param>
+        /// <param name="circleColor">the color of the stroke of the ricochet mark : optional</param>
         public static void DrawRicochetMark(int x, int y, bool isLocation = false, SolidColorBrush circleColor = null)
         {
             if (isLocation)
@@ -118,54 +168,131 @@ namespace Foosbot
             }));
         }
 
-
-        public static void DrawRodtMark(Point start, Point end, int thickness, bool isLocation = false, SolidColorBrush color = null)
-        {
-            if (isLocation)
-            {
-                int x = Convert.ToInt32(start.X);
-                int y = Convert.ToInt32(start.Y);
-
-                ConvertToLocation(ref x, ref y);
-                start = new Point(x, y);
-
-                x = 0;
-                y = Convert.ToInt32(end.Y);
-
-                ConvertToLocation(ref x, ref y);
-                end = new Point(x, y);
-            }
-
-            Point presentationStartPoint = new Point(start.X * _actualWidthRate, start.Y * _actualHeightRate);
-            Point presentationVector = new Point(end.X * _actualWidthRate, end.Y * _actualHeightRate);
-            Point presentationEndPoint = new Point(presentationStartPoint.X + presentationVector.X,
-                presentationStartPoint.Y + presentationVector.Y);
-
-            const int key = (int)eMarks.GoalKeeper;
-
+        /// <summary>
+        /// init the rods lines on the  canvas --> TODO fix the rods position problem
+        /// </summary>
+        /// <param name="thickness">the thickness of the rods</param>
+        /// <param name="color">the color of the rods</param>
+        public static void DrawRods(int thickness = 10, SolidColorBrush color = null)
+        { 
             _dispatcher.Invoke(new ThreadStart(delegate
             {
-                int deltaX = 0;
-                for (int i = 0; i < 4; i++)
+                const int key = (int)eMarks.GoalKeeper;
+
+                for (int eMarksCounter = 0; eMarksCounter < 4; eMarksCounter++)
                 {
-                    int x = _rods[(eMarks)(i + eMarks.GoalKeeper)];
-                    (_markups[key+i] as Shape).StrokeThickness = thickness;
-                    (_markups[key + i] as Shape).Stroke = (color == null) ? Brushes.Chocolate : color;
+                    int x = _rods[(eMarksCounter + eMarks.GoalKeeper)];
+                    int y = (int)_buttomBorder;
 
-                    (_markups[key + i] as Line).X1 = presentationStartPoint.X + x;
-                    (_markups[key + i] as Line).Y1 = presentationStartPoint.Y;
-                    (_markups[key + i] as Line).X2 = presentationEndPoint.X + x;
-                    (_markups[key + i] as Line).Y2 = presentationEndPoint.Y;
+                    //ConvertToLocation(ref x, ref y);
 
-                    Canvas.SetLeft(_markups[key + i], 0);
-                    Canvas.SetTop(_markups[key + i], 0);
-                    deltaX += 200;
+                    (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
+                    (_markups[key + eMarksCounter] as Shape).Stroke = (color == null) ? Brushes.White : color;
+
+                    (_markups[key + eMarksCounter] as Line).X1 = x;
+                    (_markups[key + eMarksCounter] as Line).Y1 = 0;
+
+                    (_markups[key + eMarksCounter] as Line).X2 = x;
+                    (_markups[key + eMarksCounter] as Line).Y2 = y;
+
+                    Canvas.SetLeft(_markups[key + eMarksCounter], 0);
+                    Canvas.SetTop(_markups[key + eMarksCounter], 0);
                 }         
             }));
         }
 
-        public static void DrawBall(Point center, int radius,
-            bool drawBall = false, SolidColorBrush circleColor = null)
+        /// <summary>
+        /// draw a rod by a given eMark sign , moving the rod on the linear and rotational axes
+        /// </summary>
+        /// <param name="rod">eMark of the wanted rod : GOALKEEPER , Defence , Midfield, Attack</param>
+        /// <param name="deltaYMovment">the change on the linear movement</param>
+        /// <param name="rotationalMove">eRotationalMove of the rod : DEFENCE, RISE, ATTACK</param>
+        public static void DrawRodPlayers(eMarks rod, int deltaYMovment, eRotationalMove rotationalMove)
+        {
+            eRod mark;
+            Enum.TryParse<eRod>(rod.ToString(), out mark);
+
+            eMarks playersBase = 0;       
+            int eMarkType = ((int)rod);
+            int deltaX = _rods[rod];
+            int count = Configuration.Attributes.GetPlayersCountPerRod(mark);
+            int dist = Configuration.Attributes.GetPlayersDistancePerRod(mark);
+            int offset = Configuration.Attributes.GetPlayersOffsetYPerRod(mark);
+            int movmentOffset = offset + deltaYMovment;
+
+            ConvertToLocation(ref deltaX, ref offset);
+
+            switch (eMarkType)
+            {
+                case (int)eMarks.GoalKeeper: playersBase = eMarks.GoalKeeperPlayer; break;
+                case (int)eMarks.Defence: playersBase = eMarks.DefencePlayer1; break;
+                case (int)eMarks.Midfield: playersBase = eMarks.MidfieldPlayer1; break;
+                case (int)eMarks.Attack: playersBase = eMarks.AttackPlayer1; break;
+                default: break;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (i == 0) DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset), 20, rotationalMove);
+                else DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset += dist), 20, rotationalMove);
+            }
+        }
+
+
+        /// <summary>
+        /// drawing a single player at a time , used by the DrawRodPlayers method to draw all rods players
+        /// </summary>
+        /// <param name="eNumKey">eMark of the wanted rod : GOALKEEPER , Defence , Midfield, Attack</param>
+        /// <param name="center">center of the players radius</param>
+        /// <param name="radius">radius size</param>
+        /// <param name="circleColor">color for the roational current pos</param>
+        private static void DrawPlayer(eMarks eNumKey,Point center, int radius,
+            eRotationalMove rotationalMove, SolidColorBrush playerColor = null)
+        {
+            int key = (int)eNumKey;
+            Point presentationCenter = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
+            int presentationRadius = Convert.ToInt32(radius * ((_actualWidthRate + _actualHeightRate) / 2));
+
+            int rotationalMoveFactor = 0;
+            SolidColorBrush rotationalColor = Brushes.DarkBlue;
+            if (rotationalMove == eRotationalMove.DEFENCE) {
+                rotationalMoveFactor = presentationRadius;
+                rotationalColor = Brushes.Blue;
+            }
+            else if (rotationalMove == eRotationalMove.RISE) {
+                rotationalMoveFactor = (int)(presentationRadius * 2.5);
+                rotationalColor = Brushes.Cyan;
+            }
+
+            _dispatcher.Invoke(new ThreadStart(delegate
+            {
+                (_markups[key] as Shape).Fill = (rotationalColor == null) ? Brushes.White : rotationalColor;
+
+                _markups[key].Width = presentationRadius * 2;
+                _markups[key].Height = presentationRadius * 2;
+
+                Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
+                Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
+
+                (_markups[key + 5] as Shape).Height = 24;
+                (_markups[key + 5] as Shape).Width = 30;
+                (_markups[key + 5] as Shape).StrokeThickness = 2;
+                (_markups[key + 5] as Shape).Fill = rotationalColor;
+
+                Canvas.SetLeft(_markups[key + 5], presentationCenter.X - rotationalMoveFactor);
+                Canvas.SetTop(_markups[key + 5], presentationCenter.Y - presentationRadius);
+
+            }));
+        }
+
+
+        /// <summary>
+        /// drawing the ball on the canvas
+        /// </summary>
+        /// <param name="center">ball circle center</param>
+        /// <param name="radius">ball radius</param>
+        /// <param name="circleColor">ball color : optional</param>
+        public static void DrawBall(Point center, int radius, SolidColorBrush circleColor = null)
         {
             const int key = (int)eMarks.BallMark;
             Point presentationCenter = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
@@ -173,7 +300,7 @@ namespace Foosbot
 
             _dispatcher.Invoke(new ThreadStart(delegate
             {
-                if (drawBall) (_markups[key] as Shape).Fill = Brushes.White;
+                (_markups[key] as Shape).Fill = Brushes.White;
                 (_markups[key] as Shape).StrokeThickness = 2;
                 (_markups[key] as Shape).Stroke = (circleColor == null) ? Brushes.Red : circleColor;
 
@@ -185,6 +312,16 @@ namespace Foosbot
             }));
         }
 
+        /// <summary>
+        /// draw the calibration circles on the canvas
+        /// </summary>
+        /// <param name="mark"></param>
+        /// <param name="center"></param>
+        /// <param name="radius"></param>
+        /// <param name="circleColor"></param>
+        /// <param name="textColor"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="text"></param>
         public static void DrawCallibrationCircle(eCallibrationMark mark, Point center, int radius,
             SolidColorBrush circleColor = null, SolidColorBrush textColor = null, double fontSize = 12,
                 string text = "")
@@ -231,6 +368,13 @@ namespace Foosbot
             }));
         }
 
+        /// <summary>
+        /// drawing the vector of the ball
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="vector"></param>
+        /// <param name="isLocation"></param>
+        /// <param name="color"></param>
         public static void DrawBallVector(Point center, Point vector, bool isLocation = false, SolidColorBrush color = null)
         {
             if (isLocation)

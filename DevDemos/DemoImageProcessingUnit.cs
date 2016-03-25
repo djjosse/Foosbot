@@ -1,4 +1,5 @@
 ﻿using Foosbot;
+using Foosbot.Common.Enums;
 using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessing;
@@ -64,8 +65,19 @@ namespace DevDemos
             _x = Convert.ToInt32(_rightBorder / 2);
             _y = Convert.ToInt32(_buttomBorder / 2);
 
+
             //Instantiate random generator
             _random = new Random();
+
+
+            //draw rods on canvas
+            //Marks.DrawRods();
+
+            //init rods players
+            Marks.DrawRodPlayers(eMarks.GoalKeeper, 0, eRotationalMove.RISE);
+            Marks.DrawRodPlayers(eMarks.Defence,0,eRotationalMove.DEFENCE);
+            Marks.DrawRodPlayers(eMarks.Midfield, 0, eRotationalMove.RISE);
+            Marks.DrawRodPlayers(eMarks.Attack, 0, eRotationalMove.KICK);
 
             //Start Generating Locations in separate Thread
             BeginInvokeGenerateLocation();
@@ -99,7 +111,10 @@ namespace DevDemos
             Transformation transformer = new Transformation();
             transformer.FindHomographyMatrix(originalPoints, transformedPoints);  
         }
-       
+
+
+        int count = 0;
+
         /// <summary>
         /// Get and notify new ball coordinates
         /// </summary>
@@ -110,14 +125,30 @@ namespace DevDemos
     
             //get current ball coordinates
             BallCoordinates coordinates = SampleCoordinates();
-   
-            //draw rods
-            Marks.DrawRodtMark(new Point(50, 0), new Point(0, _actualButtomBorder), 10, true, System.Windows.Media.Brushes.White);
+
+
+
+            //testing rods movenent and switches
+            count++;
+            if (count > 20 && count < 40)
+            {
+                Marks.DrawRodPlayers(eMarks.Midfield, count, eRotationalMove.RISE);
+            }
+            if (count > 40 && count < 60)
+            {
+                Marks.DrawRodPlayers(eMarks.Midfield, count, eRotationalMove.DEFENCE);
+            }
+            if (count > 60 && count < 80)
+            {
+                Marks.DrawRodPlayers(eMarks.Midfield, count, eRotationalMove.KICK);
+            }
+
+
 
             //show current ball coordinates on screen and GUI
             Transformation transfromer = new Transformation();
             System.Drawing.PointF p = transfromer.InvertTransform(new System.Drawing.PointF(_x, _y));
-            Marks.DrawBall(new Point(p.X, p.Y), _ballRadius * 2, true);
+            Marks.DrawBall(new Point(p.X, p.Y), _ballRadius * 2);
 
             Statistics.UpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
             
