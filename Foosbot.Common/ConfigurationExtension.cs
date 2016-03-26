@@ -60,6 +60,18 @@ namespace Foosbot
         }
 
         /// <summary>
+        /// Get First Player Y coordinate for Best Effort linear move
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        /// <param name="rodType">Current Rod Type</param>
+        /// <returns>First Player Y coordinate for Best Effort</returns>
+        public static int GetFirstPlayerBestEffort(this Configuration configuration, eRod rodType)
+        {
+            return Configuration.Attributes.GetValue<int>(
+                String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_BEST_EFFORT));
+        }
+
+        /// <summary>
         /// Get distance between stoppers on current rod
         /// </summary>
         /// <param name="configuration">Configuration</param>

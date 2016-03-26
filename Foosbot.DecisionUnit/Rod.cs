@@ -62,6 +62,11 @@ namespace Foosbot.DecisionUnit
         /// </summary>
         private DateTime _sectorIntersectionTime;
 
+        /// <summary>
+        /// Best Effort First Player Y Coordinate 
+        /// </summary>
+        private int _bestEffort;
+
         #endregion Private Members
 
         #region Properties
@@ -133,6 +138,39 @@ namespace Foosbot.DecisionUnit
         }
 
         /// <summary>
+        /// Is Ball Intersection with current rod defined 
+        /// </summary>
+        public bool IsIntersectionDefined
+        {
+            get
+            {
+                return IsDefined;
+            }
+        }
+
+        /// <summary>
+        /// Ball Intersection with current rod X coordinate
+        /// </summary>
+        public int IntersectionX
+        {
+            get
+            {
+                return X;
+            }
+        }
+
+        /// <summary>
+        /// Ball Intersection with current rod Y coordinate
+        /// </summary>
+        public int IntersectionY
+        {
+            get
+            {
+                return Y;
+            }
+        }
+
+        /// <summary>
         /// Sector Intersection Time get property
         /// </summary>
         public DateTime SectorIntersectionTime
@@ -150,6 +188,17 @@ namespace Foosbot.DecisionUnit
         /// Dynamic Sector Get Property
         /// </summary>
         public int DynamicSector { get; private set; }
+
+        /// <summary>
+        /// Best Effort First Player Y Coordinate 
+        /// </summary>
+        public int BestEffort
+        {
+            get
+            {
+                return _bestEffort;
+            }
+        }
 
         #endregion Properties
 
@@ -180,6 +229,7 @@ namespace Foosbot.DecisionUnit
             _playersCount = Configuration.Attributes.GetPlayersCountPerRod(_rodType);
             _offsetY = Configuration.Attributes.GetPlayersOffsetYPerRod(_rodType);
             _stopperDistance = Configuration.Attributes.GetRodDistanceBetweenStoppers(_rodType);
+            _bestEffort = Configuration.Attributes.GetFirstPlayerBestEffort(_rodType);
         }
 
         /// <summary>
