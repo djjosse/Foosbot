@@ -52,8 +52,7 @@ namespace Foosbot.VectorCalculation
             try
             {
                 Coordinates2D intersectionPoint = FindNearestIntersectionPoint(ballCoordinates);
-                if (intersectionPoint == null)
-                    return null;
+                if (intersectionPoint == null) return null;
                 Marks.DrawRicochetMark(Convert.ToInt32(intersectionPoint.X), Convert.ToInt32(intersectionPoint.Y), true);
                 
                 DateTime ricocheTime = FindRicochetTime(ballCoordinates, intersectionPoint);

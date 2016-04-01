@@ -71,11 +71,11 @@ namespace DevDemos
 
 
             //draw rods on canvas
-            //Marks.DrawRods();
+            Marks.DrawRods();
 
             //init rods players
             Marks.DrawRodPlayers(eMarks.GoalKeeper, 0, eRotationalMove.RISE);
-            Marks.DrawRodPlayers(eMarks.Defence,0,eRotationalMove.DEFENCE);
+            Marks.DrawRodPlayers(eMarks.Defence, 0, eRotationalMove.DEFENCE);
             Marks.DrawRodPlayers(eMarks.Midfield, 0, eRotationalMove.RISE);
             Marks.DrawRodPlayers(eMarks.Attack, 0, eRotationalMove.KICK);
 
@@ -127,23 +127,30 @@ namespace DevDemos
             BallCoordinates coordinates = SampleCoordinates();
 
 
-
-            //testing rods movenent and switches
+            //================testing rods movenent and switches DEMO==========================
             count++;
-            if (count > 20 && count < 40)
+            if (count % 200 > 0 && count % 200 < 75)
             {
-                Marks.DrawRodPlayers(eMarks.Midfield, count, eRotationalMove.RISE);
+                Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
+                Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.RISE);
+                Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
+                Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
             }
-            if (count > 40 && count < 60)
+            if (count % 200 > 75 && count % 200 < 150)
             {
-                Marks.DrawRodPlayers(eMarks.Midfield, count, eRotationalMove.DEFENCE);
+                Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
+                Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.DEFENCE);
+                Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
+                Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
             }
-            if (count > 60 && count < 80)
+            if (count % 200 > 150 && count % 200 < 200)
             {
-                Marks.DrawRodPlayers(eMarks.Midfield, count, eRotationalMove.KICK);
+                Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
+                Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.KICK);
+                Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
+                Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
             }
-
-
+            //===============================================================================
 
             //show current ball coordinates on screen and GUI
             Transformation transfromer = new Transformation();
@@ -157,8 +164,6 @@ namespace DevDemos
 
             //publish new ball coordinates
             BallLocationPublisher.UpdateAndNotify();
-
-
 
             //attach back to streamer
             _publisher.Attach(this);

@@ -33,17 +33,15 @@ namespace Foosbot.VectorCalculation
 
             //TODO: implement vector calculation here
             //...
-           // Marks.DrawBall(new Point(100, 100), 20, true);
-           // Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL, new System.Windows.Point(200, 200), 50);
+            //Marks.DrawBall(new Point(100, 100), 20, true);
+            //Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL, new System.Windows.Point(200, 200), 50);
                  
-            //example of updating UI
-
             if (ballCoordinates.IsDefined && ballCoordinates.Vector.IsDefined)
             {
                 try
                 {
-                    //Marks.DrawBallVector(new Point(ballCoordinates.X, ballCoordinates.Y), 
-                    //    new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)), true);
+                    Marks.DrawBallVector(new Point(ballCoordinates.X, ballCoordinates.Y), 
+                        new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)), true);
                 }
                 catch(Exception e)
                 {
@@ -85,37 +83,37 @@ namespace Foosbot.VectorCalculation
 
         private Vector2D CalculateVector(BallCoordinates ballCoordinates)
         {
-
             double deltaT = (ballCoordinates.Timestamp - _storedBallCoordinates.Timestamp).TotalSeconds;// / 100;
             double x = ballCoordinates.X - _storedBallCoordinates.X;
             double y = ballCoordinates.Y - _storedBallCoordinates.Y;
             ballCoordinates.Vector = new Vector2D(x / deltaT, y / deltaT);
 
-            if (_storedBallCoordinates.Vector.IsDefined &&
-                ballCoordinates.Vector.Velocity() > 0)
+            if (_storedBallCoordinates.Vector.IsDefined && ballCoordinates.Vector.Velocity() > 0)
             {
                 double velocity = _storedBallCoordinates.Vector.Velocity() * ballCoordinates.Vector.Velocity();
                 if (velocity != 0)
                 {
-                    double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X
-                                        + _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) / velocity;
+                    double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X +
+                                       _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) / velocity;
 
                     if (!((1 - ALPHA_ERR < cosAlpha) && (cosAlpha < 1 + ALPHA_ERR)))
                     {
-                        Log.Common.Debug(String.Format("[{0}] Current angle is {1}",
-                            MethodBase.GetCurrentMethod().Name, Math.Acos(cosAlpha).ToDegrees(2)));
+                        Log.Common.Debug(
+                            String.Format("[{0}] Current angle is {1}",MethodBase.GetCurrentMethod().Name, 
+                                                                       Math.Acos(cosAlpha).ToDegrees(2)));
                         VectorUtils utils = new VectorUtils();
                         BallCoordinates intersection = utils.Ricochet(_storedBallCoordinates);
                         if (intersection != null && intersection.Vector != null)
+                        {
                             return intersection.Vector;
+                        }
                         else return new Vector2D();
-                         //return new Vector2D();
                     }
                 }
             }
             _storedBallCoordinates.Vector = ballCoordinates.Vector;
-            Log.Common.Debug(String.Format("[{0}] Ball speed is {1} p/s {2} degrees", MethodBase.GetCurrentMethod().Name,
-                    Math.Round(ballCoordinates.Vector.Velocity(), 2), ballCoordinates.Vector.Angle().ToDegrees(2)));
+            //Log.Common.Debug(String.Format("[{0}] Ball speed is {1} p/s {2} degrees", MethodBase.GetCurrentMethod().Name,
+            //        Math.Round(ballCoordinates.Vector.Velocity(), 2), ballCoordinates.Vector.Angle().ToDegrees(2)));
             return ballCoordinates.Vector;
         }
     }

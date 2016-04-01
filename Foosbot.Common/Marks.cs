@@ -173,7 +173,7 @@ namespace Foosbot
         /// </summary>
         /// <param name="thickness">the thickness of the rods</param>
         /// <param name="color">the color of the rods</param>
-        public static void DrawRods(int thickness = 10, SolidColorBrush color = null)
+        public static void DrawRods(int thickness = 3, SolidColorBrush color = null ,bool isLocation = true)
         { 
             _dispatcher.Invoke(new ThreadStart(delegate
             {
@@ -184,7 +184,8 @@ namespace Foosbot
                     int x = _rods[(eMarksCounter + eMarks.GoalKeeper)];
                     int y = (int)_buttomBorder;
 
-                    //ConvertToLocation(ref x, ref y);
+                    if(isLocation)
+                        ConvertToLocation(ref x, ref y);
 
                     (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
                     (_markups[key + eMarksCounter] as Shape).Stroke = (color == null) ? Brushes.White : color;
@@ -207,7 +208,7 @@ namespace Foosbot
         /// <param name="rod">eMark of the wanted rod : GOALKEEPER , Defence , Midfield, Attack</param>
         /// <param name="deltaYMovment">the change on the linear movement</param>
         /// <param name="rotationalMove">eRotationalMove of the rod : DEFENCE, RISE, ATTACK</param>
-        public static void DrawRodPlayers(eMarks rod, int deltaYMovment, eRotationalMove rotationalMove)
+        public static void DrawRodPlayers(eMarks rod, int deltaYMovment, eRotationalMove rotationalMove ,bool isLocation = true)
         {
             eRod mark;
             Enum.TryParse<eRod>(rod.ToString(), out mark);
@@ -220,7 +221,8 @@ namespace Foosbot
             int offset = Configuration.Attributes.GetPlayersOffsetYPerRod(mark);
             int movmentOffset = offset + deltaYMovment;
 
-            ConvertToLocation(ref deltaX, ref offset);
+            if (isLocation)
+                ConvertToLocation(ref deltaX, ref offset);
 
             switch (eMarkType)
             {
@@ -233,8 +235,8 @@ namespace Foosbot
 
             for (int i = 0; i < count; i++)
             {
-                if (i == 0) DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset), 20, rotationalMove);
-                else DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset += dist), 20, rotationalMove);
+                if (i == 0) DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset), 12, rotationalMove);
+                else DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset += dist), 12, rotationalMove);
             }
         }
 
@@ -247,20 +249,22 @@ namespace Foosbot
         /// <param name="radius">radius size</param>
         /// <param name="circleColor">color for the roational current pos</param>
         private static void DrawPlayer(eMarks eNumKey,Point center, int radius,
-            eRotationalMove rotationalMove, SolidColorBrush playerColor = null)
+                    eRotationalMove rotationalMove, SolidColorBrush playerColor = null)
         {
             int key = (int)eNumKey;
-            Point presentationCenter = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
-            int presentationRadius = Convert.ToInt32(radius * ((_actualWidthRate + _actualHeightRate) / 2));
+            
+            //Point presentationCenter = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
+            //int presentationRadius = Convert.ToInt32(radius * ((_actualWidthRate + _actualHeightRate) / 2));
 
             int rotationalMoveFactor = 0;
             SolidColorBrush rotationalColor = Brushes.DarkBlue;
+
             if (rotationalMove == eRotationalMove.DEFENCE) {
-                rotationalMoveFactor = presentationRadius;
+                rotationalMoveFactor = radius;
                 rotationalColor = Brushes.Blue;
             }
             else if (rotationalMove == eRotationalMove.RISE) {
-                rotationalMoveFactor = (int)(presentationRadius * 2.5);
+                rotationalMoveFactor = (int)(radius * 2.5);
                 rotationalColor = Brushes.Cyan;
             }
 
@@ -268,19 +272,19 @@ namespace Foosbot
             {
                 (_markups[key] as Shape).Fill = (rotationalColor == null) ? Brushes.White : rotationalColor;
 
-                _markups[key].Width = presentationRadius * 2;
-                _markups[key].Height = presentationRadius * 2;
+                _markups[key].Width = radius * 2;
+                _markups[key].Height = radius * 2;
 
-                Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
-                Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
+                Canvas.SetLeft(_markups[key], center.X - radius);
+                Canvas.SetTop(_markups[key], center.Y - radius);
 
                 (_markups[key + 5] as Shape).Height = 24;
                 (_markups[key + 5] as Shape).Width = 30;
                 (_markups[key + 5] as Shape).StrokeThickness = 2;
                 (_markups[key + 5] as Shape).Fill = rotationalColor;
 
-                Canvas.SetLeft(_markups[key + 5], presentationCenter.X - rotationalMoveFactor);
-                Canvas.SetTop(_markups[key + 5], presentationCenter.Y - presentationRadius);
+                Canvas.SetLeft(_markups[key + 5], center.X - rotationalMoveFactor);
+                Canvas.SetTop(_markups[key + 5], center.Y - radius);
 
             }));
         }
