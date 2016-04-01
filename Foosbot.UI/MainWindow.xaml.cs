@@ -1,7 +1,15 @@
-﻿using DevDemos;
-using Foosbot.Common;
+﻿// **************************************************************************************
+// **																				   **
+// **		(C) FOOSBOT - Final Software Engineering Project, 2015 - 2016			   **
+// **		(C) Authors: M.Toubian, M.Shimon, E.Kleinman, O.Sasson, J.Gleyzer          **
+// **			Advisors: Mr.Resh Amit & Dr.Hoffner Yigal							   **
+// **		The information and source code here belongs to Foosbot project			   **
+// **		and may not be reproduced or used without authors explicit permission.	   **
+// **																				   **
+// **************************************************************************************
+
+using DevDemos;
 using Foosbot.Common.Logs;
-using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessing;
 using Foosbot.VectorCalculation;
@@ -12,18 +20,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace Foosbot.UI
