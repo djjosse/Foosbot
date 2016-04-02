@@ -11,6 +11,7 @@
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Foosbot.Common.Multithreading;
+using Foosbot.Common.Protocols;
 using System;
 
 namespace Foosbot.ImageProcessing
@@ -28,17 +29,17 @@ namespace Foosbot.ImageProcessing
         private Tracker _ballTracker;
 
         /// <summary>
-        /// Ball Callibration Unit Instance
+        /// Ball Calibration Unit Instance
         /// </summary>
         private CalibrationUnit _calibrator;
 
         /// <summary>
-        /// Represents a flag for callibration
+        /// Represents a flag for calibration
         /// </summary>
         private bool _isCallibrated;
 
         /// <summary>
-        /// Last Received Frame Timestamp
+        /// Last Received Frame Time stamp
         /// </summary>
         private DateTime _lastFrameTimeStamp;
 
@@ -57,7 +58,7 @@ namespace Foosbot.ImageProcessing
         {
             _calibrator = new CalibrationUnit();
             _ballTracker = new Tracker(_calibrator, _publisher);
-            BallLocationPublisher = new BallLocationPublisher(_ballTracker);
+            LastBallLocationPublisher = new BallLocationPublisher(_ballTracker);
             _lastFrameTimeStamp = DateTime.Now;
             _detectionAnalyzer = new DetectionStatisticAnalyzer(/*onUpdateStatistics*/);
         }
@@ -85,7 +86,7 @@ namespace Foosbot.ImageProcessing
                     _detectionAnalyzer.Finalize(_ballTracker.IsBallLocationFound);
 
                     //Notify Observers
-                    BallLocationPublisher.UpdateAndNotify();
+                    LastBallLocationPublisher.UpdateAndNotify();
                 }
                 else
                 {

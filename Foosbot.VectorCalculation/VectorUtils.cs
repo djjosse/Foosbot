@@ -68,8 +68,8 @@ namespace Foosbot.VectorCalculation
                         Convert.ToInt32(intersectionPoint.Y), ricocheTime);
                 coordinates.Vector = vector;
 
-                Marks.DrawBallVector(new System.Windows.Point(intersectionPoint.X, intersectionPoint.Y),
-                                     new System.Windows.Point(vector.X, vector.Y), true);
+              //  Marks.DrawBallVector(new System.Windows.Point(intersectionPoint.X, intersectionPoint.Y),
+               //                      new System.Windows.Point(vector.X, vector.Y), true);
 
                // return null;
                 return coordinates;

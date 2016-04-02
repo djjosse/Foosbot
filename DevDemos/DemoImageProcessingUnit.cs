@@ -61,7 +61,7 @@ namespace DevDemos
 
             //Create Ball Location Publisher for Observers
             _coordinatesUpdater = new DemoLastBallCoordinatesUpdater();
-            BallLocationPublisher = new BallLocationPublisher(_coordinatesUpdater);
+            LastBallLocationPublisher = new BallLocationPublisher(_coordinatesUpdater);
 
             //Set borders of frame to include ball radius
             _rightBorder -= _ballRadius;
@@ -136,28 +136,28 @@ namespace DevDemos
 
 
             //================testing rods movenent and switches DEMO==========================
-            count++;
-            if (count % 200 > 0 && count % 200 < 75)
-            {
-                Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
-                Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.RISE);
-                Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
-                Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
-            }
-            if (count % 200 > 75 && count % 200 < 150)
-            {
-                Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
-                Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.DEFENCE);
-                Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
-                Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
-            }
-            if (count % 200 > 150 && count % 200 < 200)
-            {
-                Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
-                Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.KICK);
-                Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
-                Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
-            }
+            //count++;
+            //if (count % 200 > 0 && count % 200 < 75)
+            //{
+            //    Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
+            //    Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.RISE);
+            //    Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
+            //    Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
+            //}
+            //if (count % 200 > 75 && count % 200 < 150)
+            //{
+            //    Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
+            //    Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.DEFENCE);
+            //    Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
+            //    Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
+            //}
+            //if (count % 200 > 150 && count % 200 < 200)
+            //{
+            //    Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
+            //    Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.KICK);
+            //    Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
+            //    Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
+            //}
             //===============================================================================
 
             //show current ball coordinates on screen and GUI
@@ -171,7 +171,7 @@ namespace DevDemos
             _coordinatesUpdater.LastBallCoordinates = coordinates;
 
             //publish new ball coordinates
-            BallLocationPublisher.UpdateAndNotify();
+            LastBallLocationPublisher.UpdateAndNotify();
 
             //attach back to streamer
             _publisher.Attach(this);

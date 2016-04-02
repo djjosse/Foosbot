@@ -19,9 +19,20 @@ namespace Foosbot.VectorCalculation
 {
     public class VectorCallculationUnit : Observer<BallCoordinates>
     {
+        /// <summary>
+        /// Ball Location Publisher
+        /// This inner object is a publisher for vector calculation unit 
+        /// </summary>
+        public BallLocationPublisher LastBallLocationPublisher { get; protected set; }
+
+        public ILastBallCoordinatesUpdater _coordinatesUpdater;
+
         public VectorCallculationUnit(Publisher<BallCoordinates> coordinatesPublisher) :
             base(coordinatesPublisher)
         {
+            _coordinatesUpdater = new BallCoordinatesUpdater();
+            LastBallLocationPublisher = new BallLocationPublisher(_coordinatesUpdater);
+
             _storedBallCoordinates = new BallCoordinates(DateTime.Now);
             _storedBallCoordinates.Vector = new Vector2D();
 
@@ -45,6 +56,9 @@ namespace Foosbot.VectorCalculation
             {
                 try
                 {
+                    (_coordinatesUpdater as BallCoordinatesUpdater).LastBallCoordinates  = ballCoordinates;
+                    LastBallLocationPublisher.UpdateAndNotify();
+
                     Marks.DrawBallVector(new Point(ballCoordinates.X, ballCoordinates.Y), 
                         new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)), true);
                 }
@@ -101,19 +115,19 @@ namespace Foosbot.VectorCalculation
                     double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X +
                                        _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) / velocity;
 
-                    if (!((1 - ALPHA_ERR < cosAlpha) && (cosAlpha < 1 + ALPHA_ERR)))
-                    {
-                        Log.Common.Debug(
-                            String.Format("[{0}] Current angle is {1}",MethodBase.GetCurrentMethod().Name, 
-                                                                       Math.Acos(cosAlpha).ToDegrees(2)));
-                        VectorUtils utils = new VectorUtils();
-                        BallCoordinates intersection = utils.Ricochet(_storedBallCoordinates);
-                        if (intersection != null && intersection.Vector != null)
-                        {
-                            return intersection.Vector;
-                        }
-                        else return new Vector2D();
-                    }
+                    //if (!((1 - ALPHA_ERR < cosAlpha) && (cosAlpha < 1 + ALPHA_ERR)))
+                    //{
+                    //    Log.Common.Debug(
+                    //        String.Format("[{0}] Current angle is {1}",MethodBase.GetCurrentMethod().Name, 
+                    //                                                   Math.Acos(cosAlpha).ToDegrees(2)));
+                    //    VectorUtils utils = new VectorUtils();
+                    //    BallCoordinates intersection = utils.Ricochet(_storedBallCoordinates);
+                    //    if (intersection != null && intersection.Vector != null)
+                    //    {
+                    //        return intersection.Vector;
+                    //    }
+                    //    else return new Vector2D();
+                    //}
                 }
             }
             _storedBallCoordinates.Vector = ballCoordinates.Vector;

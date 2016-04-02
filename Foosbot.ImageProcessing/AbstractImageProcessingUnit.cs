@@ -9,6 +9,7 @@
 // **************************************************************************************
 
 using Foosbot.Common.Multithreading;
+using Foosbot.Common.Protocols;
 
 namespace Foosbot.ImageProcessing
 {
@@ -23,7 +24,7 @@ namespace Foosbot.ImageProcessing
         /// Ball Location Publisher
         /// This inner object is a publisher for vector calculation unit 
         /// </summary>
-        public BallLocationPublisher BallLocationPublisher { get; protected set; }
+        public BallLocationPublisher LastBallLocationPublisher { get; protected set; }
 
         /// <summary>
         /// Constructor
