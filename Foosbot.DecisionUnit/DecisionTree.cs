@@ -137,7 +137,7 @@ namespace Foosbot.DecisionUnit
 
             //Set last decided rod and player coordinates 
             _lastDecidedRodLinearMovement[rod.RodType] = action.LinearMovement;
-            _lastDecidedRodRotationPosition[rod.RodType] = action.Rotation;
+            _lastDecidedRodRotationPosition[rod.RodType] = (action.Rotation != eRotationalMove.NA) ? action.Rotation : _lastDecidedRodRotationPosition[rod.RodType];
             return action;
         }
 
@@ -200,6 +200,8 @@ namespace Foosbot.DecisionUnit
                     else
                         //Ball Vector Direction is FROM Current Rod
                         action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.BEST_EFFORT);
+                        //not really relevant
+                        respondingPlayer = 1;
                     break;
                 //Ball is behind Current Rod Sector
                 case eXPositionSectorRelative.BEHIND_SECTOR:
@@ -427,7 +429,7 @@ namespace Foosbot.DecisionUnit
             {
                 //as index starts from 0 => first one is 1
                 playerToResponse = minIndexSecond + 1;
-                movement = movements[minIndexSecond]; ;
+                movement = movements[minIndexSecond];
             }
 
             //In case we reach the ball - no move needed
@@ -519,7 +521,7 @@ namespace Foosbot.DecisionUnit
         /// <returns>[True] In case vector is to rod, [False] otherwise</returns>
         private bool IsBallVectorToRod(Vector2D vector)
         {
-            return (vector.X < 0);
+            return (vector != null && vector.IsDefined && vector.X < 0);
         }
 
         /// <summary>

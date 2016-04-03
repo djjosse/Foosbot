@@ -131,7 +131,7 @@ namespace Foosbot.ImageProcessing
             FrameHeight = Configuration.Attributes.GetValue<int>("FrameHeight");
             FrameRate = Configuration.Attributes.GetValue<int>("FrameRate");
 
-            //_capture.FlipHorizontal = true;
+            _capture.FlipHorizontal = true;
             _capture.SetCaptureProperty(CapProp.FrameWidth, FrameWidth);
             _capture.SetCaptureProperty(CapProp.FrameHeight, FrameHeight);
             _capture.SetCaptureProperty(CapProp.Fps, FrameRate);

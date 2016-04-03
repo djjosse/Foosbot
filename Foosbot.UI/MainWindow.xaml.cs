@@ -11,6 +11,7 @@
 using DevDemos;
 using Foosbot.Common.Logs;
 using Foosbot.Common.Protocols;
+using Foosbot.DecisionUnit;
 using Foosbot.ImageProcessing;
 using Foosbot.VectorCalculation;
 using System;
@@ -115,7 +116,7 @@ namespace Foosbot.UI
                     _ipu = new DemoImageProcessingUnit(_streamer as DemoStreamer);
                 _ipu.Start();
 
-                //Show frames in diferent thread
+                //Show frames in different thread
                 _imageBrush = new ImageBrush();
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (s, z) =>
@@ -124,8 +125,11 @@ namespace Foosbot.UI
                 };
                 worker.RunWorkerAsync();
 
-                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.BallLocationPublisher);
+                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.LastBallLocationPublisher);
                 vectorCalcullationUnit.Start();
+
+                Decision decisionUnit = new Decision(vectorCalcullationUnit.LastBallLocationPublisher);
+                decisionUnit.Start();
             }
             catch(Exception ex)
             {

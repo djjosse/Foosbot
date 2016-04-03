@@ -27,7 +27,10 @@ namespace Foosbot
         private static double _actualHeightRate;
         private static Canvas _canvas;
         private static Dispatcher _dispatcher;
-        private static double _buttomBorder;
+        private static double DEVICE_MAX_Y;
+        private static double DEVICE_MAX_X;
+        private static double TABLE_MAX_Y_MM;
+        private static double TABLE_MAX_X_MM;
         private static Dictionary<eMarks, int> _rods;
         private static Dictionary<eMarks, int> _players;
 
@@ -44,7 +47,11 @@ namespace Foosbot
         /// </summary>
         public static void Initialize(Dispatcher dispatcher, Canvas canvas, double actualWidthRate, double actualHeightRate)
         {
-            _buttomBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+            DEVICE_MAX_Y = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+            DEVICE_MAX_X = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+
+            TABLE_MAX_Y_MM = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_HEIGHT);
+            TABLE_MAX_X_MM = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_WIDTH); 
 
             _rods = new Dictionary<eMarks,int>();
             foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
@@ -188,25 +195,35 @@ namespace Foosbot
 
                 for (int eMarksCounter = 0; eMarksCounter < 4; eMarksCounter++)
                 {
-                    int x = _rods[(eMarksCounter + eMarks.GoalKeeper)];
-                    int y = (int)_buttomBorder;
+                    int x = XTableToDeviceCoordinates(_rods[(eMarksCounter + eMarks.GoalKeeper)]);
+                    int y = ((int)DEVICE_MAX_Y);
 
                     if(isLocation)
-                        ConvertToLocation(ref x, ref y);
+                       ConvertToLocation(ref x, ref y);
 
                     (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
                     (_markups[key + eMarksCounter] as Shape).Stroke = (color == null) ? Brushes.White : color;
 
-                    (_markups[key + eMarksCounter] as Line).X1 = x;
+                    (_markups[key + eMarksCounter] as Line).X1 = x * _actualWidthRate;
                     (_markups[key + eMarksCounter] as Line).Y1 = 0;
 
-                    (_markups[key + eMarksCounter] as Line).X2 = x;
-                    (_markups[key + eMarksCounter] as Line).Y2 = y;
+                    (_markups[key + eMarksCounter] as Line).X2 = x * _actualWidthRate;
+                    (_markups[key + eMarksCounter] as Line).Y2 = y * _actualHeightRate;
 
                     Canvas.SetLeft(_markups[key + eMarksCounter], 0);
                     Canvas.SetTop(_markups[key + eMarksCounter], 0);
                 }         
             }));
+        }
+
+        public static int XTableToDeviceCoordinates(int x)
+        {
+            return Convert.ToInt32((x * DEVICE_MAX_X) / TABLE_MAX_X_MM);
+        }
+
+        public static int YTableToDeviceCoordinates(int y)
+        {
+            return Convert.ToInt32((y * DEVICE_MAX_Y) / TABLE_MAX_Y_MM);
         }
 
         /// <summary>
@@ -219,17 +236,22 @@ namespace Foosbot
         {
             eRod mark;
             Enum.TryParse<eRod>(rod.ToString(), out mark);
-
-            eMarks playersBase = 0;       
-            int eMarkType = ((int)rod);
-            int deltaX = _rods[rod];
+            eMarks playersBase = 0;    
+   
+            int eMarkType = ((int)rod);       
             int count = Configuration.Attributes.GetPlayersCountPerRod(mark);
-            int dist = Configuration.Attributes.GetPlayersDistancePerRod(mark);
-            int offset = Configuration.Attributes.GetPlayersOffsetYPerRod(mark);
-            int movmentOffset = offset + deltaYMovment;
+            int yDistance = Configuration.Attributes.GetPlayersDistancePerRod(mark);
+            int xDistance = 0;
+            int x = XTableToDeviceCoordinates(_rods[rod]);
+            int y = Configuration.Attributes.GetPlayersOffsetYPerRod(mark);
+
+            int movmentOffset = y + deltaYMovment;
 
             if (isLocation)
-                ConvertToLocation(ref deltaX, ref offset);
+            {
+                ConvertToLocation(ref x, ref movmentOffset);
+                ConvertToLocation(ref xDistance, ref yDistance);
+            }
 
             switch (eMarkType)
             {
@@ -242,8 +264,8 @@ namespace Foosbot
 
             for (int i = 0; i < count; i++)
             {
-                if (i == 0) DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset), 12, rotationalMove);
-                else DrawPlayer(playersBase + i, new Point(deltaX, movmentOffset += dist), 12, rotationalMove);
+                if (i == 0) DrawPlayer(playersBase + i, new Point(x * _actualWidthRate, movmentOffset * _actualHeightRate), 12, rotationalMove);
+                else DrawPlayer(playersBase + i, new Point(x * _actualWidthRate, (movmentOffset += yDistance) * _actualHeightRate), 12, rotationalMove);
             }
         }
 

@@ -71,6 +71,7 @@
     <Compile Include="Multithreading\Observer.cs" />
     <Compile Include="Multithreading\Publisher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocols\BallLocationPublisher.cs" />
     <Compile Include="Protocols\DefinableCartesianCoordinate.cs" />
     <Compile Include="Protocols\BallCoordinates.cs" />
     <Compile Include="Protocols\Enums\eCallibrationMark.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Protocols\Enums\eRod.cs" />
     <Compile Include="Protocols\Enums\eRotationalMove.cs" />
     <Compile Include="Protocols\Enums\eStatisticsKey.cs" />
+    <Compile Include="Protocols\ILastBallCoordinatesUpdater.cs" />
     <Compile Include="Protocols\RodAction.cs" />
     <Compile Include="Protocols\Vector2D.cs" />
     <Compile Include="Marks.cs" />
