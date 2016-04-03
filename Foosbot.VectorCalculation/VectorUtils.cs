@@ -24,29 +24,99 @@ namespace Foosbot.VectorCalculation
 
         public VectorUtils()
         {
+        }
+
+
+        public void Initialize()
+        {
             if (!_isInitilized)
             {
-                Initialize();
+                XMinBorder = 0;
+                YMinBorder = 0;
+                XMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+                YMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+                RicocheFactor = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
+                _isInitilized = true;
             }
         }
 
-        
-        private void Initialize()
+        protected static double XMinBorder
         {
-            x0 = 0;
-            y0 = 0;
-            xMax = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
-            yMax = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
-            _isInitilized = true;
+            get
+            {
+                if (!_isInitilized)
+                    throw new NotSupportedException("VectorUtils not initialized!");
+                return _xMinBorder;
+            }
+            set
+            {
+                _xMinBorder = value;
+            }
         }
 
-        private static double x0;
-        private static double y0;
-        private static double xMax;
-        private static double yMax;
-        private static readonly double RICOCHET_FACTOR
-            = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
-        private static bool _isInitilized = false;
+        protected static double YMinBorder
+        {
+            get
+            {
+                if (!_isInitilized)
+                    throw new NotSupportedException("VectorUtils not initialized!");
+                return _yMinBorder;
+            }
+            set
+            {
+                _yMinBorder = value;
+            }
+        }
+
+        protected static double XMaxBorder
+        {
+            get
+            {
+                if (!_isInitilized)
+                    throw new NotSupportedException("VectorUtils not initialized!");
+                return _xMaxBorder;
+            }
+            set
+            {
+                _xMaxBorder = value;
+            }
+        }
+
+        protected static double YMaxBorder
+        {
+            get
+            {
+                if (!_isInitilized)
+                    throw new NotSupportedException("VectorUtils not initialized!");
+                return _yMaxBorder;
+            }
+            set
+            {
+                _yMaxBorder = value;
+            }
+        }
+
+        protected static double RicocheFactor
+        {
+            get
+            {
+                if (!_isInitilized)
+                    throw new NotSupportedException("VectorUtils not initialized!");
+                return _ricocheFactor;
+            }
+            set
+            {
+                _ricocheFactor = value;
+            }
+        }
+
+        private static double _xMinBorder;
+        private static double _yMinBorder;
+        private static double _xMaxBorder;
+        private static double _yMaxBorder;
+        private static double _ricocheFactor;
+
+        protected static bool _isInitilized = false;
 
         /// <summary>
         /// 
@@ -138,51 +208,47 @@ namespace Foosbot.VectorCalculation
         /// <returns>Coordinates of intersection with border</returns>
         public Coordinates2D FindNearestIntersectionPoint(BallCoordinates ballCoordinates)
         {
+            //verify we can proceed to calculate intersection
+            VerifyBallCoordinatesAndVectorInput(ballCoordinates);
+
             Dictionary<Vector2D, Coordinates2D> borderIntersection = new Dictionary<Vector2D, Coordinates2D>();
             List<Vector2D> vectors = new List<Vector2D>();
 
-            //find all possible points if both vector X and Y components are bigger than 0 => 4 points
-            if (ballCoordinates.Vector.X != 0 || ballCoordinates.Vector.Y != 0)
+            //get line slope
+            double m = CalculateLineSlope(ballCoordinates.Vector);
+
+            if (ballCoordinates.Vector.X != 0)
             {
-                double m = (ballCoordinates.Vector.X != 0) ? 0 : 1;
-                if (ballCoordinates.Vector.X != 0 && ballCoordinates.Vector.Y != 0 ) 
-                    m = ballCoordinates.Vector.Y / ballCoordinates.Vector.X;
+                double yb = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMinBorder);
+                double yc = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMaxBorder);
 
-                if (ballCoordinates.Vector.X != 0)
-                {
-                    double yb = m * (0 - ballCoordinates.X) + ballCoordinates.Y;
-                    double yc = m * (xMax - ballCoordinates.X) + ballCoordinates.Y;
+                Coordinates2D B = new Coordinates2D(XMinBorder, yb);
+                Vector2D vB = new Vector2D(B.X - ballCoordinates.X, B.Y - ballCoordinates.Y);
+                vectors.Add(vB);
+                borderIntersection.Add(vB, B); //B
 
-                    Coordinates2D B = new Coordinates2D(0, yb);
-                    Vector2D vB = new Vector2D(B.X - ballCoordinates.X, B.Y - ballCoordinates.Y);
-                    vectors.Add(vB);
-                    borderIntersection.Add(vB, B); //B
-
-                    Coordinates2D C = new Coordinates2D(xMax, yc);
-                    Vector2D vC = new Vector2D(C.X - ballCoordinates.X, C.Y - ballCoordinates.Y);
-                    vectors.Add(vC);
-                    borderIntersection.Add(vC, C); //C
-                }
-
-                if (ballCoordinates.Vector.Y != 0)
-                {
-                    double xa = (0 - ballCoordinates.Y) / m + ballCoordinates.X;
-                    double xd = (yMax - ballCoordinates.Y) / m + ballCoordinates.X;
-
-                    Coordinates2D A = new Coordinates2D(xa, 0);
-                    Vector2D vA = new Vector2D(A.X - ballCoordinates.X, A.Y - ballCoordinates.Y);
-                    vectors.Add(vA);
-                    borderIntersection.Add(vA, A); //A
-
-                    Coordinates2D D = new Coordinates2D(xd, yMax);
-                    Vector2D vD = new Vector2D(D.X - ballCoordinates.X, D.Y - ballCoordinates.Y);
-                    vectors.Add(vD);
-                    borderIntersection.Add(vD, D); //D
-                }
+                Coordinates2D C = new Coordinates2D(XMaxBorder, yc);
+                Vector2D vC = new Vector2D(C.X - ballCoordinates.X, C.Y - ballCoordinates.Y);
+                vectors.Add(vC);
+                borderIntersection.Add(vC, C); //C
             }
-            //no possible points if both vector X and Y components are 0
-            else // (ballCoordinates.Vector.X == 0 && ballCoordinates.Vector.Y == 0)
-                return null;
+
+            if (ballCoordinates.Vector.Y != 0)
+            {
+                double xa = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMinBorder);
+                double xd = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMaxBorder);
+
+                Coordinates2D A = new Coordinates2D(xa, YMinBorder);
+                Vector2D vA = new Vector2D(A.X - ballCoordinates.X, A.Y - ballCoordinates.Y);
+                vectors.Add(vA);
+                borderIntersection.Add(vA, A); //A
+
+                Coordinates2D D = new Coordinates2D(xd, YMaxBorder);
+                Vector2D vD = new Vector2D(D.X - ballCoordinates.X, D.Y - ballCoordinates.Y);
+                vectors.Add(vD);
+                borderIntersection.Add(vD, D); //D
+            }
+
 
             //remove points from wrong direction
             foreach (Vector2D vector in vectors)
@@ -199,7 +265,7 @@ namespace Foosbot.VectorCalculation
 
             //get nearest point
             Coordinates2D intersectionPoint = null;
-            double minDistance = xMax * yMax;
+            double minDistance = XMaxBorder * YMaxBorder;
             foreach (Coordinates2D intersection in borderIntersection.Values)
             {
                 double dist = intersection.Distance(ballCoordinates);
@@ -242,15 +308,15 @@ namespace Foosbot.VectorCalculation
         public Vector2D FindIntersectionVector(Vector2D vector, Coordinates2D intersection)
         {
             bool isDirectionChanged = false;
-            double x = vector.X * RICOCHET_FACTOR;
-            double y = vector.Y * RICOCHET_FACTOR;
+            double x = vector.X * RicocheFactor;
+            double y = vector.Y * RicocheFactor;
 
-            if (intersection.Y == y0 || intersection.Y == yMax)
+            if (intersection.Y == YMinBorder || intersection.Y == YMaxBorder)
             {
                 y *= (-1);
                 isDirectionChanged = true;
             }
-            if (intersection.X == x0 || intersection.X == xMax)
+            if (intersection.X == XMinBorder || intersection.X == XMaxBorder)
             {
                 x *= (-1);
                 isDirectionChanged = true;
@@ -267,5 +333,73 @@ namespace Foosbot.VectorCalculation
         {
             return coordA.X * coordB.X + coordA.Y * coordB.Y;
         }
-    }
+
+        /// <summary>
+        /// Calculate X2 from: Y2-Y1= m(X2-X1)
+        /// </summary>
+        /// <param name="m">Line Slope</param>
+        /// <param name="x1">X1</param>
+        /// <param name="y1">Y1</param>
+        /// <param name="y2">Y2</param>
+        /// <returns>X2</returns>
+        public double CalculateX2OnLine(double m, double x1, double y1, double y2)
+        {
+            if (m == 0) return x1;
+            return (y2 - y1) / m + x1;
+        }
+
+        /// <summary>
+        /// Calculate Y2 from: Y2-Y1= m(X2-X1)
+        /// </summary>
+        /// <param name="m">Line Slope</param>
+        /// <param name="x1">X1</param>
+        /// <param name="y1">Y1</param>
+        /// <param name="x2">X2</param>
+        /// <returns>Y2</returns>
+        public double CalculateY2OnLine(double m, double x1, double y1, double x2)
+        {
+            return m * (x2 - x1) + y1;
+        }
+
+        /// <summary>
+        /// Calculate line slope
+        /// </summary>
+        /// <param name="vector">Vector to calculate line slope from</param>
+        /// <returns>Line Slope</returns>
+        public double CalculateLineSlope(Vector2D vector)
+        {
+            if (vector.X == 0 || vector.Y == 0)
+                return 0;
+
+            double sign = +1;
+            if (vector.X > 0 && vector.Y > 0) sign = +1;
+            if (vector.X > 0 && vector.Y < 0) sign = +1; //right
+            if (vector.X < 0 && vector.Y > 0) sign = +1; //right
+            if (vector.X < 0 && vector.Y < 0) sign = +1; //right and changed
+            return vector.Y / vector.X * sign;
+        }
+
+        /// <summary>
+        /// Verify coordinates and vector are defined, not null and not both vector x and y are 0
+        /// </summary>
+        /// <param name="ballCoordinates">Ball Coordianates with vector</param>
+        /// <exception cref="NotSupportedException">Thrown in case vector or coordinates are not defined or are NULL, or both vector x and y are 0</exception>
+        private void VerifyBallCoordinatesAndVectorInput(BallCoordinates ballCoordinates)
+        {
+            if (ballCoordinates == null)
+                throw new NotSupportedException(String.Format("[{0}] Intersection point can not be found because ball coordinates are NULL", MethodBase.GetCurrentMethod().Name));
+
+            if (!ballCoordinates.IsDefined)
+                throw new NotSupportedException(String.Format("[{0}] Intersection point can not be found because ball coordinates are not defined", MethodBase.GetCurrentMethod().Name));
+
+            if (ballCoordinates.Vector == null)
+                throw new NotSupportedException(String.Format("[{0}] Intersection point can not be found because vector is NULL", MethodBase.GetCurrentMethod().Name));
+
+            if (!ballCoordinates.Vector.IsDefined)
+                throw new NotSupportedException(String.Format("[{0}] Intersection point can not be found because vector is undefined", MethodBase.GetCurrentMethod().Name));
+
+            if (ballCoordinates.Vector.X == 0 && ballCoordinates.Vector.Y == 0)
+                throw new NotSupportedException(String.Format("[{0}] Intersection point can not be found because vector is 0x0", MethodBase.GetCurrentMethod().Name));
+        }
+    } 
 }

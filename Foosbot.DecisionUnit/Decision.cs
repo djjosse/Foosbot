@@ -79,6 +79,7 @@ namespace Foosbot.DecisionUnit
 
             //Used for Ricochet callculations
             _vectorUtils = new VectorUtils();
+            _vectorUtils.Initialize();
 
             //Set constants from configuration file
             DELAYS = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));

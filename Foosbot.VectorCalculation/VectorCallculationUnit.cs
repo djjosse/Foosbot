@@ -107,6 +107,7 @@ namespace Foosbot.VectorCalculation
                             String.Format("[{0}] Current angle is {1}",MethodBase.GetCurrentMethod().Name, 
                                                                        Math.Acos(cosAlpha).ToDegrees(2)));
                         VectorUtils utils = new VectorUtils();
+                        utils.Initialize();
                         BallCoordinates intersection = utils.Ricochet(_storedBallCoordinates);
                         if (intersection != null && intersection.Vector != null)
                         {
