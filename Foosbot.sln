@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevDemos", "DevDemos\DevDem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.VectorCalculationTest", "Foosbot.VectorCalculationTest\Foosbot.VectorCalculationTest.csproj", "{F4AE2316-359B-4A83-9361-2C1EBD701A62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoManualTests", "ArduinoManualTests\ArduinoManualTests.csproj", "{33953F77-9F27-4BCA-BC38-5F70A38F30ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,16 @@ Global
 		{F4AE2316-359B-4A83-9361-2C1EBD701A62}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F4AE2316-359B-4A83-9361-2C1EBD701A62}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F4AE2316-359B-4A83-9361-2C1EBD701A62}.Release|Win32.ActiveCfg = Release|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,5 +149,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE} = {33FFCBD0-6414-4E64-9AFB-D1AFA146FAEB}
 		{F4AE2316-359B-4A83-9361-2C1EBD701A62} = {0769A23B-9177-407E-A0A5-602D96AF517C}
+		{33953F77-9F27-4BCA-BC38-5F70A38F30ED} = {0769A23B-9177-407E-A0A5-602D96AF517C}
 	EndGlobalSection
 EndGlobal
