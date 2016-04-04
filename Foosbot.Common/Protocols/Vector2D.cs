@@ -13,16 +13,16 @@ using System;
 namespace Foosbot.Common.Protocols
 {
     /// <summary>
-    /// Vector 2D in Cartesian Coordinates
-    /// Result of vector callculation unit
+    /// Vector 2D in Cartesian Coordinates (points per second)
+    /// Result of vector Calculation Unit
     /// </summary>
     public class Vector2D : DefinableCartesianCoordinate<double>
     {
         /// <summary>
         /// Constructor for defined vector
         /// </sumary>
-        /// <param name="x">X coordinate</param>
-        /// <param name="y">Y coordinate</param>
+        /// <param name="x">X coordinate (points per second)</param>
+        /// <param name="y">Y coordinate (points per second)</param>
         public Vector2D(double x, double y) : base(x, y) { }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Foosbot.Common.Protocols
         public Vector2D() : base() { }
 
         /// <summary>
-        /// Vector radius (speed) calculation method
+        /// Vector radius (speed) calculation method (points per second)
         /// </summary>
         /// <returns>Vector speed</returns>
         public double Velocity()

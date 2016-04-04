@@ -128,8 +128,8 @@ namespace Foosbot.UI
                 VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.LastBallLocationPublisher);
                 vectorCalcullationUnit.Start();
 
-                Decision decisionUnit = new Decision(vectorCalcullationUnit.LastBallLocationPublisher);
-                decisionUnit.Start();
+                //Decision decisionUnit = new Decision(vectorCalcullationUnit.LastBallLocationPublisher);
+                //decisionUnit.Start();
             }
             catch(Exception ex)
             {

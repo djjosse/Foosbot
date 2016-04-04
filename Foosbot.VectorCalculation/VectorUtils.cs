@@ -17,16 +17,9 @@ namespace Foosbot.VectorCalculation
 {
     public class VectorUtils
     {
-        //public static VectorUtils()
-        //{
-        //    RICOCHET_FACTOR = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
-        //}
-
-        public VectorUtils()
-        {
-        }
-
-
+        /// <summary>
+        /// Initialization Method - reads all constants from Configuration file
+        /// </summary>
         public void Initialize()
         {
             if (!_isInitilized)
@@ -39,6 +32,8 @@ namespace Foosbot.VectorCalculation
                 _isInitilized = true;
             }
         }
+
+        #region Protected Static Properties
 
         protected static double XMinBorder
         {
@@ -110,94 +105,47 @@ namespace Foosbot.VectorCalculation
             }
         }
 
+        #endregion Protected Static Properties
+
+        #region Static Members
+
         private static double _xMinBorder;
         private static double _yMinBorder;
         private static double _xMaxBorder;
         private static double _yMaxBorder;
         private static double _ricocheFactor;
-
         protected static bool _isInitilized = false;
 
+        #endregion Static Members
+
         /// <summary>
-        /// 
+        /// Ricochet coordinate calculation
         /// </summary>
-        /// <param name="ballCoordinates"></param>
-        /// <returns></returns>
+        /// <param name="ballCoordinates">Ball Coordinates</param>
+        /// <returns>Ricochet Ball Coordinates</returns>
         public BallCoordinates Ricochet(BallCoordinates ballCoordinates)
         {
             try
             {
                 Coordinates2D intersectionPoint = FindNearestIntersectionPoint(ballCoordinates);
-                if (intersectionPoint == null) return null;
+
                 Marks.DrawRicochetMark(Convert.ToInt32(intersectionPoint.X), Convert.ToInt32(intersectionPoint.Y), true);
                 
                 DateTime ricocheTime = FindRicochetTime(ballCoordinates, intersectionPoint);
                 Vector2D vector = FindIntersectionVector(ballCoordinates.Vector, intersectionPoint);
+                
                 BallCoordinates coordinates = new BallCoordinates(
                         Convert.ToInt32(intersectionPoint.X),
                         Convert.ToInt32(intersectionPoint.Y), ricocheTime);
                 coordinates.Vector = vector;
 
-              //  Marks.DrawBallVector(new System.Windows.Point(intersectionPoint.X, intersectionPoint.Y),
-               //                      new System.Windows.Point(vector.X, vector.Y), true);
-
-               // return null;
                 return coordinates;
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] {1} {2}", MethodBase.GetCurrentMethod().Name, e.GetType().Name, e.Message));
-                return null;
+                Log.Common.Error(String.Format("[{0}] {1}", MethodBase.GetCurrentMethod().Name, e.Message));
+                return new BallCoordinates(ballCoordinates.Timestamp);
             }
-
-            //if (intersectionPoint != null)
-            //{
-            //    double distance = ballCoordinates.Distance(intersectionPoint);
-            //    double velocity = ballCoordinates.Vector.Velocity();
-            //    double deltaT = distance / velocity;
-            //    DateTime ricocheTime = new DateTime();
-            //    try
-            //    {
-            //        ricocheTime = ballCoordinates.Timestamp + TimeSpan.FromSeconds(deltaT);
-            //    }
-            //    catch(Exception e)
-            //    {
-            //        Log.Common.Error(String.Format("[{0}] Error in addition time. Stamp: {1} Delta T: {2}",
-            //            MethodBase.GetCurrentMethod().Name, ballCoordinates.Timestamp.ToString("HH:mm:ss.fff"), deltaT));
-            //        return null;
-            //    }
-
-            //    Log.Common.Debug(String.Format("[{0}] Dist: {1} From: {2} To: {3}",
-            //        MethodBase.GetCurrentMethod().Name, Math.Round(distance,2), ballCoordinates.Timestamp.ToString("HH:mm:ss.fff"), ricocheTime.ToString("HH:mm:ss.fff")));
-
-            //    double xVector = ballCoordinates.Vector.X * RICOCHET_FACTOR;
-            //    double yVector = ballCoordinates.Vector.Y * RICOCHET_FACTOR;
-            //    if (intersectionPoint.Y == y0 || intersectionPoint.Y == yMax)
-            //        yVector *= -1;
-            //    if (intersectionPoint.X == x0 || intersectionPoint.X == xMax)
-            //        xVector *= -1;
-
-
-            //    Log.Common.Info("Point " + intersectionPoint.X + " " + intersectionPoint.Y);
-
-            //    System.Drawing.PointF point = new System.Drawing.PointF(Convert.ToSingle(intersectionPoint.X), Convert.ToSingle(intersectionPoint.Y));
-
-            //    Transformation transformer = new Transformation();
-            //    System.Drawing.PointF guiPoint = transformer.InvertTransform(point);
-
-            //    //Marks.DrawBall(new System.Windows.Point(guiPoint.X, guiPoint.Y), 10);
-            //    //Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL, new System.Windows.Point(guiPoint.X, guiPoint.Y), 10);
-            //    Marks.DrawRicochetMark(Convert.ToInt32(guiPoint.X), Convert.ToInt32(guiPoint.Y));
-
-            //    BallCoordinates coordinates =
-            //        new BallCoordinates(
-            //        Convert.ToInt32(intersectionPoint.X),
-            //        Convert.ToInt32(intersectionPoint.Y), ricocheTime);
-            //    coordinates.Vector = new Vector2D(xVector, yVector);
-
-            //    return coordinates;
-            //}
-            return null;
         }
 
         /// <summary>
@@ -219,8 +167,8 @@ namespace Foosbot.VectorCalculation
 
             if (ballCoordinates.Vector.X != 0)
             {
-                double yb = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMinBorder);
-                double yc = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMaxBorder);
+                double yb = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMinBorder);
+                double yc = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMaxBorder);
 
                 Coordinates2D B = new Coordinates2D(XMinBorder, yb);
                 Vector2D vB = new Vector2D(B.X - ballCoordinates.X, B.Y - ballCoordinates.Y);
@@ -235,8 +183,8 @@ namespace Foosbot.VectorCalculation
 
             if (ballCoordinates.Vector.Y != 0)
             {
-                double xa = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMinBorder);
-                double xd = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMaxBorder);
+                double xa = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMinBorder);
+                double xd = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMaxBorder);
 
                 Coordinates2D A = new Coordinates2D(xa, YMinBorder);
                 Vector2D vA = new Vector2D(A.X - ballCoordinates.X, A.Y - ballCoordinates.Y);
@@ -289,8 +237,10 @@ namespace Foosbot.VectorCalculation
         /// <returns>Intersection timestamp</returns>
         public DateTime FindRicochetTime(BallCoordinates ballCoordinates, Coordinates2D intersection)
         {
+            VerifyBallCoordinatesAndVectorInput(ballCoordinates);
+
             if (intersection == null || !intersection.IsDefined)
-                throw new NotSupportedException("Intersection coordinates undefined!");
+                throw new NotSupportedException(String.Format("[{0}] Intersection coordinates undefined!", MethodBase.GetCurrentMethod().Name));
 
             double distance = ballCoordinates.Distance(intersection);
             double velocity = ballCoordinates.Vector.Velocity();
@@ -307,6 +257,21 @@ namespace Foosbot.VectorCalculation
         /// <returns>Ball Vector after intersection</returns>
         public Vector2D FindIntersectionVector(Vector2D vector, Coordinates2D intersection)
         {
+            if (vector == null)
+                throw new NotSupportedException(String.Format(
+                    "[{0}] Vector from Intersection point can not be found because last known vector is NULL",
+                        MethodBase.GetCurrentMethod().Name));
+
+            if (!vector.IsDefined)
+                throw new NotSupportedException(String.Format(
+                    "[{0}] Vector from Intersection point can not be found because last known vector is undefined",
+                        MethodBase.GetCurrentMethod().Name));
+
+            if (!intersection.IsDefined)
+                throw new NotSupportedException(String.Format(
+                    "[{0}] Vector from Intersection point can not be found because intersection point is undefined",
+                        MethodBase.GetCurrentMethod().Name));
+
             bool isDirectionChanged = false;
             double x = vector.X * RicocheFactor;
             double y = vector.Y * RicocheFactor;
@@ -323,8 +288,8 @@ namespace Foosbot.VectorCalculation
             }
             if (!isDirectionChanged)
                 throw new NotSupportedException(
-                    String.Format("Intersection point must be on border! Current point is {0}x{1}",
-                        intersection.X, intersection.Y));
+                    String.Format("[{0}] Intersection point must be on border! Current point is {1}x{2}",
+                        MethodBase.GetCurrentMethod().Name, intersection.X, intersection.Y));
 
             return new Vector2D(x, y);
         }
@@ -334,6 +299,8 @@ namespace Foosbot.VectorCalculation
             return coordA.X * coordB.X + coordA.Y * coordB.Y;
         }
 
+        #region Private Member Functions
+
         /// <summary>
         /// Calculate X2 from: Y2-Y1= m(X2-X1)
         /// </summary>
@@ -342,7 +309,7 @@ namespace Foosbot.VectorCalculation
         /// <param name="y1">Y1</param>
         /// <param name="y2">Y2</param>
         /// <returns>X2</returns>
-        public double CalculateX2OnLine(double m, double x1, double y1, double y2)
+        private double CalculateX2OnLine(double m, double x1, double y1, double y2)
         {
             if (m == 0) return x1;
             return (y2 - y1) / m + x1;
@@ -356,7 +323,7 @@ namespace Foosbot.VectorCalculation
         /// <param name="y1">Y1</param>
         /// <param name="x2">X2</param>
         /// <returns>Y2</returns>
-        public double CalculateY2OnLine(double m, double x1, double y1, double x2)
+        private double CalculateY2OnLine(double m, double x1, double y1, double x2)
         {
             return m * (x2 - x1) + y1;
         }
@@ -366,17 +333,12 @@ namespace Foosbot.VectorCalculation
         /// </summary>
         /// <param name="vector">Vector to calculate line slope from</param>
         /// <returns>Line Slope</returns>
-        public double CalculateLineSlope(Vector2D vector)
+        private double CalculateLineSlope(Vector2D vector)
         {
             if (vector.X == 0 || vector.Y == 0)
                 return 0;
 
-            double sign = +1;
-            if (vector.X > 0 && vector.Y > 0) sign = +1;
-            if (vector.X > 0 && vector.Y < 0) sign = +1; //right
-            if (vector.X < 0 && vector.Y > 0) sign = +1; //right
-            if (vector.X < 0 && vector.Y < 0) sign = +1; //right and changed
-            return vector.Y / vector.X * sign;
+            return vector.Y / vector.X;
         }
 
         /// <summary>
@@ -401,5 +363,7 @@ namespace Foosbot.VectorCalculation
             if (ballCoordinates.Vector.X == 0 && ballCoordinates.Vector.Y == 0)
                 throw new NotSupportedException(String.Format("[{0}] Intersection point can not be found because vector is 0x0", MethodBase.GetCurrentMethod().Name));
         }
+
+        #endregion Private Member Functions
     } 
 }

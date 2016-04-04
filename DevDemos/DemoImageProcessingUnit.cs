@@ -77,16 +77,6 @@ namespace DevDemos
             //Instantiate random generator
             _random = new Random();
 
-
-            //draw rods on canvas
-            Marks.DrawRods();
-
-            //init rods players
-            Marks.DrawRodPlayers(eMarks.GoalKeeper, 0, eRotationalMove.RISE);
-            Marks.DrawRodPlayers(eMarks.Defence, 0, eRotationalMove.DEFENCE);
-            Marks.DrawRodPlayers(eMarks.Midfield, 0, eRotationalMove.RISE);
-            Marks.DrawRodPlayers(eMarks.Attack, 0, eRotationalMove.KICK);
-
             //Start Generating Locations in separate Thread
             BeginInvokeGenerateLocation();
         }
@@ -115,7 +105,7 @@ namespace DevDemos
             transformedPoints[2] = new System.Drawing.PointF(0, worldHeight);
             transformedPoints[3] = new System.Drawing.PointF(worldWidth, worldHeight);
 
-            //Calculate trabsformation matrix and store in static class
+            //Calculate transformation matrix and store in static class
             Transformation transformer = new Transformation();
             transformer.FindHomographyMatrix(originalPoints, transformedPoints);  
         }
@@ -133,32 +123,6 @@ namespace DevDemos
     
             //get current ball coordinates
             BallCoordinates coordinates = SampleCoordinates();
-
-
-            //================testing rods movenent and switches DEMO==========================
-            //count++;
-            //if (count % 200 > 0 && count % 200 < 75)
-            //{
-            //    Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
-            //    Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.RISE);
-            //    Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
-            //    Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
-            //}
-            //if (count % 200 > 75 && count % 200 < 150)
-            //{
-            //    Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
-            //    Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.DEFENCE);
-            //    Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
-            //    Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
-            //}
-            //if (count % 200 > 150 && count % 200 < 200)
-            //{
-            //    Marks.DrawRodPlayers(eMarks.Attack, count % 200, eRotationalMove.RISE);
-            //    Marks.DrawRodPlayers(eMarks.Midfield, count % 200, eRotationalMove.KICK);
-            //    Marks.DrawRodPlayers(eMarks.Defence, count % 200, eRotationalMove.DEFENCE);
-            //    Marks.DrawRodPlayers(eMarks.GoalKeeper, count % 200, eRotationalMove.DEFENCE);
-            //}
-            //===============================================================================
 
             //show current ball coordinates on screen and GUI
             Transformation transfromer = new Transformation();

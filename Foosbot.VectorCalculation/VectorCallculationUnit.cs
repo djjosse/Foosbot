@@ -100,40 +100,64 @@ namespace Foosbot.VectorCalculation
             }
         }
 
-        private Vector2D CalculateVector(BallCoordinates ballCoordinates)
+        static int counter = 0;
+        private Vector2D CalculateVector(BallCoordinates ballCoordinates, double maxAngleError = 1.0)
         {
+            if (maxAngleError == 1.0) counter = 0;
+            //find basic vector
             double deltaT = (ballCoordinates.Timestamp - _storedBallCoordinates.Timestamp).TotalSeconds;// / 100;
             double x = ballCoordinates.X - _storedBallCoordinates.X;
             double y = ballCoordinates.Y - _storedBallCoordinates.Y;
             ballCoordinates.Vector = new Vector2D(x / deltaT, y / deltaT);
 
-            if (_storedBallCoordinates.Vector.IsDefined && ballCoordinates.Vector.Velocity() > 0)
+            //no movement in a new vector OR 
+            //stored vector is undefined OR
+            //no movement in the old vector
+            if (ballCoordinates.Vector.Velocity() == 0 ||
+                !_storedBallCoordinates.Vector.IsDefined ||
+                _storedBallCoordinates.Vector.Velocity() == 0)
             {
-                double velocity = _storedBallCoordinates.Vector.Velocity() * ballCoordinates.Vector.Velocity();
-                if (velocity != 0)
-                {
-                    double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X +
-                                       _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) / velocity;
-
-                    //if (!((1 - ALPHA_ERR < cosAlpha) && (cosAlpha < 1 + ALPHA_ERR)))
-                    //{
-                    //    Log.Common.Debug(
-                    //        String.Format("[{0}] Current angle is {1}",MethodBase.GetCurrentMethod().Name, 
-                    //                                                   Math.Acos(cosAlpha).ToDegrees(2)));
-                    //    VectorUtils utils = new VectorUtils();
-                    //    BallCoordinates intersection = utils.Ricochet(_storedBallCoordinates);
-                    //    if (intersection != null && intersection.Vector != null)
-                    //    {
-                    //        return intersection.Vector;
-                    //    }
-                    //    else return new Vector2D();
-                    //}
-                }
+                _storedBallCoordinates.Vector = ballCoordinates.Vector;
+                return ballCoordinates.Vector;
             }
-            _storedBallCoordinates.Vector = ballCoordinates.Vector;
-            //Log.Common.Debug(String.Format("[{0}] Ball speed is {1} p/s {2} degrees", MethodBase.GetCurrentMethod().Name,
-            //        Math.Round(ballCoordinates.Vector.Velocity(), 2), ballCoordinates.Vector.Angle().ToDegrees(2)));
-            return ballCoordinates.Vector;
+
+            //Calculate cos of angle of scalar product
+            double scalarProductDevider = _storedBallCoordinates.Vector.Velocity() *
+                    ballCoordinates.Vector.Velocity();
+            double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X +
+                               _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) /
+                               scalarProductDevider;
+
+            double minLimit = (1 - ALPHA_ERR) * 1/maxAngleError;
+            double maxLimit = (1 + ALPHA_ERR) * maxAngleError;
+
+            if (!((minLimit < cosAlpha) && (cosAlpha < maxLimit)))
+            {
+                counter++;
+                //if (counter>3)
+                //{
+                    Log.Common.Debug("counter:" + counter);
+                //}
+            //    Log.Common.Debug(
+            //        String.Format("[{0}] Current angle is {1}",MethodBase.GetCurrentMethod().Name, 
+            //                                                   Math.Acos(cosAlpha).ToDegrees(2)));
+                  VectorUtils utils = new VectorUtils();
+                  utils.Initialize();
+                  BallCoordinates intersection = utils.Ricochet(ballCoordinates);
+                  _storedBallCoordinates = ballCoordinates;
+                  //ballCoordinates = intersection;
+                  return CalculateVector(intersection, maxAngleError * 1.2);
+            //      if (intersection != null && intersection.Vector != null)
+            //    {
+            //        return intersection.Vector;
+            //    }
+            //    else return new Vector2D();
+            }
+            else
+            {
+                _storedBallCoordinates.Vector = ballCoordinates.Vector;
+                return ballCoordinates.Vector;
+            }
         }
     }
 }

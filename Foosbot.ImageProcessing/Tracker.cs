@@ -194,7 +194,6 @@ namespace Foosbot.ImageProcessing
             CircleF[] pos = base.DetectCircles(image, _calibrator.Radius, _calibrator.ErrorRate * 2, _calibrator.Radius * 5, 250, 37, 1.5);//300, 40, 1.3);
             if (pos.Length > 0)
             {
-                
                 _storedLocation = new Location(pos[0].Center.X + additionalOffsetX, pos[0].Center.Y + additionalOffsetY, imageTimestamp);
 
                 int x = _storedLocation.X + OffsetX;
@@ -207,7 +206,20 @@ namespace Foosbot.ImageProcessing
                 Transformation transformer = new Transformation();
                 System.Drawing.PointF coordinates = transformer.Transform(new System.Drawing.PointF(x, y));
                 
-                this.LastBallCoordinates = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), imageTimestamp);
+                //not to change if it has not changed...
+                if (LastBallCoordinates != null && LastBallCoordinates.IsDefined &&
+                    LastBallCoordinates.X - _calibrator.Radius > coordinates.X &&
+                    LastBallCoordinates.X + _calibrator.Radius < coordinates.X &&
+                    LastBallCoordinates.Y - _calibrator.Radius > coordinates.Y &&
+                    LastBallCoordinates.Y + _calibrator.Radius < coordinates.Y)
+                {
+                    LastBallCoordinates = new BallCoordinates(LastBallCoordinates.X, LastBallCoordinates.Y, imageTimestamp);
+                }
+                else
+                {
+                    this.LastBallCoordinates = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), imageTimestamp);
+                }
+
                 IsBallLocationFound = true;
                 Statistics.UpdateBallCoordinates(
                     String.Format("Ball coordinates: {0}x{1}", LastBallCoordinates.X, LastBallCoordinates.Y));

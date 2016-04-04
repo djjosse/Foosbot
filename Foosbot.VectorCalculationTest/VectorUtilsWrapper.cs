@@ -10,10 +10,10 @@ namespace Foosbot.VectorCalculationTest
     public class VectorUtilsWrapper : VectorUtils
     {
         public const int XMIN = 0;
-        public const int XMAX = 400;
+        public const int XMAX = 800;
         public const int YMIN = 0;
-        public const int YMAX = 800;
-        public const double RICOCHE = 2;
+        public const int YMAX = 400;
+        public const double RICOCHE = 0.7;
 
         public VectorUtilsWrapper()
         {
