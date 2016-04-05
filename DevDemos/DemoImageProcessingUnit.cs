@@ -44,6 +44,8 @@ namespace DevDemos
         /// <param name="streamer">DemoStreamer instance</param>
         public DemoImageProcessingUnit(DemoStreamer streamer) : base(streamer)
         {
+            IsCallibrated = true;
+
             //Set Foosbot world sizes - axe X x axe Y
             _rightBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
             _buttomBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);

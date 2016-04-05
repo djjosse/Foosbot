@@ -34,11 +34,6 @@ namespace Foosbot.ImageProcessing
         private CalibrationUnit _calibrator;
 
         /// <summary>
-        /// Represents a flag for calibration
-        /// </summary>
-        private bool _isCallibrated;
-
-        /// <summary>
         /// Last Received Frame Time stamp
         /// </summary>
         private DateTime _lastFrameTimeStamp;
@@ -74,7 +69,7 @@ namespace Foosbot.ImageProcessing
             if (timestamp != _lastFrameTimeStamp)
             {
                 _lastFrameTimeStamp = timestamp;
-                if (_isCallibrated)
+                if (IsCallibrated)
                 {
                     //Start statisctics and stopwatch
                     _detectionAnalyzer.Next();
@@ -91,7 +86,12 @@ namespace Foosbot.ImageProcessing
                 else
                 {
                     //Call Callibrator
-                    _isCallibrated = _calibrator.InvokeCallibration(image);
+                    bool success = _calibrator.InvokeCallibration(image);
+                    if (success)
+                    {
+                        BallRadius = _calibrator.Radius;
+                        IsCallibrated = true;
+                    }
                 }
             }
             else

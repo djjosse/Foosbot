@@ -14,6 +14,7 @@ using System;
 using System.Reflection;
 using System.Windows;
 using Foosbot.Common;
+using System.Threading;
 
 namespace Foosbot.VectorCalculation
 {
@@ -27,9 +28,23 @@ namespace Foosbot.VectorCalculation
 
         public ILastBallCoordinatesUpdater _coordinatesUpdater;
 
-        public VectorCallculationUnit(Publisher<BallCoordinates> coordinatesPublisher) :
+        public CoordinatesStabilizer _stabilizer;
+
+        private Transformation _transformer;
+
+        private VectorUtils vectorUtils;
+
+
+        public VectorCallculationUnit(Publisher<BallCoordinates> coordinatesPublisher, int ballRadius) :
             base(coordinatesPublisher)
         {
+            vectorUtils = new VectorUtils();
+            vectorUtils.Initialize();
+
+            _transformer = new Transformation();
+
+            _stabilizer = new CoordinatesStabilizer(ballRadius);
+
             _coordinatesUpdater = new BallCoordinatesUpdater();
             LastBallLocationPublisher = new BallLocationPublisher(_coordinatesUpdater);
 
@@ -42,32 +57,67 @@ namespace Foosbot.VectorCalculation
 
         public override void Job()
         {
-            _publisher.Dettach(this);
-            BallCoordinates ballCoordinates = _publisher.Data;
-
-            ballCoordinates.Vector = VectorCalculationAlgorithm(ballCoordinates);
-
-            //TODO: implement vector calculation here
-            //...
-            //Marks.DrawBall(new Point(100, 100), 20, true);
-            //Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL, new System.Windows.Point(200, 200), 50);
-                 
-            if (ballCoordinates.IsDefined && ballCoordinates.Vector.IsDefined)
+            try
             {
-                try
-                {
-                    (_coordinatesUpdater as BallCoordinatesUpdater).LastBallCoordinates  = ballCoordinates;
-                    LastBallLocationPublisher.UpdateAndNotify();
 
-                    Marks.DrawBallVector(new Point(ballCoordinates.X, ballCoordinates.Y), 
-                        new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)), true);
-                }
-                catch(Exception e)
+                _publisher.Dettach(this);
+
+                //Get data and remove noise
+                BallCoordinates newCoordinates = _publisher.Data;
+                BallCoordinates ballCoordinates = _stabilizer.Stabilize(newCoordinates, _storedBallCoordinates);
+
+                //Draw coordinates from stabilizer
+                if (ballCoordinates.IsDefined)
                 {
-                    Log.Common.Error(String.Format("[{0}] {1} [{2}]", MethodBase.GetCurrentMethod().Name, e.Message, ballCoordinates.ToString()));
+                    double x, y;
+                    _transformer.InvertTransform(ballCoordinates.X, ballCoordinates.Y, out x, out y);
+                    Marks.DrawBall(new System.Windows.Point(x, y), _stabilizer.BallRadius);
+                }
+                else
+                {
+                    Marks.DrawBall(new System.Windows.Point(0, 0), 0);
+                }
+                
+
+                ballCoordinates.Vector = VectorCalculationAlgorithm(ballCoordinates);
+
+                //TODO: implement vector calculation here
+                //...
+                //Marks.DrawBall(new Point(100, 100), 20, true);
+                //Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL, new System.Windows.Point(200, 200), 50);
+
+                if (ballCoordinates.IsDefined && ballCoordinates.Vector.IsDefined)
+                {
+                    try
+                    {
+                        (_coordinatesUpdater as BallCoordinatesUpdater).LastBallCoordinates = ballCoordinates;
+                        LastBallLocationPublisher.UpdateAndNotify();
+
+                        Marks.DrawBallVector(new Point(ballCoordinates.X, ballCoordinates.Y),
+                            new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)), true);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Common.Error(String.Format("[{0}] {1} [{2}]", MethodBase.GetCurrentMethod().Name, e.Message, ballCoordinates.ToString()));
+                    }
+                }
+                else
+                {
+                   // Marks.DrawBallVector(new Point(0,0), new Point(0, 0), false);
                 }
             }
-            _publisher.Attach(this);
+            catch (ThreadInterruptedException)
+            {
+                /* new data received */
+            }
+            catch (Exception e)
+            {
+                Log.Common.Error(String.Format("[{0}] Error in vector calculation. Reason: {1}", MethodBase.GetCurrentMethod().Name, e.Message));
+            }
+            finally
+            {
+                _publisher.Attach(this);
+            }
         }
 
         private readonly double D_ERR;
@@ -93,9 +143,12 @@ namespace Foosbot.VectorCalculation
                     return new Vector2D();
                 }
             }
+            //If we have received undefined coordinates -
+            //we will sent undefined vector and set last known coordinates as undefined
             else //ball coordinates undefined
             {
                 //ToDo: think of handling better undefined coordinates
+                _storedBallCoordinates = ballCoordinates;
                 return new Vector2D();
             }
         }
@@ -103,60 +156,52 @@ namespace Foosbot.VectorCalculation
         static int counter = 0;
         private Vector2D CalculateVector(BallCoordinates ballCoordinates, double maxAngleError = 1.0)
         {
-            if (maxAngleError == 1.0) counter = 0;
-            //find basic vector
-            double deltaT = (ballCoordinates.Timestamp - _storedBallCoordinates.Timestamp).TotalSeconds;// / 100;
-            double x = ballCoordinates.X - _storedBallCoordinates.X;
-            double y = ballCoordinates.Y - _storedBallCoordinates.Y;
-            ballCoordinates.Vector = new Vector2D(x / deltaT, y / deltaT);
-
-            //no movement in a new vector OR 
-            //stored vector is undefined OR
-            //no movement in the old vector
-            if (ballCoordinates.Vector.Velocity() == 0 ||
-                !_storedBallCoordinates.Vector.IsDefined ||
-                _storedBallCoordinates.Vector.Velocity() == 0)
+            if (ballCoordinates.Timestamp == _storedBallCoordinates.Timestamp)
             {
-                _storedBallCoordinates.Vector = ballCoordinates.Vector;
-                return ballCoordinates.Vector;
-            }
-
-            //Calculate cos of angle of scalar product
-            double scalarProductDevider = _storedBallCoordinates.Vector.Velocity() *
-                    ballCoordinates.Vector.Velocity();
-            double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X +
-                               _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) /
-                               scalarProductDevider;
-
-            double minLimit = (1 - ALPHA_ERR) * 1/maxAngleError;
-            double maxLimit = (1 + ALPHA_ERR) * maxAngleError;
-
-            if (!((minLimit < cosAlpha) && (cosAlpha < maxLimit)))
-            {
-                counter++;
-                //if (counter>3)
-                //{
-                    Log.Common.Debug("counter:" + counter);
-                //}
-            //    Log.Common.Debug(
-            //        String.Format("[{0}] Current angle is {1}",MethodBase.GetCurrentMethod().Name, 
-            //                                                   Math.Acos(cosAlpha).ToDegrees(2)));
-                  VectorUtils utils = new VectorUtils();
-                  utils.Initialize();
-                  BallCoordinates intersection = utils.Ricochet(ballCoordinates);
-                  _storedBallCoordinates = ballCoordinates;
-                  //ballCoordinates = intersection;
-                  return CalculateVector(intersection, maxAngleError * 1.2);
-            //      if (intersection != null && intersection.Vector != null)
-            //    {
-            //        return intersection.Vector;
-            //    }
-            //    else return new Vector2D();
+                Log.Common.Error(String.Format("[{0}] Current ball coordinates and stored are with same time stamp!", MethodBase.GetCurrentMethod().Name));
+                return new Vector2D();
             }
             else
             {
-                _storedBallCoordinates.Vector = ballCoordinates.Vector;
-                return ballCoordinates.Vector;
+                if (maxAngleError == 1.0) counter = 0;
+                //find basic vector
+                double deltaT = (ballCoordinates.Timestamp - _storedBallCoordinates.Timestamp).TotalSeconds;// / 100;
+                double x = ballCoordinates.X - _storedBallCoordinates.X;
+                double y = ballCoordinates.Y - _storedBallCoordinates.Y;
+                ballCoordinates.Vector = new Vector2D(x / deltaT, y / deltaT);
+
+                //no movement in a new vector OR 
+                //stored vector is undefined OR
+                //no movement in the old vector
+                if (ballCoordinates.Vector.Velocity() == 0 ||
+                    !_storedBallCoordinates.Vector.IsDefined ||
+                    _storedBallCoordinates.Vector.Velocity() == 0)
+                {
+                    _storedBallCoordinates.Vector = ballCoordinates.Vector;
+                    return ballCoordinates.Vector;
+                }
+
+                //Calculate cos of angle of scalar product
+                double scalarProductDevider = _storedBallCoordinates.Vector.Velocity() *
+                        ballCoordinates.Vector.Velocity();
+                double cosAlpha = (_storedBallCoordinates.Vector.X * ballCoordinates.Vector.X +
+                                   _storedBallCoordinates.Vector.Y * ballCoordinates.Vector.Y) /
+                                   scalarProductDevider;
+
+                double minLimit = (1 - ALPHA_ERR) * 1/maxAngleError;
+                double maxLimit = (1 + ALPHA_ERR) * maxAngleError;
+
+                if (!((minLimit < cosAlpha) && (cosAlpha < maxLimit)))
+                {
+                    BallCoordinates intersection = vectorUtils.Ricochet(ballCoordinates);
+                    _storedBallCoordinates = ballCoordinates;
+                    return CalculateVector(intersection, maxAngleError * 1.2);
+                }
+                else
+                {
+                    _storedBallCoordinates.Vector = ballCoordinates.Vector;
+                    return ballCoordinates.Vector;
+                }
             }
         }
     }

@@ -125,11 +125,18 @@ namespace Foosbot.UI
                 };
                 worker.RunWorkerAsync();
 
-                VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.LastBallLocationPublisher);
-                vectorCalcullationUnit.Start();
+                BackgroundWorker worker2 = new BackgroundWorker();
+                worker2.DoWork += (s, z) =>
+                {
+                    while (!_ipu.IsCallibrated) { Thread.Sleep(100);/* wait till calibrated*/}
 
-                //Decision decisionUnit = new Decision(vectorCalcullationUnit.LastBallLocationPublisher);
-                //decisionUnit.Start();
+                    VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
+                    vectorCalcullationUnit.Start();
+
+                    Decision decisionUnit = new Decision(vectorCalcullationUnit.LastBallLocationPublisher);
+                    decisionUnit.Start();
+                };
+                worker2.RunWorkerAsync();
             }
             catch(Exception ex)
             {

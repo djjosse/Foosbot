@@ -9,6 +9,8 @@
 // **************************************************************************************
 
 using Foosbot.Common.Multithreading;
+using System;
+using System.Reflection;
 
 namespace Foosbot.Common.Protocols
 {
@@ -41,6 +43,10 @@ namespace Foosbot.Common.Protocols
             {
                 Data = _coordinatesUpdater.LastBallCoordinates;
                 NotifyAll();
+            }
+            else
+            {
+                Log.Common.Error(String.Format("[{0}] Coordinates were not set by IP-Unit", MethodBase.GetCurrentMethod().Name));
             }
         }
     }

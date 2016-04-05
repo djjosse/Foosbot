@@ -232,17 +232,18 @@ namespace Foosbot.ImageProcessing
                 {
                     Log.Image.Debug("Found callibration marks!");
 
+                    /* ----------Extract Background Currently not in use-------------------*/
                     //Extract Background
-                    Background = image.Clone();//.Sub(_phaseOneFrame);
+                    //Background = image.Clone();//.Sub(_phaseOneFrame);
                    // image.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "image.png");
                     //_phaseOneFrame.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "_phaseOneFrame.png");
                     //Background.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "back.png");
-                    Log.Image.Debug("Background image extracted");
+                    //Log.Image.Debug("Background image extracted");
 
                     //Crop background based on callibration marks
-                    Background = CropAndStoreOffset(Background, CallibrationMarks.Values.ToList());
+                    //Background = CropAndStoreOffset(Background, CallibrationMarks.Values.ToList());
 
-                    Log.Image.Debug("Background image cropped");
+                    //Log.Image.Debug("Background image cropped");
 
                     Log.Image.Info("Callibration finished!");
 

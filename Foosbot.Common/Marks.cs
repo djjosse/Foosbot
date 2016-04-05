@@ -419,7 +419,13 @@ namespace Foosbot
 
                 x = Convert.ToInt32(vector.X);
                 y = Convert.ToInt32(vector.Y);
-                ConvertToLocation(ref x, ref y);
+
+                //we don't want to convert 0 of vector
+                int convX = x;  
+                int convY = y;
+                ConvertToLocation(ref convX, ref convY);
+                if (x!=0) x = convX;
+                if (y!=0) y = convY;
                 vector = new Point(x, y);
             }
 

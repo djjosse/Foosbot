@@ -102,8 +102,15 @@ namespace Foosbot.ImageProcessing
             int ySize = Convert.ToInt32(yMax - OffsetY);
 
             Rectangle frame = new Rectangle(new System.Drawing.Point(OffsetX, OffsetY), new System.Drawing.Size(xSize, ySize));
-
-            Mat cropped = new Mat(image.Clone().Mat, frame);
+            Mat cropped = null;
+            try
+            {
+                cropped = new Mat(image.Clone().Mat, frame);
+            }
+            catch(Exception e)
+            {
+                Log.Common.Error("Error: " + e.Message);
+            }
             Image<Gray, byte> croppedImage = cropped.ToImage<Gray, byte>();
             return croppedImage;
         }

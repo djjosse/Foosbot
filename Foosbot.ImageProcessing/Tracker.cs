@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 
 namespace Foosbot.ImageProcessing
 {
@@ -146,7 +147,12 @@ namespace Foosbot.ImageProcessing
                     //    "Searching for a ball on image from: {0}", imageTimestamp.ToString("HH:mm:ss.ffff")));
                     //LastBallCoordinates = new BallCoordinates(imageTimestamp);
                 }
-            }catch(Exception e)
+            }
+            catch(ThreadInterruptedException)
+            {
+                /* if we are here means new frame received */
+            }
+            catch(Exception e)
             {
                 Log.Image.Error(String.Format("[{0}] Unable to find the ball in current image. Reason: {1}", MethodBase.GetCurrentMethod().Name, e.Message));
             }
@@ -201,32 +207,36 @@ namespace Foosbot.ImageProcessing
 
                 Log.Image.Info(String.Format("[{0}] Possible ball location in {1} area: {2}x{3}",
                     MethodBase.GetCurrentMethod().Name, area, x, y));
-                Marks.DrawBall(new System.Windows.Point(x, y), Convert.ToInt32(pos[0].Radius));
+                //Marks.DrawBall(new System.Windows.Point(x, y), Convert.ToInt32(pos[0].Radius));
                 
                 Transformation transformer = new Transformation();
                 System.Drawing.PointF coordinates = transformer.Transform(new System.Drawing.PointF(x, y));
-                
-                //not to change if it has not changed...
-                if (LastBallCoordinates != null && LastBallCoordinates.IsDefined &&
-                    LastBallCoordinates.X - _calibrator.Radius > coordinates.X &&
-                    LastBallCoordinates.X + _calibrator.Radius < coordinates.X &&
-                    LastBallCoordinates.Y - _calibrator.Radius > coordinates.Y &&
-                    LastBallCoordinates.Y + _calibrator.Radius < coordinates.Y)
-                {
-                    LastBallCoordinates = new BallCoordinates(LastBallCoordinates.X, LastBallCoordinates.Y, imageTimestamp);
-                }
-                else
-                {
-                    this.LastBallCoordinates = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), imageTimestamp);
-                }
+
+                LastBallCoordinates = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), imageTimestamp);
+
+                //THIS MOVED TO VECTOR
+                ////not to change if it has not changed...
+                //if (LastBallCoordinates != null && LastBallCoordinates.IsDefined &&
+                //    LastBallCoordinates.X - _calibrator.Radius > coordinates.X &&
+                //    LastBallCoordinates.X + _calibrator.Radius < coordinates.X &&
+                //    LastBallCoordinates.Y - _calibrator.Radius > coordinates.Y &&
+                //    LastBallCoordinates.Y + _calibrator.Radius < coordinates.Y)
+                //{
+                //    LastBallCoordinates = new BallCoordinates(LastBallCoordinates.X, LastBallCoordinates.Y, imageTimestamp);
+                //}
+                //else
+                //{
+                //    this.LastBallCoordinates = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), imageTimestamp);
+                //}
 
                 IsBallLocationFound = true;
                 Statistics.UpdateBallCoordinates(
-                    String.Format("Ball coordinates: {0}x{1}", LastBallCoordinates.X, LastBallCoordinates.Y));
+                    String.Format("[IP Unit] Ball coordinates: {0}x{1}", LastBallCoordinates.X, LastBallCoordinates.Y));
                 
                 return true;
             }
             Log.Image.Debug(String.Format("[{0}] Ball not found in {1} area", MethodBase.GetCurrentMethod().Name, area));
+            LastBallCoordinates = new BallCoordinates(imageTimestamp);
             IsBallLocationFound = false;
             return false;
         }

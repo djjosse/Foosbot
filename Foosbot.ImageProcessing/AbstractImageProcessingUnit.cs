@@ -21,6 +21,13 @@ namespace Foosbot.ImageProcessing
     public abstract class AbstractImageProcessingUnit : Observer<Frame>
     {
         /// <summary>
+        /// Represents a flag for calibration
+        /// </summary>
+        public bool IsCallibrated { get; protected set; }
+
+        public int BallRadius { get; protected set; }
+
+        /// <summary>
         /// Ball Location Publisher
         /// This inner object is a publisher for vector calculation unit 
         /// </summary>
@@ -34,6 +41,7 @@ namespace Foosbot.ImageProcessing
             base(streamer)
         {
             _publisher = streamer;
+            BallRadius = 10;
         }
 
         /// <summary>
