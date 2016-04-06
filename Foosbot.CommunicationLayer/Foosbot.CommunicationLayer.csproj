@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArduinoCom.cs" />
+    <Compile Include="CommunicationFactory.cs" />
+    <Compile Include="CommunicationUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

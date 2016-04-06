@@ -67,6 +67,8 @@ namespace Foosbot.DecisionUnit
 
         #endregion private members
 
+        public Dictionary<eRod, RodActionPublisher> RodActionPublishers;
+
         /// <summary>
         /// Decision Unit Constructor
         /// </summary>
@@ -89,6 +91,12 @@ namespace Foosbot.DecisionUnit
             DELAYS = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
             XMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
             YMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+
+            RodActionPublishers = new Dictionary<eRod, RodActionPublisher>();
+            foreach(eRod rodType in Enum.GetValues(typeof(eRod)))
+            {
+                RodActionPublishers.Add(rodType, new RodActionPublisher());
+            }
         }
 
         public override void Job()
@@ -145,6 +153,7 @@ namespace Foosbot.DecisionUnit
                     {
                         Marks.DrawRodPlayers(eMarks.Attack, action.LinearMovement, action.Rotation);
                     }
+                    RodActionPublishers[rod.RodType].UpdateAndNotify(action);
                 }
             }
             else

@@ -13,27 +13,27 @@ namespace Foosbot.Common.Protocols
     /// <summary>
     /// Player rotational position/move.
     /// </summary>
-    public enum eRotationalMove
+    public enum eRotationalMove : int
     {
         /// <summary>
         /// Undefined player rotational position
         /// </summary>
-        NA,
+        NA = 0,
 
         /// <summary>
         /// Player is in 0 degrees (Legs back)
         /// </summary>
-        RISE, 
+        RISE = 3, 
 
         /// <summary>
         /// Player is in 90 degrees (Legs down)
         /// </summary>
-        DEFENCE,
+        DEFENCE = 2,
 
         /// <summary>
         /// Player is in 180 degrees (Legs ahead to the competitors gate)
         /// Also called Reverse-Rise
         /// </summary>
-        KICK
+        KICK = 1
     }
 }

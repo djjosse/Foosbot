@@ -10,7 +10,9 @@
 
 using DevDemos;
 using Foosbot.Common.Logs;
+using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
+using Foosbot.CommunicationLayer;
 using Foosbot.DecisionUnit;
 using Foosbot.ImageProcessing;
 using Foosbot.VectorCalculation;
@@ -135,6 +137,20 @@ namespace Foosbot.UI
 
                     Decision decisionUnit = new Decision(vectorCalcullationUnit.LastBallLocationPublisher);
                     decisionUnit.Start();
+
+                    Dictionary<eRod, Publisher<RodAction>> decisionUnitPublishers = new Dictionary<eRod, Publisher<RodAction>>();
+
+                    foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
+                    {
+                        decisionUnitPublishers.Add(rodType, decisionUnit.RodActionPublishers[rodType]);
+                    }
+
+                    Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.ConnectedArduinos(decisionUnitPublishers);
+                    foreach (eRod key in communication.Keys)
+                    {
+                        if (communication[key] != null)
+                            communication[key].Start();
+                    }
                 };
                 worker2.RunWorkerAsync();
             }
@@ -148,7 +164,7 @@ namespace Foosbot.UI
         /// <summary>
         /// Show video stream method
         /// Must run in background thread.
-        /// Waits for a new frame in Streamer and shows it continiusly
+        /// Waits for a new frame in Streamer and shows it continuously
         /// </summary>
         public void ShowVideoStream()
         {

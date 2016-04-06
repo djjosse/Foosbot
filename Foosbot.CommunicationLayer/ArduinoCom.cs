@@ -6,65 +6,66 @@ using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Threading;
 using Foosbot.Common.Protocols;
+using System.Reflection;
 
-namespace ArduinoTestCommunication
+namespace Foosbot.CommunicationLayer
 {
     public class ArduinoCom
     {
+
         private const string KEY_INIT = "init";
         private const int RATE = 9600;
 
-        /// <summary>
-        /// Port List where eRod key represents rod type port number
-        /// </summary>
-        private Dictionary<eRod, SerialPort> portList;
-        
-        public ArduinoCom()
+        private string _comPortName;
+        private SerialPort _comPort;
+
+        public ArduinoCom(string comPort)
         {
-            portList = new Dictionary<eRod, SerialPort>();
+            _comPortName = comPort;
         }
 
-        public void Init()
+        public void InitializeArduino()
         {
-            string[] portsList = System.IO.Ports.SerialPort.GetPortNames();
-
-            //TODO: need to support several Arduino, identify by Arduino id
-            portList.Add(eRod.GoalKeeper, OpenPort(portsList[0]));
-
-            //callibrate all rods
-            foreach(eRod rod in portList.Keys)
-            {
-                InitRod(rod);
-            }
+            Log.Common.Info(String.Format("[{0}] Initializing Arduino with key {1} on port {2} ...",
+                MethodBase.GetCurrentMethod().Name, KEY_INIT, _comPortName));
+            _comPort.WriteLine(KEY_INIT);
         }
 
-        private void InitRod(eRod rod)
+        public void OpenArduinoComPort()
         {
-            portList[rod].WriteLine(KEY_INIT);
-        }
-
-        private SerialPort OpenPort(String port)
-        {
-            SerialPort currentPort = new SerialPort();
-            currentPort.PortName = port;
-            currentPort.BaudRate = RATE;
+            _comPort = new SerialPort();
+            _comPort.PortName = _comPortName;
+            _comPort.BaudRate = RATE;
             try
             {
-                Console.WriteLine("Open port " + port);
-                currentPort.Open();
+                Log.Common.Info(String.Format("[{0}] Opening Arduino port {1}...",
+                        MethodBase.GetCurrentMethod().Name, _comPortName));
+                _comPort.Open();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.Data);
+                Log.Common.Error(String.Format("[{0}] Error opening Arduino port {1}. Reason: {2}",
+                        MethodBase.GetCurrentMethod().Name, _comPortName, ex.Data));
             }
-            Console.WriteLine(port + " is open");
-            return currentPort;
+            Log.Common.Info(String.Format("[{0}] Arduino port {1} is open!",
+                        MethodBase.GetCurrentMethod().Name, _comPortName));
         }
 
-        public void Move(eRod rod, int dc = -1, int servo = 0)
+
+        private int _lastServo = 0;
+        private int _lastDc = -1;
+
+        public void Move(int dc = -1, eRotationalMove servo = eRotationalMove.NA)
         {
-            String action = String.Format("{0}&{1}", dc, servo);
-            portList[rod].Write(action);
+            Log.Common.Info(String.Format("[{0}] Moving rod on {1} DC: {2} SERVO: {3}",
+                        MethodBase.GetCurrentMethod().Name, _comPortName, dc, servo.ToString()));
+            if (_lastServo != (int)servo || _lastDc != dc)
+            {
+                String action = String.Format("{0}&{1}", dc, (int)servo);
+                _comPort.Write(action);
+                _lastServo = (int)servo;
+                _lastDc = dc;
+            }
         }
     }
 

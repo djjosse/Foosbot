@@ -1,5 +1,5 @@
-﻿using ArduinoTestCommunication;
-using Foosbot.Common.Protocols;
+﻿using Foosbot.Common.Protocols;
+using Foosbot.CommunicationLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +12,9 @@ namespace ArduinoManualTests
     {
         static void Main(string[] args)
         {
-            ArduinoCom arduino = new ArduinoCom();
-            arduino.Init();
+            ArduinoCom arduino = new ArduinoCom("Com3");
+            arduino.OpenArduinoComPort();
+            arduino.InitializeArduino();
             string input = "";
             while(true)
             {
@@ -32,7 +33,7 @@ namespace ArduinoManualTests
                 }
 
                 Console.WriteLine("dc: " + dc + " servo: " + servo);
-                arduino.Move(eRod.GoalKeeper, dc, servo);
+                arduino.Move(dc, (eRotationalMove)servo);
             }
         }
     }

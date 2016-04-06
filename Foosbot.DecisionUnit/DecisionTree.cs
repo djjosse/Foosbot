@@ -158,7 +158,7 @@ namespace Foosbot.DecisionUnit
                 case eLinearMove.BALL_Y:
                     return bfc.Y - CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
                 case eLinearMove.BEST_EFFORT:
-                    return rod.BestEffort - CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], 1);
+                    return rod.BestEffort;// - CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], 1);
                 case eLinearMove.LEFT_BALL_DIAMETER:
                     return (-1) * 2 * BALL_RADIUS;
                 case eLinearMove.RIGHT_BALL_DIAMETER:
