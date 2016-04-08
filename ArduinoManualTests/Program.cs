@@ -2,6 +2,7 @@
 using Foosbot.CommunicationLayer;
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,28 +13,46 @@ namespace ArduinoManualTests
     {
         static void Main(string[] args)
         {
-            ArduinoCom arduino = new ArduinoCom("Com3");
-            arduino.OpenArduinoComPort();
-            arduino.InitializeArduino();
-            string input = "";
-            while(true)
+            string[] portsList = SerialPort.GetPortNames();
+            if (portsList.Length < 1)
             {
-                input = Console.ReadLine();
-
-                string [] chars = input.Split('&');
-                if (chars.Length == 0)
+                Console.WriteLine("No Arduino connected!");
+            }
+            else
+            {
+                ArduinoCom arduino = new ArduinoCom(portsList[0]);
+                try
                 {
-                   break;
-                }
-                int dc = Convert.ToInt32(chars[0]);
-                int servo = 0;
-                if (chars.Length > 1)
-                {
-                    servo = Convert.ToInt32(chars[1]);
-                }
+                    arduino.OpenArduinoComPort();
+                    Console.WriteLine("Arduino port {0} is open!", portsList[0]);
+                    arduino.InitializeArduino();
+                    Console.WriteLine("Arduino port is initialized!");
+                    string input = "";
+                    while (true)
+                    {
+                        Console.Write("Waiting for input: ");
+                        input = Console.ReadLine();
 
-                Console.WriteLine("dc: " + dc + " servo: " + servo);
-                arduino.Move(dc, (eRotationalMove)servo);
+                        string[] chars = input.Split('&');
+                        if (chars.Length == 0)
+                        {
+                            break;
+                        }
+                        int dc = Convert.ToInt32(chars[0]);
+                        int servo = 0;
+                        if (chars.Length > 1)
+                        {
+                            servo = Convert.ToInt32(chars[1]);
+                        }
+
+                        Console.WriteLine("Performing: dc: {0} servo: {1}", dc, servo);
+                        arduino.Move(dc, (eRotationalMove)servo);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error occured: {0}", ex.Message);
+                }
             }
         }
     }

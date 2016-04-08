@@ -123,37 +123,33 @@ namespace Foosbot.VectorCalculation
         private readonly double D_ERR;
         private readonly double ALPHA_ERR;
 
+        /// <summary>
+        /// Last known ball coordinates from previous iteration
+        /// </summary>
         private BallCoordinates _storedBallCoordinates;
 
         private Vector2D VectorCalculationAlgorithm(BallCoordinates ballCoordinates)
         {
-            if (ballCoordinates.IsDefined)
-            {
-                if (_storedBallCoordinates.IsDefined)
-                {
+            //verify ball coordinates
+            if (ballCoordinates == null)
+                throw new ArgumentException(String.Format(
+                    "[{0}] Ball coordinates are null we are unable to calculate vector", 
+                        MethodBase.GetCurrentMethod().Name));
 
-                    Vector2D vector = CalculateVector(ballCoordinates);
-                    _storedBallCoordinates = ballCoordinates;
-                    return vector;
-                }
-                else
-                {
-                    _storedBallCoordinates = ballCoordinates;
-                    //ToDo: think of handling better undefined coordinates
-                    return new Vector2D();
-                }
-            }
-            //If we have received undefined coordinates -
-            //we will sent undefined vector and set last known coordinates as undefined
-            else //ball coordinates undefined
-            {
-                //ToDo: think of handling better undefined coordinates
-                _storedBallCoordinates = ballCoordinates;
-                return new Vector2D();
-            }
+            //create undefined vector in case we can't calculate vector
+            Vector2D vector = new Vector2D();
+
+            //calculate new vector if possible
+            if (ballCoordinates.IsDefined && _storedBallCoordinates.IsDefined)
+                vector = CalculateVector(ballCoordinates);
+
+            //update stored ball coordinates
+            _storedBallCoordinates = ballCoordinates;
+
+            //return calculated vector
+            return vector;
         }
 
-        static int counter = 0;
         private Vector2D CalculateVector(BallCoordinates ballCoordinates, double maxAngleError = 1.0)
         {
             if (ballCoordinates.Timestamp == _storedBallCoordinates.Timestamp)
@@ -163,7 +159,6 @@ namespace Foosbot.VectorCalculation
             }
             else
             {
-                if (maxAngleError == 1.0) counter = 0;
                 //find basic vector
                 double deltaT = (ballCoordinates.Timestamp - _storedBallCoordinates.Timestamp).TotalSeconds;// / 100;
                 double x = ballCoordinates.X - _storedBallCoordinates.X;
