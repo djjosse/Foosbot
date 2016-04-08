@@ -10,6 +10,7 @@
 
 using Foosbot.Common.Protocols;
 using System;
+using System.Reflection;
 
 namespace Foosbot.DecisionUnit
 {
@@ -238,17 +239,21 @@ namespace Foosbot.DecisionUnit
         }
 
         /// <summary>
-        /// Dynamic sector callculation method
+        /// Dynamic sector calculation method - sets DynamicSector property value.
+        /// * if coordinates and vector are defined AND vector is to the rod THEN sets dynamic sector due to ball velocity
+        /// * else sets minimal sector width
         /// </summary>
-        /// <param name="ballXcoordinate">Ball X Coordinate</param>
-        /// <param name="ballXvector">Ball X Vector Coordinate</param>
+        /// <param name="currentCoordinates">Current ball coordinates and vector</param>
         /// <returns>Dynamic Sector Width</returns>
-        public void CalculateDynamicSector(int ballXcoordinate, double ballXvector)
+        public int CalculateDynamicSector(BallCoordinates currentCoordinates)
         {
-            if (ballXcoordinate > _rodXCoordinate)
-                DynamicSector = Convert.ToInt32(_minSectorWidth + Math.Abs(ballXvector) * _sectorFactor);
+            if (currentCoordinates == null || currentCoordinates.Vector == null)
+                throw new ArgumentException(String.Format("[{0}] Current ball coordinates and vector are expected not to be null!", MethodBase.GetCurrentMethod().Name));
+            if (currentCoordinates.IsDefined && currentCoordinates.Vector.IsDefined && currentCoordinates.X > _rodXCoordinate)
+                DynamicSector = Convert.ToInt32(_minSectorWidth + Math.Abs(currentCoordinates.Vector.X) * _sectorFactor);
             else
                 DynamicSector = _minSectorWidth;
+            return DynamicSector;
         }
 
         /// <summary>

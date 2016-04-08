@@ -222,7 +222,7 @@ namespace Foosbot.DecisionUnit
         private RodAction EnterDecisionTreeBallInSector(Rod rod, BallCoordinates bfc, out int responsingPlayer)
         {
             //Stage 4 - get current ball relative position to rod
-            eXPositionRodRelative xRelative = XPositionToRodXPostion(bfc.X, rod.RodType);
+            eXPositionRodRelative xRelative = XPositionToRodXPosition(bfc.X, rod.RodType);
 
             //stage 9, 12, 5 - define player to move AND get current ball relative position to player
             eYPositionPlayerRelative yRelative = BallYPositionToPlayerYCoordinate(bfc.Y, rod, out responsingPlayer);
@@ -465,7 +465,7 @@ namespace Foosbot.DecisionUnit
         /// <param name="xBallPosition">X ball coordinate</param>
         /// <param name="currentRod">Current rod</param>
         /// <returns>X position relative to current rod</returns>
-        private eXPositionRodRelative XPositionToRodXPostion(int xBallPosition, eRod currentRod)
+        private eXPositionRodRelative XPositionToRodXPosition(int xBallPosition, eRod currentRod)
         {
             int xRodPosition = _rodXCoordinate[currentRod];
             if (xBallPosition + BALL_RADIUS > xRodPosition)

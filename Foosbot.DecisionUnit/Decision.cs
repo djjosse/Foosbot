@@ -15,6 +15,7 @@ using Foosbot.VectorCalculation;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 
 namespace Foosbot.DecisionUnit
 {
@@ -101,77 +102,82 @@ namespace Foosbot.DecisionUnit
 
         public override void Job()
         {
-            _publisher.Dettach(this);
+            try
+            {
+                _publisher.Dettach(this);
 
-            BallCoordinates ballCoordinates = _publisher.Data;
-            DecisionFlow(ballCoordinates);
-
-            _publisher.Attach(this);
+                BallCoordinates ballCoordinates = _publisher.Data;
+                DecisionFlow(ballCoordinates);
+            }
+            catch (ThreadInterruptedException)
+            {
+                /* Got new data while wait - it is good */
+            }
+            catch (Exception ex)
+            {
+                Log.Common.Error(String.Format("[{0}] [{1}]",
+                    MethodBase.GetCurrentMethod().DeclaringType.Name, ex.Message));
+            }
+            finally
+            {
+                _publisher.Attach(this);
+            }
         }
 
         /// <summary>
         /// Main Decision Flow
         /// </summary>
-        /// <param name="currentCoordinates"></param>
+        /// <param name="currentCoordinates">Ball current coordinates and vector to make decision on movement</param>
+        /// <exception cref="ArgumentException">Thrown in case current ball coordinates are null</exception>
         public void DecisionFlow(BallCoordinates currentCoordinates)
         {
-            if (currentCoordinates != null)
+            if (currentCoordinates == null)
+                throw new ArgumentException(String.Format("[{0}] Coordinates received from vector calculation unit are null",
+                    MethodBase.GetCurrentMethod().Name));
+
+            //Calculate Actual Possible Action Time
+            DateTime timeOfAction = FindActionTime(DELAYS);
+
+            //Calculate ball future coordinates
+            _bfc = FindBallFutureCoordinates(currentCoordinates, timeOfAction);
+
+            //Calculate dynamic sectors
+            CalculateDynamicSectors(currentCoordinates);
+
+            //Calculate Rod Intersection with a ball for all rods
+            CalculateSectorIntersection(currentCoordinates);
+
+            //Take decision for each rod
+            foreach (Rod rod in _rods.Values)
             {
-                //Calculate Actual Possible Action Time
-                DateTime timeOfAction = DateTime.Now + DELAYS;
-
-                //Calculate ball future coordinates
-                FindBallFutureCoordinates(currentCoordinates, timeOfAction);
-
-                //Calculate dynamic sectors
-                if (currentCoordinates.IsDefined && currentCoordinates.Vector.IsDefined)
-                    CalculateDynamicSectors(currentCoordinates.X, currentCoordinates.Vector.X);
-                else
-                    throw new NotSupportedException("Currently not defined coordinates are not supported by Pre-Decision Flow");
-
-                //Calculate Rod Intersection with a ball for all rods
-                CalculateSectorIntersection(currentCoordinates);
-
-                //Take decision for each rod
-                foreach (Rod rod in _rods.Values)
-                {
-                    RodAction action = _decisionTree.Decide(rod, _bfc);
-                    if (rod.RodType == eRod.GoalKeeper)
-                    {
-                        Log.Common.Info(String.Format("Decision {0} {1}", action.Linear.ToString(), action.Rotation.ToString()));
-                        Marks.DrawRodPlayers(eMarks.GoalKeeper, action.LinearMovement, action.Rotation);
-                    }
-                    if (rod.RodType == eRod.Defence)
-                    {
-                        Marks.DrawRodPlayers(eMarks.Defence, action.LinearMovement, action.Rotation);
-                    }
-                    if (rod.RodType == eRod.Midfield)
-                    {
-                        Marks.DrawRodPlayers(eMarks.Midfield, action.LinearMovement, action.Rotation);
-                    }
-                    if (rod.RodType == eRod.Attack)
-                    {
-                        Marks.DrawRodPlayers(eMarks.Attack, action.LinearMovement, action.Rotation);
-                    }
-                    RodActionPublishers[rod.RodType].UpdateAndNotify(action);
-                }
-            }
-            else
-            {
-                Log.Common.Error(String.Format("Coordinates received from vector calculation unit are null"));
+                RodAction action = _decisionTree.Decide(rod, _bfc);
+                eMarks rodMark = (eMarks)Enum.Parse(typeof(eMarks), rod.RodType.ToString(), true);
+                Marks.DrawRodPlayers(rodMark, action.LinearMovement, action.Rotation);
+                RodActionPublishers[rod.RodType].UpdateAndNotify(action);
             }
         }
 
         #region Private Member Functions
 
+        /// <summary>
+        /// Calculate Actual Possible Action Time
+        /// </summary>
+        /// <param name="delays">System delays</param>
+        /// <returns>Possible action time stamp</returns>
+        private DateTime FindActionTime(TimeSpan delays)
+        {
+            return DateTime.Now + DELAYS;
+        }
 
         /// <summary>
         /// Calculate Ball Future Coordinates in actual time system can responce
         /// </summary>
         /// <param name="currentCoordinates"><Current ball coordinates/param>
         /// <param name="actionTime">Actual system responce time</param>
-        private void FindBallFutureCoordinates(BallCoordinates currentCoordinates, DateTime actionTime)
+        /// <returns>Ball Future coordinates</returns>
+        private BallCoordinates FindBallFutureCoordinates(BallCoordinates currentCoordinates, DateTime actionTime)
         {
+            BallCoordinates bfc = currentCoordinates;
             try
             {
                 TimeSpan deltaT = actionTime - currentCoordinates.Timestamp;
@@ -183,7 +189,7 @@ namespace Foosbot.DecisionUnit
 
                     if (IsCoordinatesInRange(xfc, yfc))
                     {
-                        _bfc = new BallCoordinates(xfc, yfc, actionTime);
+                        bfc = new BallCoordinates(xfc, yfc, actionTime);
                     }
                     else
                     {
@@ -200,17 +206,17 @@ namespace Foosbot.DecisionUnit
             {
                 Log.Common.Error(String.Format("[{0}] Error: {1}", MethodBase.GetCurrentMethod().Name, e.Message));
             }
+            return bfc;
         }
 
         /// <summary>
-        /// Calcullates Dynamic Sectors per each rod
+        /// Calculates Dynamic Sectors per each rod
         /// </summary>
-        /// <param name="ballXcoordinate">Current Ball X Coordinate</param>
-        /// <param name="ballXvector">Current Ball Vector X Coordinate</param>
-        private void CalculateDynamicSectors(int ballXcoordinate, double ballXvector)
+        /// <param name="currentCoordinates">Current ball coordinates</param>
+        private void CalculateDynamicSectors(BallCoordinates currentCoordinates)
         {
             foreach (Rod rod in _rods.Values)
-                rod.CalculateDynamicSector(ballXcoordinate, ballXvector);
+                rod.CalculateDynamicSector(currentCoordinates);
         }
 
         /// <summary>
@@ -248,8 +254,10 @@ namespace Foosbot.DecisionUnit
                 }
                 else
                 {
-                    //BallCoordinates ricoshetCoordiantes = _vectorUtils.Ricochet(currentCoordinates);
-                    //CalculateSectorIntersection(rod, ricoshetCoordiantes);
+                    /*
+                    BallCoordinates ricoshetCoordiantes = _vectorUtils.Ricochet(currentCoordinates);
+                    CalculateSectorIntersection(rod, ricoshetCoordiantes);
+                    */
                 }
             }
             else
