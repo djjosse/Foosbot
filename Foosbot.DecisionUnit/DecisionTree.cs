@@ -12,6 +12,7 @@ using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Foosbot.DecisionUnit
 {
@@ -188,6 +189,16 @@ namespace Foosbot.DecisionUnit
         /// <returns>Rod Action to be performed</returns>
         private RodAction DefineActionAndRespondingPlayer(Rod rod, BallCoordinates bfc, out int respondingPlayer)
         {
+            if (rod == null)
+                throw new ArgumentException(String.Format(
+                     "[{0}] Unable to define action and responding player while rod argument is NULL!",
+                        MethodBase.GetCurrentMethod().Name));
+
+            if (bfc == null || !bfc.IsDefined)
+                throw new ArgumentException(String.Format(
+                    "[{0}] Unable to define action and responding player while ball coordinates are NULL or UNDEFINED!", 
+                        MethodBase.GetCurrentMethod().Name));
+
             RodAction action = null;
             respondingPlayer = -1;
             switch (IsBallInSector(bfc.X))
