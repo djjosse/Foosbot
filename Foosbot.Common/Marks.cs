@@ -185,7 +185,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                throw new NotSupportedException(String.Format("[{0}] Failed to draw ricochet mark. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw ricochet mark. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
@@ -227,7 +227,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                throw new NotSupportedException(String.Format("[{0}] Failed to draw rods marks. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw rods marks. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
@@ -288,7 +288,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                throw new NotSupportedException(String.Format("[{0}] Failed to draw rods players mark. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw rods players mark. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
@@ -345,7 +345,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                throw new NotSupportedException(String.Format("[{0}] Failed to draw player mark. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw player mark. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
@@ -380,7 +380,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                throw new NotSupportedException(String.Format("[{0}] Failed to draw ball mark. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw ball mark. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
@@ -444,7 +444,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                throw new NotSupportedException(String.Format("[{0}] Failed to draw calibration mark. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw calibration mark. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
@@ -511,7 +511,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                throw new NotSupportedException(String.Format("[{0}] Failed to draw ball vector mark. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw ball vector mark. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
