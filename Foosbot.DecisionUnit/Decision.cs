@@ -166,7 +166,6 @@ namespace Foosbot.DecisionUnit
             {
                 mmCoords.Vector = pointsCoords.Vector;
             }
-
             return mmCoords;
         }
 
