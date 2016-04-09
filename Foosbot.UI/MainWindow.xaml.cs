@@ -64,6 +64,11 @@ namespace Foosbot.UI
         /// </summary>
         private bool _isDemoMode = false;
 
+        /// <summary>
+        /// Current Foosbot mode
+        /// </summary>
+        private bool _isArduinoConnected = false;
+
         #endregion private members
 
         /// <summary>
@@ -88,6 +93,7 @@ namespace Foosbot.UI
                 InitializeStatistics();
                 //get operation mode from configuration file
                 _isDemoMode = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_DEMO_MODE);
+                _isArduinoConnected = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_ARDUINOS_CONNECTED);
 
                 //Set canvas background as green image
                 _guiImage.Background = System.Windows.Media.Brushes.Green;
@@ -145,11 +151,14 @@ namespace Foosbot.UI
                         decisionUnitPublishers.Add(rodType, decisionUnit.RodActionPublishers[rodType]);
                     }
 
-                    Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.ConnectedArduinos(decisionUnitPublishers);
-                    foreach (eRod key in communication.Keys)
+                    if (_isArduinoConnected)
                     {
-                        if (communication[key] != null)
-                            communication[key].Start();
+                        Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.ConnectedArduinos(decisionUnitPublishers);
+                        foreach (eRod key in communication.Keys)
+                        {
+                            if (communication[key] != null)
+                                communication[key].Start();
+                        }
                     }
                 };
                 worker2.RunWorkerAsync();

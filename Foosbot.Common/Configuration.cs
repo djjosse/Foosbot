@@ -34,6 +34,8 @@ namespace Foosbot
             /// </summary>
             public const string KEY_IS_DEMO_MODE = "IsDemoMode";
 
+            public const string KEY_IS_ARDUINOS_CONNECTED = "IsArduinosConnected";
+
             public const string TABLE_WIDTH = "Width";
             public const string TABLE_HEIGHT = "Height";
             public const string BALL_DIAMETR = "BallDiameter";
