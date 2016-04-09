@@ -59,8 +59,10 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="ConfigurationExtension.cs" />
+    <Compile Include="Contracts\IInitializable.cs" />
     <Compile Include="Enums\eMarks.cs" />
     <Compile Include="Exceptions\ConfigurationException.cs" />
+    <Compile Include="Exceptions\InitializationException.cs" />
     <Compile Include="Multithreading\BackgroundFlow.cs" />
     <Compile Include="Multithreading\BackgroundFlowPublisher.cs" />
     <Compile Include="Multithreading\IFlow.cs" />

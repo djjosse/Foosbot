@@ -88,5 +88,11 @@ namespace Foosbot
             return Configuration.Attributes.GetValue<int>(
                 String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_STOPPER_DIST));
         }
+
+        public static int GetTicksPerRod(this Configuration configuration, eRod rodType)
+        {
+            return Configuration.Attributes.GetValue<int>(
+                String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_TICKS));
+        }
     }
 }

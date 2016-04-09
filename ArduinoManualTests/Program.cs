@@ -25,7 +25,7 @@ namespace ArduinoManualTests
                 {
                     arduino.OpenArduinoComPort();
                     Console.WriteLine("Arduino port {0} is open!", portsList[0]);
-                    arduino.InitializeArduino();
+                    arduino.Initialize();
                     Console.WriteLine("Arduino port is initialized!");
                     string input = "";
                     while (true)

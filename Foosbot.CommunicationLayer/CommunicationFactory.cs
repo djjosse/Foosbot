@@ -25,6 +25,7 @@ namespace Foosbot.CommunicationLayer
 
 
             allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, portsList[0]);
+            allArduinos[eRod.GoalKeeper].InitializeRod();
 
             return allArduinos;
         }

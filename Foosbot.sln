@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C2F78F9-8268-4910-9110-0559764EB3AD}"
 	ProjectSection(SolutionItems) = preProject
 		bin\config.ini = bin\config.ini
+		External\NSubstitute\NSubstitute.dll = External\NSubstitute\NSubstitute.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevDemos", "DevDemos\DevDemos.csproj", "{DB02397F-544C-48B8-AD9F-A0AD4836B6E5}"
@@ -33,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoManualTests", "ArduinoManualTests\ArduinoManualTests.csproj", "{33953F77-9F27-4BCA-BC38-5F70A38F30ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecisionUnitTest", "DecisionUnitTest\DecisionUnitTest.csproj", "{497943E7-F2A6-42EC-AF16-804AEB5C897D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.CommunicationLayerTest", "Foosbot.CommunicationLayerTest\Foosbot.CommunicationLayerTest.csproj", "{443B34D7-1E51-447E-941D-86DDF63D471C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -154,6 +157,16 @@ Global
 		{497943E7-F2A6-42EC-AF16-804AEB5C897D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{497943E7-F2A6-42EC-AF16-804AEB5C897D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{497943E7-F2A6-42EC-AF16-804AEB5C897D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{443B34D7-1E51-447E-941D-86DDF63D471C}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -163,5 +176,6 @@ Global
 		{F4AE2316-359B-4A83-9361-2C1EBD701A62} = {0769A23B-9177-407E-A0A5-602D96AF517C}
 		{33953F77-9F27-4BCA-BC38-5F70A38F30ED} = {0769A23B-9177-407E-A0A5-602D96AF517C}
 		{497943E7-F2A6-42EC-AF16-804AEB5C897D} = {0769A23B-9177-407E-A0A5-602D96AF517C}
+		{443B34D7-1E51-447E-941D-86DDF63D471C} = {0769A23B-9177-407E-A0A5-602D96AF517C}
 	EndGlobalSection
 EndGlobal

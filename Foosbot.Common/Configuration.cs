@@ -56,6 +56,7 @@ namespace Foosbot
             public const string SUBKEY_OFFSET_Y = "_OffsetY";
             public const string SUBKEY_STOPPER_DIST = "_StopperDistance";
             public const string SUBKEY_BEST_EFFORT = "_BestEffort";
+            public const string SUBKEY_TICKS = "_Ticks";
         }
 
         /// <summary>
