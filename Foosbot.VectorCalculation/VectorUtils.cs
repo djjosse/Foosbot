@@ -132,6 +132,7 @@ namespace Foosbot.VectorCalculation
                 Marks.DrawRicochetMark(Convert.ToInt32(intersectionPoint.X), Convert.ToInt32(intersectionPoint.Y), true);
                 
                 DateTime ricocheTime = FindRicochetTime(ballCoordinates, intersectionPoint);
+                
                 Vector2D vector = FindIntersectionVector(ballCoordinates.Vector, intersectionPoint);
                 
                 BallCoordinates coordinates = new BallCoordinates(
@@ -143,8 +144,9 @@ namespace Foosbot.VectorCalculation
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] {1}", MethodBase.GetCurrentMethod().Name, e.Message));
-                return new BallCoordinates(ballCoordinates.Timestamp);
+                throw new NotSupportedException(String.Format(
+                    "[{0}] Failed to find ricochet coordinates. Reason: {1}",
+                        MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
 

@@ -161,25 +161,33 @@ namespace Foosbot
         /// <param name="circleColor">the color of the stroke of the ricochet mark : optional</param>
         public static void DrawRicochetMark(int x, int y, bool isLocation = false, SolidColorBrush circleColor = null)
         {
-            if (isLocation)
+            try
             {
-                ConvertToLocation(ref x, ref y);
+
+                if (isLocation)
+                {
+                    ConvertToLocation(ref x, ref y);
+                }
+
+                const int radius = 10;
+                const int key = (int)eMarks.RicochetMark;
+                Point presentationCenter = new Point(x * _actualWidthRate, y * _actualHeightRate);
+                int presentationRadius = Convert.ToInt32(radius * ((_actualWidthRate + _actualHeightRate) / 2));
+
+                _dispatcher.Invoke(new ThreadStart(delegate
+                {
+                    (_markups[key] as Shape).StrokeThickness = 2;
+                    (_markups[key] as Shape).Stroke = (circleColor == null) ? Brushes.Chocolate : circleColor;
+                    _markups[key].Width = presentationRadius * 2;
+                    _markups[key].Height = presentationRadius * 2;
+                    Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
+                    Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
+                }));
             }
-
-            const int radius = 10;
-            const int key = (int)eMarks.RicochetMark;
-            Point presentationCenter = new Point(x * _actualWidthRate, y * _actualHeightRate);
-            int presentationRadius = Convert.ToInt32(radius * ((_actualWidthRate + _actualHeightRate) / 2));
-
-            _dispatcher.Invoke(new ThreadStart(delegate
+            catch(Exception)
             {
-                (_markups[key] as Shape).StrokeThickness = 2;
-                (_markups[key] as Shape).Stroke = (circleColor == null) ? Brushes.Chocolate : circleColor;
-                _markups[key].Width = presentationRadius * 2;
-                _markups[key].Height = presentationRadius * 2;
-                Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
-                Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
-            }));
+                Log.Common.Debug(String.Format(""));
+            }
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace Foosbot.VectorCalculationTest
             _vectorUtils = new VectorUtilsWrapper();
         }
 
-        #region FindNearestIntersectionPoint() Tests
+        #region FindNearestIntersectionPoint
 
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
@@ -237,7 +237,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        #endregion FindNearestIntersectionPoint() Tests
+        #endregion FindNearestIntersectionPoint
 
         #region FindRicochetTime
 
@@ -347,5 +347,71 @@ namespace Foosbot.VectorCalculationTest
         }
 
         #endregion FindIntersectionVector
+
+        #region Ricochet
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void Ricochet_UndefinedCoordinates()
+        {
+            _initialCoordinates = new BallCoordinates(DateTime.Now);
+            _vectorUtils.Ricochet(_initialCoordinates);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void Ricochet_NullCoordinates()
+        {
+            _initialCoordinates = null;
+            _vectorUtils.Ricochet(_initialCoordinates);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void Ricochet_UndefinedVector()
+        {
+            _initialCoordinates = new BallCoordinates(10, 10, DateTime.Now);
+            _initialCoordinates.Vector = new Vector2D();
+            _vectorUtils.Ricochet(_initialCoordinates);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void Ricochet_NullVector()
+        {
+            _initialCoordinates = new BallCoordinates(10, 10, DateTime.Now);
+            _vectorUtils.Ricochet(_initialCoordinates);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void Ricochet_ZeroVelocity()
+        {
+            _initialCoordinates = new BallCoordinates(10, 10, DateTime.Now);
+            _initialCoordinates.Vector = new Vector2D(0, 0);
+            _vectorUtils.Ricochet(_initialCoordinates);
+        }
+
+        [TestMethod]
+        public void Ricochet_FromCoord100_50_SpeedMinus100_0()
+        {
+            DateTime initTime = DateTime.Now;
+            _initialCoordinates = new BallCoordinates(100, 50, initTime);
+            _initialCoordinates.Vector = new Vector2D(-100, 0);
+
+            DateTime expectedTime = initTime + TimeSpan.FromSeconds(1);
+            BallCoordinates expectedResult = new BallCoordinates(VectorUtilsWrapper.XMIN, 50, expectedTime);
+            expectedResult.Vector = new Vector2D(100 * VectorUtilsWrapper.RICOCHE, 0);
+
+            BallCoordinates actualResult = _vectorUtils.Ricochet(_initialCoordinates);
+
+            Assert.AreEqual(expectedResult.X, actualResult.X);
+            Assert.AreEqual(expectedResult.Y, actualResult.Y);
+            Assert.AreEqual(expectedResult.Timestamp, actualResult.Timestamp);
+            Assert.AreEqual(expectedResult.Vector.X, actualResult.Vector.X);
+            Assert.AreEqual(expectedResult.Vector.Y, actualResult.Vector.Y);
+        }
+
+        #endregion Ricochet
     }
 }
