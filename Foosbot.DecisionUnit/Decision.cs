@@ -32,14 +32,24 @@ namespace Foosbot.DecisionUnit
         private readonly TimeSpan DELAYS;
 
         /// <summary>
-        /// Table X lenght (width) in Foosbot world
+        /// Table X lenght (width) in Foosbot world (POINTS)
         /// </summary>
-        private readonly int XMAX;
+        private readonly int XMAX_PTS;
 
         /// <summary>
-        /// Table Y lenght (height) in Foosbot world
+        /// Table Y lenght (height) in Foosbot world (POINTS)
         /// </summary>
-        private readonly int YMAX;
+        private readonly int YMAX_PTS;
+
+        /// <summary>
+        /// Table X lenght (width) in Foosbot world (MM)
+        /// </summary>
+        private readonly int XMAX_MM;
+
+        /// <summary>
+        /// Table Y lenght (height) in Foosbot world (MM)
+        /// </summary>
+        private readonly int YMAX_MM;
 
         #endregion Constants
 
@@ -90,8 +100,11 @@ namespace Foosbot.DecisionUnit
 
             //Set constants from configuration file
             DELAYS = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
-            XMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
-            YMAX = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+            XMAX_PTS = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+            YMAX_PTS = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+
+            XMAX_MM = Configuration.Attributes.GetValue<int>(Configuration.Names.TABLE_WIDTH);
+            YMAX_MM = Configuration.Attributes.GetValue<int>(Configuration.Names.TABLE_HEIGHT);
 
             RodActionPublishers = new Dictionary<eRod, RodActionPublisher>();
             foreach(eRod rodType in Enum.GetValues(typeof(eRod)))
@@ -125,6 +138,39 @@ namespace Foosbot.DecisionUnit
         }
 
         /// <summary>
+        /// Convert ball coordinates from point units to mm units
+        /// </summary>
+        /// <param name="pointsCoords">Coordinates in points</param>
+        /// <returns>Coordinates in millimeters</returns>
+        public BallCoordinates ConvertPointsToMillimeters(BallCoordinates pointsCoords)
+        {
+            BallCoordinates mmCoords = null;
+            if (pointsCoords != null && pointsCoords.IsDefined)
+            {
+                int xMm = pointsCoords.X * XMAX_MM / XMAX_PTS;
+                int yMm = pointsCoords.Y * YMAX_MM / YMAX_PTS;
+                mmCoords = new BallCoordinates(xMm, yMm, pointsCoords.Timestamp);
+            }
+            else
+            {
+                return pointsCoords;
+            }
+
+            if (pointsCoords.Vector != null && pointsCoords.Vector.IsDefined)
+            {
+                double xMm = pointsCoords.Vector.X * (double)XMAX_MM / (double)XMAX_PTS;
+                double yMm = pointsCoords.Vector.Y * (double)YMAX_MM / (double)YMAX_PTS;
+                mmCoords.Vector = new Vector2D(xMm, yMm);
+            }
+            else
+            {
+                mmCoords.Vector = pointsCoords.Vector;
+            }
+
+            return mmCoords;
+        }
+
+        /// <summary>
         /// Main Decision Flow
         /// </summary>
         /// <param name="currentCoordinates">Ball current coordinates and vector to make decision on movement</param>
@@ -134,6 +180,9 @@ namespace Foosbot.DecisionUnit
             if (currentCoordinates == null)
                 throw new ArgumentException(String.Format("[{0}] Coordinates received from vector calculation unit are null",
                     MethodBase.GetCurrentMethod().Name));
+
+            //Convert pts and pts/sec to mm and mm/sec
+            currentCoordinates = ConvertPointsToMillimeters(currentCoordinates);
 
             //Calculate Actual Possible Action Time
             DateTime timeOfAction = FindActionTime(DELAYS);
@@ -288,7 +337,7 @@ namespace Foosbot.DecisionUnit
         /// <returns>[True] if in range, [False] otherwise</returns>
         public bool IsCoordinatesXInRange(int xCoordinate)
         {
-            return (xCoordinate >= 0 && xCoordinate <= XMAX);
+            return (xCoordinate >= 0 && xCoordinate <= XMAX_MM);
         }
 
         /// <summary>
@@ -298,7 +347,7 @@ namespace Foosbot.DecisionUnit
         /// <returns>[True] if in range, [False] otherwise</returns>
         public bool IsCoordinatesYInRange(int yCoordinate)
         {
-            return (yCoordinate >= 0 && yCoordinate <= YMAX);
+            return (yCoordinate >= 0 && yCoordinate <= YMAX_MM);
         }
 
         #endregion is coordinates in range
