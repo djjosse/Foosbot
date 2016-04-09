@@ -80,6 +80,19 @@ namespace Foosbot
         private Dictionary<string, string> _local;
 
         /// <summary>
+        /// Get the number of attributes in configuration file
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                if (_local == null) 
+                    return 0;
+                return _local.Count;
+            }
+        }
+
+        /// <summary>
         /// Singleton Constructor
         /// </summary>
         private Configuration() 
@@ -94,11 +107,11 @@ namespace Foosbot
         {
             get
             {
-                if (_attributes == null)
+                if (_attributes == null || _attributes.Count < 1)
                 {
                     lock(syncToken)
                     {
-                        if (_attributes == null)
+                        if (_attributes == null || _attributes.Count < 1)
                             _attributes = new Configuration();
                     }
                 }
