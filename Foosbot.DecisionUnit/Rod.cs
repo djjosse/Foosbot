@@ -226,6 +226,7 @@ namespace Foosbot.DecisionUnit
             //Calculate Rod Minimal Sector
             int actualRodsDist = Configuration.Attributes.GetValue<int>(Configuration.Names.TABLE_RODS_DIST);
             _minSectorWidth = actualRodsDist * foosbotWidth / tableWidth;
+            DynamicSector = _minSectorWidth;
 
             //Set sector factor to calculate dynamic sector based ball velocity
             _sectorFactor = Configuration.Attributes.GetValue<double>(Configuration.Names.SECTOR_FACTOR);

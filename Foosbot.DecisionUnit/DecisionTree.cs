@@ -49,12 +49,12 @@ namespace Foosbot.DecisionUnit
         /// <summary>
         /// Sector Start Coordinate X
         /// </summary>
-        private int sectorStart;
+        private int _sectorStart;
 
         /// <summary>
         /// Sector End Coordinate X
         /// </summary>
-        private int sectorEnd;
+        private int _sectorEnd;
 
         /// <summary>
         /// Ball Radius
@@ -113,6 +113,16 @@ namespace Foosbot.DecisionUnit
             PLAYER_WIDTH = Configuration.Attributes.GetValue<int>(Configuration.Names.KEY_PLAYER_WIDTH);
         }
 
+        /// <summary>
+        /// Calculate sector start and end coordinates
+        /// </summary>
+        /// <param name="rod">Current Rod</param>
+        public void DefineSectorStartAndEnd(Rod rod)
+        {
+            _sectorStart = rod.RodXCoordinate - rod.DynamicSector / 2;
+            _sectorEnd = rod.RodXCoordinate + rod.DynamicSector / 2;
+        }
+
         public RodAction Decide(Rod rod, BallCoordinates bfc)
         {
             //set current coordinates and current rotational position of rod
@@ -121,8 +131,7 @@ namespace Foosbot.DecisionUnit
             _currentRodRotationPosition[rod.RodType] = _lastDecidedRodRotationPosition[rod.RodType];
 
             //calculate sector start and end coordinates
-            sectorStart = rod.RodXCoordinate - rod.DynamicSector / 2;
-            sectorEnd = rod.RodXCoordinate + rod.DynamicSector / 2;
+            DefineSectorStartAndEnd(rod);
 
             //Player to respond  (index base is 0)
             int respondingPlayer = -1;
@@ -198,10 +207,12 @@ namespace Foosbot.DecisionUnit
                         BallYPositionToPlayerYCoordinate(rod.IntersectionY, rod, out respondingPlayer);
                     }
                     else
+                    {
                         //Ball Vector Direction is FROM Current Rod
                         action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.BEST_EFFORT);
                         //not really relevant
                         respondingPlayer = 1;
+                    }
                     break;
                 //Ball is behind Current Rod Sector
                 case eXPositionSectorRelative.BEHIND_SECTOR:
@@ -506,9 +517,9 @@ namespace Foosbot.DecisionUnit
         /// <returns>Ball position relative to sector of current rod</returns>
         private eXPositionSectorRelative IsBallInSector(int ballXcoordinate)
         {
-            if (ballXcoordinate < sectorStart)
+            if (ballXcoordinate < _sectorStart)
                 return eXPositionSectorRelative.BEHIND_SECTOR;
-            else if (ballXcoordinate > sectorEnd)
+            else if (ballXcoordinate > _sectorEnd)
                 return eXPositionSectorRelative.AHEAD_SECTOR;
             else
                 return eXPositionSectorRelative.IN_SECTOR;
