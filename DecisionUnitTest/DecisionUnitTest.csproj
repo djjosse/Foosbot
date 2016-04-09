@@ -54,6 +54,20 @@
     <Compile Include="DecisionTreeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">
+      <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
+      <Name>Foosbot.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Foosbot.DecisionUnit\Foosbot.DecisionUnit.csproj">
+      <Project>{d9a1501a-4b90-4835-96c1-b847ba54026d}</Project>
+      <Name>Foosbot.DecisionUnit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Foosbot.VectorCalculation\Foosbot.VectorCalculation.csproj">
+      <Project>{023c6c34-e785-4786-86ae-1b2d8daa06bf}</Project>
+      <Name>Foosbot.VectorCalculation</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
