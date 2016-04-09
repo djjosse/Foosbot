@@ -32,6 +32,7 @@ namespace DecisionUnitTest
         /// </summary>
         DecisionTree _tree;
 
+
         [TestInitialize]
         public void DecisionTreeTestInit()
         {
@@ -102,6 +103,117 @@ namespace DecisionUnitTest
             //ball coordinates define in mm
             BallCoordinates ballCoords = new BallCoordinates(MIDFIELD_ROD_X, 200, DateTime.Now);
             ballCoords.Vector = new Vector2D(0, 0);
+
+            Rod rod = new Rod(eRod.Attack);
+            rod.CalculateDynamicSector(ballCoords);
+
+            int respondingPlayer;
+
+            _tree.DefineSectorStartAndEnd(rod);
+            RodAction actualResult = _defineActionAndRespondingPlayerInternal.Invoke(rod, ballCoords, out respondingPlayer);
+
+            Assert.AreEqual(eRotationalMove.RISE, actualResult.Rotation);
+            Assert.AreEqual(eLinearMove.BEST_EFFORT, actualResult.Linear);
+        }
+
+        [TestMethod]
+        public void DefineActionAndRespondingPlayer_BallVectorFromRodIsAheadOfDefence_DefenceBestEffort()
+        {
+            Init_DefineActionAndRespondingPlayer();
+
+            //ball coordinates define in mm
+            BallCoordinates ballCoords = new BallCoordinates(MIDFIELD_ROD_X, 200, DateTime.Now);
+            ballCoords.Vector = new Vector2D(20, 10);
+
+            Rod rod = new Rod(eRod.Defence);
+            rod.CalculateDynamicSector(ballCoords);
+
+            int respondingPlayer;
+
+            _tree.DefineSectorStartAndEnd(rod);
+            RodAction actualResult = _defineActionAndRespondingPlayerInternal.Invoke(rod, ballCoords, out respondingPlayer);
+
+            Assert.AreEqual(eRotationalMove.DEFENCE, actualResult.Rotation);
+            Assert.AreEqual(eLinearMove.BEST_EFFORT, actualResult.Linear);
+        }
+
+        [TestMethod]
+        public void DefineActionAndRespondingPlayer_BallVectorToRodIsAheadOfDefence_DefenceVectorBased()
+        {
+            Init_DefineActionAndRespondingPlayer();
+
+            //ball coordinates define in mm
+            BallCoordinates ballCoords = new BallCoordinates(MIDFIELD_ROD_X, 200, DateTime.Now);
+            ballCoords.Vector = new Vector2D(-20, 10);
+
+            Rod rod = new Rod(eRod.Defence);
+            rod.CalculateDynamicSector(ballCoords);
+
+            int respondingPlayer;
+
+            _tree.DefineSectorStartAndEnd(rod);
+
+            rod.SetBallIntersection(100, 100, DateTime.Now + TimeSpan.FromSeconds(2));
+            RodAction actualResult = _defineActionAndRespondingPlayerInternal.Invoke(rod, ballCoords, out respondingPlayer);
+
+            Assert.AreEqual(eRotationalMove.DEFENCE, actualResult.Rotation);
+            Assert.AreEqual(eLinearMove.VECTOR_BASED, actualResult.Linear);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void DefineActionAndRespondingPlayer_BallCoordinatesNull()
+        {
+            Init_DefineActionAndRespondingPlayer();
+            Rod rod = new Rod(eRod.Defence);
+            BallCoordinates ballCoords = null;
+            int respondingPlayer;
+            RodAction actualResult = _defineActionAndRespondingPlayerInternal.Invoke(rod, ballCoords, out respondingPlayer);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void DefineActionAndRespondingPlayer_BallCoordinatesUndefined()
+        {
+            Init_DefineActionAndRespondingPlayer();
+            Rod rod = new Rod(eRod.Defence);
+            BallCoordinates ballCoords = new BallCoordinates(DateTime.Now);
+            int respondingPlayer;
+            RodAction actualResult = _defineActionAndRespondingPlayerInternal.Invoke(rod, ballCoords, out respondingPlayer);
+        }
+
+        [TestMethod]
+        public void DefineActionAndRespondingPlayer_BallVectorNullIsAheadOfDefence_DefenceBestEffort()
+        {
+            Init_DefineActionAndRespondingPlayer();
+
+            //ball coordinates define in mm
+            BallCoordinates ballCoords = new BallCoordinates(MIDFIELD_ROD_X, 200, DateTime.Now);
+            ballCoords.Vector = null;
+
+            BallCoordinates ballCoordsForDynamicSectorCalc = new BallCoordinates(MIDFIELD_ROD_X, 200, DateTime.Now);
+            ballCoordsForDynamicSectorCalc.Vector = new Vector2D();
+
+            Rod rod = new Rod(eRod.Defence);
+            rod.CalculateDynamicSector(ballCoordsForDynamicSectorCalc);
+
+            int respondingPlayer;
+
+            _tree.DefineSectorStartAndEnd(rod);
+            RodAction actualResult = _defineActionAndRespondingPlayerInternal.Invoke(rod, ballCoords, out respondingPlayer);
+
+            Assert.AreEqual(eRotationalMove.DEFENCE, actualResult.Rotation);
+            Assert.AreEqual(eLinearMove.BEST_EFFORT, actualResult.Linear);
+        }
+
+        [TestMethod]
+        public void DefineActionAndRespondingPlayer_BallVectorUndefinedIsBehindOfAttack_DefenceBestEffort()
+        {
+            Init_DefineActionAndRespondingPlayer();
+
+            //ball coordinates define in mm
+            BallCoordinates ballCoords = new BallCoordinates(MIDFIELD_ROD_X, 200, DateTime.Now);
+            ballCoords.Vector = new Vector2D();
 
             Rod rod = new Rod(eRod.Attack);
             rod.CalculateDynamicSector(ballCoords);
