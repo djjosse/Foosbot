@@ -214,7 +214,7 @@ namespace Foosbot.DecisionUnit
         /// <returns>Possible action time stamp</returns>
         private DateTime FindActionTime(TimeSpan delays)
         {
-            return DateTime.Now + DELAYS;
+            return DateTime.Now + delays;
         }
 
         /// <summary>

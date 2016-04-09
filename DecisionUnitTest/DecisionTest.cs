@@ -20,7 +20,7 @@ namespace DecisionUnitTest
         [TestMethod]
         public void FindActionTime_Test()
         {
-            TimeSpan deltaMilliseconds = TimeSpan.FromMilliseconds(5);
+            TimeSpan deltaMilliseconds = TimeSpan.FromMilliseconds(100);
             TimeSpan delay = TimeSpan.FromMilliseconds(5);
 
             PrivateObject po = new PrivateObject(typeof(Decision), new BallLocationPublisher(null));
@@ -31,10 +31,9 @@ namespace DecisionUnitTest
             DateTime expectedPlusDelta = expected + deltaMilliseconds;
             DateTime expectedMinusDelta = expected - deltaMilliseconds;
 
-            if (expectedPlusDelta > actual && expectedMinusDelta < actual)
-                Assert.IsTrue(true);
-            else
-                Assert.IsTrue(false);
+            Assert.IsTrue(expectedPlusDelta > actual);
+            Assert.IsTrue(expectedMinusDelta < actual);
+
         }
 
         #endregion Find Action Time Test
