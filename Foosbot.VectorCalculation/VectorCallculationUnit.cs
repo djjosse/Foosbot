@@ -129,16 +129,20 @@ namespace Foosbot.VectorCalculation
         {
             //verify ball coordinates
             if (ballCoordinates == null)
+            {
                 throw new ArgumentException(String.Format(
-                    "[{0}] Ball coordinates are null we are unable to calculate vector", 
+                    "[{0}] Ball coordinates are null we are unable to calculate vector",
                         MethodBase.GetCurrentMethod().Name));
+            }
 
             //create undefined vector in case we can't calculate vector
             Vector2D vector = new Vector2D();
 
             //calculate new vector if possible
             if (ballCoordinates.IsDefined && _storedBallCoordinates.IsDefined)
+            {
                 vector = CalculateVector(ballCoordinates);
+            }
 
             //update stored ball coordinates
             _storedBallCoordinates = ballCoordinates;
