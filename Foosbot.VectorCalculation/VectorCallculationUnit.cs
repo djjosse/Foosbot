@@ -53,6 +53,8 @@ namespace Foosbot.VectorCalculation
 
             D_ERR = Configuration.Attributes.GetValue<double>(Configuration.Names.VECTOR_CALC_DISTANCE_ERROR);
             ALPHA_ERR = Configuration.Attributes.GetValue<double>(Configuration.Names.VECTOR_CALC_ANGLE_ERROR);
+
+            //Marks.DrawRods(5);
         }
 
         public override void Job()
@@ -80,11 +82,6 @@ namespace Foosbot.VectorCalculation
                 
 
                 ballCoordinates.Vector = VectorCalculationAlgorithm(ballCoordinates);
-
-                //TODO: implement vector calculation here
-                //...
-                //Marks.DrawBall(new Point(100, 100), 20, true);
-                //Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL, new System.Windows.Point(200, 200), 50);
 
                 if (ballCoordinates.IsDefined && ballCoordinates.Vector.IsDefined)
                 {

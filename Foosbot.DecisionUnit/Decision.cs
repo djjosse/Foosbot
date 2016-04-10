@@ -169,6 +169,17 @@ namespace Foosbot.DecisionUnit
             return mmCoords;
         }
 
+
+        /// <summary>
+        /// Convert ball coordinates from point units to mm units
+        /// </summary>
+        /// <param name="pointsCoords">Coordinates in points</param>
+        /// <returns>Coordinates in millimeters</returns>
+        public int ConvertMillimetersToPoints(int millimeterUnit)
+        {
+            return millimeterUnit * YMAX_PTS / YMAX_MM;
+        }
+
         /// <summary>
         /// Main Decision Flow
         /// </summary>
@@ -199,12 +210,17 @@ namespace Foosbot.DecisionUnit
             foreach (Rod rod in _rods.Values)
             {
                 RodAction action = _decisionTree.Decide(rod, _bfc);
+
                 if (rod.RodType == eRod.GoalKeeper)
-                    Log.Common.Debug(String.Format(
-                     "[{0}] New action for {1} DC: {2} pts, Servo: {3}",
+                {
+                    Log.Common.Debug(String.Format("[{0}] New action for {1} DC: {2} pts, Servo: {3}",
                             MethodBase.GetCurrentMethod().Name, rod.RodType.ToString(), action.LinearMovement, action.Rotation.ToString()));
+                    int test =   ConvertMillimetersToPoints(action.LinearMovement); 
+                }
+
                 eMarks rodMark = (eMarks)Enum.Parse(typeof(eMarks), rod.RodType.ToString(), true);
-                Marks.DrawRodPlayers(rodMark, action.LinearMovement, action.Rotation);
+
+                Marks.DrawRodPlayers(rodMark, ConvertMillimetersToPoints(action.LinearMovement), action.Rotation);
                 RodActionPublishers[rod.RodType].UpdateAndNotify(action);
             }
         }

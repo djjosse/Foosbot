@@ -264,6 +264,7 @@ namespace Foosbot
                 int y = Configuration.Attributes.GetPlayersOffsetYPerRod(mark);
 
                 int movmentOffset = y + deltaYMovment;
+                //int movmentOffset = y + deltaYMovment;
 
                 if (isLocation)
                 {
