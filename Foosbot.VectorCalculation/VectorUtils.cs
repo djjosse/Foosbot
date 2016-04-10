@@ -20,14 +20,23 @@ namespace Foosbot.VectorCalculation
         /// <summary>
         /// Initialization Method - reads all constants from Configuration file
         /// </summary>
-        public void Initialize()
+        /// <param name="isMM">If [True] all will be calculated in mm, [False] otherwise in points [default is points (False)]</param>
+        public void Initialize(bool isMM = false)
         {
             if (!_isInitilized)
             {
                 XMinBorder = 0;
                 YMinBorder = 0;
-                XMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
-                YMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+                if (isMM) //use mm
+                {
+                    XMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_WIDTH);
+                    YMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_HEIGHT);
+                }
+                else //use points
+                {
+                    XMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+                    YMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+                }
                 RicocheFactor = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
                 _isInitilized = true;
             }

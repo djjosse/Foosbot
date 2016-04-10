@@ -27,6 +27,7 @@ namespace ArduinoManualTests
                     Console.WriteLine("Arduino port {0} is open!", portsList[0]);
                     arduino.Initialize();
                     Console.WriteLine("Arduino port is initialized!");
+                    arduino.MaxTicks = 3100;
                     string input = "";
                     while (true)
                     {
