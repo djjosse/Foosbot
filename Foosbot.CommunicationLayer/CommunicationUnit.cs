@@ -131,7 +131,7 @@ namespace Foosbot.CommunicationLayer
                 ticks = _ticksPerRod - TICKS_BUFFER;
             if (ticks <= TICKS_BUFFER)
                 ticks = TICKS_BUFFER;
-            ticks = _ticksPerRod - ticks;
+            ticks = _ticksPerRod; // -ticks;
             return ticks;
         }
     }
