@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Decision.cs" />
     <Compile Include="DecisionTree.cs" />
+    <Compile Include="DecisionHelper.cs" />
     <Compile Include="Enums\eXPositionSectorRelative.cs" />
     <Compile Include="Enums\eXPositionRodRelative.cs" />
     <Compile Include="Enums\eYPositionPlayerRelative.cs" />

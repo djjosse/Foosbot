@@ -55,9 +55,11 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DecisionTest.cs" />
+    <Compile Include="DecisionHelperTest.cs" />
     <Compile Include="DecisionTreeTest.cs" />
     <Compile Include="DecisionWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RodWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">

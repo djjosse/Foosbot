@@ -26,52 +26,52 @@ namespace Foosbot.DecisionUnit
         /// <summary>
         /// Rod type private readonly member
         /// </summary>
-        private readonly eRod _rodType;
+        protected eRod _rodType;
 
         /// <summary>
         /// Distance between each 2 player on current rod
         /// </summary>
-        private readonly int _playerDistance;
+        protected int _playerDistance;
 
         /// <summary>
         /// Number of players in current rod
         /// </summary>
-        private readonly int _playersCount;
+        protected int _playersCount;
 
         /// <summary>
         /// Distance from table border (Y min) to head of first player
         /// </summary>
-        private readonly int _offsetY;
+        protected int _offsetY;
 
         /// <summary>
         /// Distance between stoppers of current rod
         /// </summary>
-        private readonly int _stopperDistance;
+        protected int _stopperDistance;
 
         /// <summary>
         /// Rod X coordinate in Foosbot world private readonly member
         /// </summary>
-        private readonly int _rodXCoordinate;
+        protected int _rodXCoordinate;
 
         /// <summary>
         /// Minimal Sector Width in Foosbot world private readonly member
         /// </summary>
-        private readonly int _minSectorWidth;
+        protected int _minSectorWidth;
 
         /// <summary>
         /// Sector Factor used to calculate dynamic sector private readonly member
         /// </summary>
-        private readonly double _sectorFactor;
+        protected double _sectorFactor;
 
         /// <summary>
         /// Sector Intersection Time private member
         /// </summary>
-        private DateTime _sectorIntersectionTime;
+        protected DateTime _sectorIntersectionTime;
 
         /// <summary>
         /// Best Effort First Player Y Coordinate 
         /// </summary>
-        private int _bestEffort;
+        protected int _bestEffort;
 
         #endregion Private Members
 
@@ -193,7 +193,7 @@ namespace Foosbot.DecisionUnit
         /// <summary>
         /// Dynamic Sector Get Property
         /// </summary>
-        public int DynamicSector { get; private set; }
+        public int DynamicSector { get; protected set; }
 
         /// <summary>
         /// Best Effort First Player Y Coordinate 
@@ -207,6 +207,11 @@ namespace Foosbot.DecisionUnit
         }
 
         #endregion Properties
+
+        /// <summary>
+        /// Constructor for UT
+        /// </summary>
+        protected Rod() {  }
 
         /// <summary>
         /// Constructor for Rod

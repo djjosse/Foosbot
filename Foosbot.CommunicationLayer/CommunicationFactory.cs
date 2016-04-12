@@ -22,7 +22,8 @@ namespace Foosbot.CommunicationLayer
 
             //TODO: Decide how to get all
             string[] portsList = SerialPort.GetPortNames();
-
+            if (portsList.Length < 1) //change to 4
+                throw new NotSupportedException("Verify arduino is connected!");
 
             allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, portsList[0]);
             allArduinos[eRod.GoalKeeper].InitializeRod();

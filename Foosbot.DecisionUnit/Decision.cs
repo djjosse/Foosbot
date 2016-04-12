@@ -123,14 +123,17 @@ namespace Foosbot.DecisionUnit
                 BallCoordinates ballCoordinates = _publisher.Data;
                 DecisionFlow(ballCoordinates);
             }
-            catch (ThreadInterruptedException)
-            {
-                /* Got new data while wait - it is good */
-            }
             catch (Exception ex)
             {
-                Log.Common.Error(String.Format("[{0}] [{1}]",
-                    MethodBase.GetCurrentMethod().DeclaringType.Name, ex.Message));
+                if (ex is ThreadInterruptedException)
+                {
+                    /* Got new data while wait - it is good */
+                }
+                else
+                {
+                    Log.Common.Error(String.Format("[{0}] [{1}]",
+                        MethodBase.GetCurrentMethod().DeclaringType.Name, ex.Message));
+                }
             }
             finally
             {
@@ -336,10 +339,8 @@ namespace Foosbot.DecisionUnit
                 }
                 else
                 {
-                    /*
                     BallCoordinates ricoshetCoordiantes = _vectorUtils.Ricochet(currentCoordinates);
                     CalculateSectorIntersection(rod, ricoshetCoordiantes);
-                    */
                 }
             }
             else

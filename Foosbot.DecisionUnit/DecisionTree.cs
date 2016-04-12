@@ -58,6 +58,11 @@ namespace Foosbot.DecisionUnit
         private int _sectorEnd;
 
         /// <summary>
+        /// Decision Calculations Helper Class instance
+        /// </summary>
+        private DecisionHelper _helper;
+
+        /// <summary>
         /// Ball Radius
         /// ToDo: Calculate Dynamically
         /// </summary>
@@ -112,6 +117,8 @@ namespace Foosbot.DecisionUnit
             ROD_START_Y = Configuration.Attributes.GetValue<int>(Configuration.Names.KEY_ROD_START_Y);
             ROD_END_Y = Configuration.Attributes.GetValue<int>(Configuration.Names.KEY_ROD_END_Y);
             PLAYER_WIDTH = Configuration.Attributes.GetValue<int>(Configuration.Names.KEY_PLAYER_WIDTH);
+
+            _helper = new DecisionHelper(ROD_START_Y, ROD_END_Y);
         }
 
         /// <summary>
@@ -166,7 +173,7 @@ namespace Foosbot.DecisionUnit
             switch (desiredLinearMove)
             {
                 case eLinearMove.BALL_Y:
-                    return bfc.Y - CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
+                    return bfc.Y - _helper.CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
                 case eLinearMove.BEST_EFFORT:
                     return rod.BestEffort;// - CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], 1);
                 case eLinearMove.LEFT_BALL_DIAMETER:
@@ -174,7 +181,7 @@ namespace Foosbot.DecisionUnit
                 case eLinearMove.RIGHT_BALL_DIAMETER:
                     return 2 * BALL_RADIUS;
                 case eLinearMove.VECTOR_BASED:
-                    return rod.IntersectionY - CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
+                    return rod.IntersectionY - _helper.CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
                 default:
                     return 0;
             }
@@ -201,7 +208,7 @@ namespace Foosbot.DecisionUnit
 
             RodAction action = null;
             respondingPlayer = -1;
-            switch (IsBallInSector(bfc.X))
+            switch (_helper.IsBallInSector(bfc.X, _sectorStart, _sectorEnd))
             {
                 //Ball is in Current Rod Sector
                 case eXPositionSectorRelative.IN_SECTOR:
@@ -210,7 +217,7 @@ namespace Foosbot.DecisionUnit
                     break;
                 //Ball is ahead of Current Rod Sector
                 case eXPositionSectorRelative.AHEAD_SECTOR:
-                    if (IsBallVectorToRod(bfc.Vector))
+                    if (_helper.IsBallVectorToRod(bfc.Vector))
                     {
                         //Ball Vector Direction is TO Current Rod
                         action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.VECTOR_BASED);
@@ -255,7 +262,7 @@ namespace Foosbot.DecisionUnit
             //stage 8 - decide on UTurn direction if needed
             eLinearMove UTurn = eLinearMove.NA;
             if (yRelative == eYPositionPlayerRelative.CENTER)
-                UTurn = (IsEnoughSpaceToMove(rod, _currentRodYCoordinate[rod.RodType], BALL_RADIUS * 2)) ?
+                UTurn = (_helper.IsEnoughSpaceToMove(rod, _currentRodYCoordinate[rod.RodType], BALL_RADIUS * 2)) ?
                     eLinearMove.RIGHT_BALL_DIAMETER : eLinearMove.LEFT_BALL_DIAMETER;
 
             return DecisionTreeBallInSector(rod.RodType, xRelative, yRelative, rotPos, UTurn);
@@ -417,13 +424,13 @@ namespace Foosbot.DecisionUnit
         /// <param name="currentRod">Current rod</param>
         /// <param name="playerToResponse">Responding player[out] (index base is 0)</param>
         /// <returns>Ball Y position relative to responding player</returns>
-        private eYPositionPlayerRelative BallYPositionToPlayerYCoordinate(int yBallCoordinate, Rod currentRod, out int playerToResponse)
+        protected eYPositionPlayerRelative BallYPositionToPlayerYCoordinate(int yBallCoordinate, Rod currentRod, out int playerToResponse)
         {
             //get array of players and their Y coordinates (player i stored in array index i - 1)
-            int[] currentPlayerYs = AllCurrentPlayersYCoordinates(currentRod, _currentRodYCoordinate[currentRod.RodType]);
+            int[] currentPlayerYs = _helper.AllCurrentPlayersYCoordinates(currentRod, _currentRodYCoordinate[currentRod.RodType]);
 
             //calculate movements for each player to reach the ball (Y Axe only)
-            int[] movements = CallculatedYMovementForAllPlayers(currentPlayerYs, yBallCoordinate);
+            int[] movements = _helper.CalculateYMovementForAllPlayers(currentPlayerYs, yBallCoordinate);
 
             //convert movement to distance on Y Axe (Absolute value)
             int[] absoluteDistance = movements.Select(x => Math.Abs(x)).ToArray();
@@ -441,7 +448,7 @@ namespace Foosbot.DecisionUnit
             int movement = 0;
 
             //Define actual player to response 
-            if (IsEnoughSpaceToMove(currentRod, _currentRodYCoordinate[currentRod.RodType], movements[minIndexFirst]))
+            if (_helper.IsEnoughSpaceToMove(currentRod, _currentRodYCoordinate[currentRod.RodType], movements[minIndexFirst]))
             {
                 //as index starts from 0 => first one is 1
                 playerToResponse = minIndexFirst + 1;
@@ -464,24 +471,6 @@ namespace Foosbot.DecisionUnit
         }
 
         /// <summary>
-        /// Get all players Y coordinates per current rod
-        /// </summary>
-        /// <param name="rodType">Current rod</param>
-        /// <param name="rodCoordinate">Y Coordinate of current rod (stopper coordinate)</param>
-        /// <returns>Array contains player Y in index of player number + 1
-        /// <example>Player 1 Y coordinate is stored in array[0]</example>
-        /// </returns>
-        private int[] AllCurrentPlayersYCoordinates(Rod rod, int rodCoordinate)
-        {
-            int[] players = new int[rod.PlayersCount];
-            for (int i = 0; i < rod.PlayersCount; i++)
-            {
-                players[i] = rodCoordinate + rod.OffsetY + i * rod.PlayerDistance;
-            }
-            return players;
-        }
-
-        /// <summary>
         /// Get Current Ball Position relative to current rod in Axe X
         /// </summary>
         /// <param name="xBallPosition">X ball coordinate</param>
@@ -496,87 +485,110 @@ namespace Foosbot.DecisionUnit
                 return eXPositionRodRelative.BACK;
             return eXPositionRodRelative.CENTER;
         }
+       
+        #region move to tree helper
 
-        /// <summary>
-        /// Verify if there is enough space to move the rod from current rod Y coordinate to new Y coordinate
-        /// New Y coordinate is rod Y coordinate with provided movement (negative or positive)
-        /// </summary>
-        /// <param name="rod">Current rod</param>
-        /// <param name="currentRodYCoordinate">Current rod Y coordinate to move from</param>
-        /// <param name="movement">Y delta to move from current rod Y coordinate (could be negative)</param>
-        /// <returns>[True] in case there is enough space to move, [False] otherwise</returns>
-        private bool IsEnoughSpaceToMove(Rod rod, int currentRodYCoordinate, int movement)
-        {
-            //Check if potential start of rod stopper is in range
-            int potentialStartY = currentRodYCoordinate + movement;
-            if (potentialStartY < ROD_START_Y)
-                return false;
+        ///// <summary>
+        ///// Get all players Y coordinates per current rod
+        ///// </summary>
+        ///// <param name="rodType">Current rod</param>
+        ///// <param name="rodCoordinate">Y Coordinate of current rod (stopper coordinate)</param>
+        ///// <returns>Array contains player Y in index of player number + 1
+        ///// <example>Player 1 Y coordinate is stored in array[0]</example>
+        ///// </returns>
+        //protected int[] AllCurrentPlayersYCoordinates(Rod rod, int rodCoordinate)
+        //{
+        //    int[] players = new int[rod.PlayersCount];
+        //    for (int i = 0; i < rod.PlayersCount; i++)
+        //    {
+        //        players[i] = rodCoordinate + rod.OffsetY + i * rod.PlayerDistance;
+        //    }
+        //    return players;
+        //}
 
-            //Check if potential end of rod stopper is in range
-            int potentialEndY = potentialStartY + rod.StopperDistance;
-            if (potentialEndY > ROD_END_Y)
-                return false;
+        ///// <summary>
+        ///// Verify if there is enough space to move the rod from current rod Y coordinate to new Y coordinate
+        ///// New Y coordinate is rod Y coordinate with provided movement (negative or positive)
+        ///// </summary>
+        ///// <param name="rod">Current rod</param>
+        ///// <param name="currentRodYCoordinate">Current rod Y coordinate to move from</param>
+        ///// <param name="movement">Y delta to move from current rod Y coordinate (could be negative)</param>
+        ///// <returns>[True] in case there is enough space to move, [False] otherwise</returns>
+        //private bool IsEnoughSpaceToMove(Rod rod, int currentRodYCoordinate, int movement)
+        //{
+        //    //Check if potential start of rod stopper is in range
+        //    int potentialStartY = currentRodYCoordinate + movement;
+        //    if (potentialStartY < ROD_START_Y)
+        //        return false;
 
-            //We are good, we have space to move!
-            return true;
-        }
+        //    //Check if potential end of rod stopper is in range
+        //    int potentialEndY = potentialStartY + rod.StopperDistance;
+        //    if (potentialEndY > ROD_END_Y)
+        //        return false;
 
-        /// <summary>
-        /// Define if ball is in sector
-        /// </summary>
-        /// <param name="ballXcoordinate">Current ball coordinate</param>
-        /// <returns>Ball position relative to sector of current rod</returns>
-        private eXPositionSectorRelative IsBallInSector(int ballXcoordinate)
-        {
-            if (ballXcoordinate < _sectorStart)
-                return eXPositionSectorRelative.BEHIND_SECTOR;
-            else if (ballXcoordinate > _sectorEnd)
-                return eXPositionSectorRelative.AHEAD_SECTOR;
-            else
-                return eXPositionSectorRelative.IN_SECTOR;
-        }
+        //    //We are good, we have space to move!
+        //    return true;
+        //}
 
-        /// <summary>
-        /// Define ball vector angle is to rod or from it
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns>[True] In case vector is to rod, [False] otherwise</returns>
-        private bool IsBallVectorToRod(Vector2D vector)
-        {
-            return (vector != null && vector.IsDefined && vector.X < 0);
-        }
+        ///// <summary>
+        ///// Define if ball is in sector
+        ///// </summary>
+        ///// <param name="ballXcoordinate">Current ball coordinate</param>
+        ///// <returns>Ball position relative to sector of current rod</returns>
+        //private eXPositionSectorRelative IsBallInSector(int ballXcoordinate)
+        //{
+        //    if (ballXcoordinate < _sectorStart)
+        //        return eXPositionSectorRelative.BEHIND_SECTOR;
+        //    else if (ballXcoordinate > _sectorEnd)
+        //        return eXPositionSectorRelative.AHEAD_SECTOR;
+        //    else
+        //        return eXPositionSectorRelative.IN_SECTOR;
+        //}
 
-        /// <summary>
-        /// Calculate movements for each player to reach the ball (Y Axe only) in current rod
-        /// </summary>
-        /// <param name="currentPlayersYsCoordinates">Current players Y coordinates in current rod</param>
-        /// <param name="yBallCoordinate">Current ball Y coordinate</param>
-        /// <returns>Array of movements to be performed per each player to reach the ball</returns>
-        private int [] CallculatedYMovementForAllPlayers(int [] currentPlayersYsCoordinates, int yBallCoordinate)
-        {
-            int[] movements = new int[currentPlayersYsCoordinates.Length];
-            for (int i = 0; i < currentPlayersYsCoordinates.Length; i++)
-            {
-                movements[i] = yBallCoordinate - currentPlayersYsCoordinates[i];
-            }
-            return movements;
-        }
+        ///// <summary>
+        ///// Define ball vector angle is to rod or from it
+        ///// </summary>
+        ///// <param name="vector"></param>
+        ///// <returns>[True] In case vector is to rod, [False] otherwise</returns>
+        //private bool IsBallVectorToRod(Vector2D vector)
+        //{
+        //    return (vector != null && vector.IsDefined && vector.X < 0);
+        //}
 
-        /// <summary>
-        /// Calculate current Player Y coordinate
-        /// </summary>
-        /// <param name="rod">Current rod</param>
-        /// <param name="currentRodYCoordinate">Current Rod Y coordinates (stopper)</param>
-        /// <param name="playerIndex">Chosen player index to perform action (index 1 based)</param>
-        /// <returns>Chosen player Y coordinate</returns>
-        private int CalculateCurrentPlayerYCoordinate(Rod rod, int currentRodYCoordinate, int playerIndex)
-        {
-            if (playerIndex > rod.PlayersCount || playerIndex < 1)
-                throw new Exception(String.Format(
-                    "Player index {0} for rod type {1} is wrong! Players count is {2}", 
-                        playerIndex, rod.RodType, rod.PlayersCount));
+        ///// <summary>
+        ///// Calculate movements for each player to reach the ball (Y Axe only) in current rod
+        ///// </summary>
+        ///// <param name="currentPlayersYsCoordinates">Current players Y coordinates in current rod</param>
+        ///// <param name="yBallCoordinate">Current ball Y coordinate</param>
+        ///// <returns>Array of movements to be performed per each player to reach the ball</returns>
+        //private int[] CallculatedYMovementForAllPlayers(int[] currentPlayersYsCoordinates, int yBallCoordinate)
+        //{
+        //    int[] movements = new int[currentPlayersYsCoordinates.Length];
+        //    for (int i = 0; i < currentPlayersYsCoordinates.Length; i++)
+        //    {
+        //        movements[i] = yBallCoordinate - currentPlayersYsCoordinates[i];
+        //    }
+        //    return movements;
+        //}
 
-            return rod.OffsetY + _currentRodYCoordinate[rod.RodType] + rod.PlayerDistance * (playerIndex - 1);
-        }
+        ///// <summary>
+        ///// Calculate current Player Y coordinate
+        ///// </summary>
+        ///// <param name="rod">Current rod</param>
+        ///// <param name="currentRodYCoordinate">Current Rod Y coordinates (stopper)</param>
+        ///// <param name="playerIndex">Chosen player index to perform action (index 1 based)</param>
+        ///// <returns>Chosen player Y coordinate</returns>
+        //private int CalculateCurrentPlayerYCoordinate(Rod rod, int currentRodYCoordinate, int playerIndex)
+        //{
+        //    if (playerIndex > rod.PlayersCount || playerIndex < 1)
+        //        throw new Exception(String.Format(
+        //            "Player index {0} for rod type {1} is wrong! Players count is {2}",
+        //                playerIndex, rod.RodType, rod.PlayersCount));
+
+        //    return rod.OffsetY + currentRodYCoordinate + rod.PlayerDistance * (playerIndex - 1);
+        //}
+
+
+        #endregion move to tree helper
     }
 }

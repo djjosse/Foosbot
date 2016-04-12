@@ -133,10 +133,10 @@ namespace Foosbot.UI
                 };
                 worker.RunWorkerAsync();
 
-                BackgroundWorker worker2 = new BackgroundWorker();
-                worker2.DoWork += (s, z) =>
-                {
-                    while (!_ipu.IsCallibrated) { Thread.Sleep(100);/* wait till calibrated*/}
+               // BackgroundWorker worker2 = new BackgroundWorker();
+               // worker2.DoWork += (s, z) =>
+               // {
+              //      while (!_ipu.IsCallibrated) { Thread.Sleep(100);/* wait till calibrated*/}
 
                     VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
                     vectorCalcullationUnit.Start();
@@ -160,8 +160,8 @@ namespace Foosbot.UI
                                 communication[key].Start();
                         }
                     }
-                };
-                worker2.RunWorkerAsync();
+              //  };
+              //  worker2.RunWorkerAsync();
             }
             catch(Exception ex)
             {
