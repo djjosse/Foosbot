@@ -14,6 +14,7 @@ using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.CommunicationLayer;
 using Foosbot.DecisionUnit;
+using Foosbot.DecisionUnit.Core;
 using Foosbot.ImageProcessing;
 using Foosbot.VectorCalculation;
 using System;
@@ -141,19 +142,12 @@ namespace Foosbot.UI
                     VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
                     vectorCalcullationUnit.Start();
 
-                    Decision decisionUnit = new Decision(vectorCalcullationUnit.LastBallLocationPublisher);
+                    MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
                     decisionUnit.Start();
-
-                    Dictionary<eRod, Publisher<RodAction>> decisionUnitPublishers = new Dictionary<eRod, Publisher<RodAction>>();
-
-                    foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
-                    {
-                        decisionUnitPublishers.Add(rodType, decisionUnit.RodActionPublishers[rodType]);
-                    }
 
                     if (_isArduinoConnected)
                     {
-                        Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.ConnectedArduinos(decisionUnitPublishers);
+                        Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(decisionUnit.RodActionPublishers);
                         foreach (eRod key in communication.Keys)
                         {
                             if (communication[key] != null)

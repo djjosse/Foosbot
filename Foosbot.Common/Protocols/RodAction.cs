@@ -16,14 +16,14 @@ namespace Foosbot.Common.Protocols
     public class RodAction
     {
         /// <summary>
-        /// Actual linear movement private member
+        /// Desired DC Position to move to
         /// </summary>
-        private int _movement;
+        private int _dcPosition;
 
         /// <summary>
         /// Current Rod type for action to perform
         /// </summary>
-        public eRod Type { get; private set; }
+        public eRod RodType { get; private set; }
 
         /// <summary>
         /// Rotation movement type to be performed
@@ -36,19 +36,24 @@ namespace Foosbot.Common.Protocols
         public eLinearMove Linear { get; private set; }
 
         /// <summary>
-        /// Linear Movement to be performed
+        /// DC Y coordinate to move to it
         /// </summary>
-        public int LinearMovement
+        public int DcCoordinate
         {
             get
             {
                 if (Linear == eLinearMove.NA)
+                {
                     return 0;
-                else return _movement;
+                }
+                else
+                {
+                    return _dcPosition;
+                }
             }
             set
             {
-                _movement = value;
+                _dcPosition = value;
             }
         }
 
@@ -60,8 +65,8 @@ namespace Foosbot.Common.Protocols
         /// <param name="linear">Linear move to be performed (default is undefined)</param>
         public RodAction(eRod type, eRotationalMove rotation = eRotationalMove.NA, eLinearMove linear = eLinearMove.NA)
         {
-            _movement = 0;
-            Type = type;
+            _dcPosition = 0;
+            RodType = type;
             Rotation = rotation;
             Linear = linear;
         }

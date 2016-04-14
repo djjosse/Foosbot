@@ -11,7 +11,12 @@ namespace Foosbot.CommunicationLayer
 {
     public class CommunicationFactory
     {
-        public static Dictionary<eRod, CommunicationUnit> ConnectedArduinos(Dictionary<eRod, Publisher<RodAction>> publishers)
+        /// <summary>
+        /// Create Communication Layer for each connected Arduino
+        /// </summary>
+        /// <param name="publishers">Dictionary of RodActionPublishers per each rod</param>
+        /// <returns>Communication Layer per each Rod</returns>
+        public static Dictionary<eRod, CommunicationUnit> Create(Dictionary<eRod, RodActionPublisher> publishers)
         {
             Dictionary<eRod, CommunicationUnit> allArduinos = new Dictionary<eRod,CommunicationUnit>();
 

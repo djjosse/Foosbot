@@ -54,6 +54,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Core\RodStateTest.cs" />
+    <Compile Include="Core\SurveyorTest.cs" />
     <Compile Include="DecisionTest.cs" />
     <Compile Include="DecisionHelperTest.cs" />
     <Compile Include="DecisionTreeTest.cs" />

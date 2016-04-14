@@ -8,39 +8,25 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Foosbot
+namespace Foosbot.DecisionUnit.Contracts
 {
     /// <summary>
-    /// Backgound Flow abstract class
-    /// Runs the flow in Thread
+    /// Implementing Class will represent decision manager which decides on actions to be taken
     /// </summary>
-    public abstract class BackgroundFlow : IFlow
+    public interface IActionProvider
     {
         /// <summary>
-        /// Running Thread
+        /// Decide on action to be taken for each rod
         /// </summary>
-        protected Thread _thread;
-
-        /// <summary>
-        /// Function that will run in Separate Thread
-        /// </summary>
-        public abstract void Flow();
-
-         /// <summary>
-        /// Run the flow in Thread
-        /// </summary>
-        public virtual void Start()
-        {
-            _thread = new Thread(() => { Flow(); });
-            _thread.IsBackground = true;
-            _thread.Start();
-        }
+        /// <param name="currentCoordinates">Current ball coordinates and vector</param>
+        /// <returns>List of actions per each rod</returns>
+        List<RodAction> Decide(BallCoordinates currentCoordinates);
     }
 }

@@ -89,12 +89,12 @@ namespace Foosbot.CommunicationLayer
                 //received command
                 RodAction action = _publisher.Data;
 
-                Log.Common.Debug(String.Format("[{0}] New action received for {1} Rotational: {2} mm Linear: {3}: {4} mm",
-                   MethodBase.GetCurrentMethod().Name, action.Type.ToString(), action.Rotation.ToString(),
-                    action.Linear.ToString(), action.LinearMovement));
+                //Log.Common.Debug(String.Format("[{0}] New action received for {1} Rotational: {2} Linear: {3}: Coordinate: {4} mm",
+                //   MethodBase.GetCurrentMethod().Name, action.RodType.ToString(), action.Rotation.ToString(),
+                //    action.Linear.ToString(), action.DcCoordinate));
 
                 //Convert mm to ticks
-                int proportinalMove = ConvertLengthToTicks(action.LinearMovement);
+                int proportinalMove = ConvertLengthToTicks(action.DcCoordinate);
 
                 //Invoke the arduino
                 _arduino.Move(proportinalMove, action.Rotation);

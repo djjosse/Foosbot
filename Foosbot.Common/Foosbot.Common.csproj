@@ -81,8 +81,10 @@
     <Compile Include="Protocols\Enums\eRod.cs" />
     <Compile Include="Protocols\Enums\eRotationalMove.cs" />
     <Compile Include="Protocols\Enums\eStatisticsKey.cs" />
+    <Compile Include="Protocols\Enums\eUnits.cs" />
     <Compile Include="Protocols\ILastBallCoordinatesUpdater.cs" />
     <Compile Include="Protocols\RodAction.cs" />
+    <Compile Include="Protocols\RodActionPublisher.cs" />
     <Compile Include="Protocols\Vector2D.cs" />
     <Compile Include="Marks.cs" />
     <Compile Include="Statistics.cs" />

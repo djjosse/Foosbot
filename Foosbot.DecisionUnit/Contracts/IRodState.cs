@@ -8,39 +8,25 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Foosbot
+namespace Foosbot.DecisionUnit.Contracts
 {
-    /// <summary>
-    /// Backgound Flow abstract class
-    /// Runs the flow in Thread
-    /// </summary>
-    public abstract class BackgroundFlow : IFlow
+    public interface IRodState
     {
         /// <summary>
-        /// Running Thread
+        /// Assumed for last known DC position (in mm)
         /// </summary>
-        protected Thread _thread;
+        int DcPosition { get; set; }
 
         /// <summary>
-        /// Function that will run in Separate Thread
+        /// Assumed for last known Servo position
         /// </summary>
-        public abstract void Flow();
-
-         /// <summary>
-        /// Run the flow in Thread
-        /// </summary>
-        public virtual void Start()
-        {
-            _thread = new Thread(() => { Flow(); });
-            _thread.IsBackground = true;
-            _thread.Start();
-        }
+        eRotationalMove ServoPosition { get; set; }
     }
 }

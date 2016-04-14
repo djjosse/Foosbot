@@ -8,26 +8,18 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.DecisionUnit.Enums
+using Foosbot.Common.Protocols;
+using System;
+namespace Foosbot.DecisionUnit.Contracts
 {
-    /// <summary>
-    /// Ball Relative Position to Current Rod's sector
-    /// </summary>
-    public enum eXPositionSectorRelative
+    public interface IPredictor
     {
         /// <summary>
-        /// Ball is Behind Current Sector
+        /// Calculate Ball Future Coordinates in actual time system can responce
         /// </summary>
-        BEHIND_SECTOR,
-
-        /// <summary>
-        /// Ball is In Current Sector
-        /// </summary>
-        IN_SECTOR,
-
-        /// <summary>
-        /// Ball is Ahead of Current Sector
-        /// </summary>
-        AHEAD_SECTOR
+        /// <param name="currentCoordinates"><Current ball coordinates/param>
+        /// <param name="actionTime">Actual system responce time</param>
+        /// <returns>Ball Future coordinates</returns>
+        BallCoordinates FindBallFutureCoordinates(BallCoordinates currentCoordinates, DateTime actionTime);
     }
 }

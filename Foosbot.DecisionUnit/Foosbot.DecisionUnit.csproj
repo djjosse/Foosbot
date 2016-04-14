@@ -40,15 +40,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Decision.cs" />
-    <Compile Include="DecisionTree.cs" />
-    <Compile Include="DecisionHelper.cs" />
+    <Compile Include="Contracts\IDecisionTree.cs" />
+    <Compile Include="Contracts\IPredictor.cs" />
+    <Compile Include="Contracts\IInitializableRod.cs" />
+    <Compile Include="Contracts\IRod.cs" />
+    <Compile Include="Contracts\IRodState.cs" />
+    <Compile Include="Core\Predictor.cs" />
+    <Compile Include="Core\DecisionManager.cs" />
+    <Compile Include="Contracts\IActionProvider.cs" />
+    <Compile Include="Contracts\ISurveyor.cs" />
+    <Compile Include="Core\MainDecisionUnit.cs" />
+    <Compile Include="Core\FullDecisionTree.cs" />
+    <Compile Include="Core\DecisionHelper.cs" />
     <Compile Include="Enums\eXPositionSectorRelative.cs" />
     <Compile Include="Enums\eXPositionRodRelative.cs" />
     <Compile Include="Enums\eYPositionPlayerRelative.cs" />
+    <Compile Include="Contracts\IDecisionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rod.cs" />
-    <Compile Include="RodActionPublisher.cs" />
+    <Compile Include="Core\ControlRod.cs" />
+    <Compile Include="Core\RodState.cs" />
+    <Compile Include="Core\Surveyor.cs" />
+    <Compile Include="Core\TimedPoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">

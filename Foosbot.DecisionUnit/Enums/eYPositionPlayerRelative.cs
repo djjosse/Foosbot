@@ -8,7 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.DecisionUnit
+namespace Foosbot.DecisionUnit.Enums
 {
     /// <summary>
     /// Ball Y Relative Position to Player in Current Rod

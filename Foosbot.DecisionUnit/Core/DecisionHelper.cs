@@ -1,4 +1,16 @@
-﻿using Foosbot.Common.Protocols;
+﻿// **************************************************************************************
+// **																				   **
+// **		(C) FOOSBOT - Final Software Engineering Project, 2015 - 2016			   **
+// **		(C) Authors: M.Toubian, M.Shimon, E.Kleinman, O.Sasson, J.Gleyzer          **
+// **			Advisors: Mr.Resh Amit & Dr.Hoffner Yigal							   **
+// **		The information and source code here belongs to Foosbot project			   **
+// **		and may not be reproduced or used without authors explicit permission.	   **
+// **																				   **
+// **************************************************************************************
+
+using Foosbot.Common.Protocols;
+using Foosbot.DecisionUnit.Contracts;
+using Foosbot.DecisionUnit.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,12 +18,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Foosbot.DecisionUnit
+namespace Foosbot.DecisionUnit.Core
 {
     /// <summary>
     /// Class contains common methods for decision tree
     /// </summary>
-    public class DecisionHelper
+    public class DecisionHelper : IDecisionHelper
     {
         /// <summary>
         /// Constructor for DecisionHelper
@@ -43,9 +55,9 @@ namespace Foosbot.DecisionUnit
         /// <example>Player 1 Y coordinate is stored in array[0]</example>
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown in case rod is null</exception>
-        public int[] AllCurrentPlayersYCoordinates(Rod rod, int rodCoordinate)
+        public int[] AllCurrentPlayersYCoordinates(IRod rod, int rodCoordinate)
         {
-            if (rod==null)
+            if (rod == null)
                 throw new ArgumentNullException(String.Format(
                     "[{0}] Unable to calculate all players Y coordinates on rod because rod is NULL!",
                         MethodBase.GetCurrentMethod().Name));
@@ -53,10 +65,10 @@ namespace Foosbot.DecisionUnit
             VerifyPlayerCountOnRod(rod);
             VerifyYRodCoordinate(rod.StopperDistance, rodCoordinate);
 
-            int[] players = new int[rod.PlayersCount];
-            for (int i = 0; i < rod.PlayersCount; i++)
+            int[] players = new int[rod.PlayerCount];
+            for (int i = 0; i < rod.PlayerCount; i++)
             {
-                players[i] = ROD_START_Y + rodCoordinate + rod.OffsetY + i * rod.PlayerDistance;
+                players[i] = rodCoordinate + rod.OffsetY + i * rod.PlayerDistance;
             }
             return players;
         }
@@ -69,7 +81,7 @@ namespace Foosbot.DecisionUnit
         /// <param name="currentRodYCoordinate">Current rod Y coordinate to move from, including ROD_START_Y </param>
         /// <param name="movement">Y delta to move from current rod Y coordinate (could be negative)</param>
         /// <returns>[True] in case there is enough space to move, [False] otherwise</returns>
-        public bool IsEnoughSpaceToMove(Rod rod, int currentRodYCoordinate, int movement)
+        public bool IsEnoughSpaceToMove(IRod rod, int currentRodYCoordinate, int movement)
         {
             //Check if potential start of rod stopper is in range
             int potentialStartY = currentRodYCoordinate + movement;
@@ -111,15 +123,18 @@ namespace Foosbot.DecisionUnit
             return (vector != null && vector.IsDefined && vector.X < 0);
         }
 
+
         /// <summary>
         /// Define if ball is in sector
         /// </summary>
         /// <param name="ballXcoordinate">Current ball coordinate</param>
-        /// <param name="sectorStart">Sector start X</param>
-        /// <param name="sectorEnd">Sector end X</param>
+        /// <param name="sectorStart">Rod X Coordinate</param>
+        /// <param name="sectorEnd">Dynamic Sector Width</param>
         /// <returns>Ball position relative to sector of current rod</returns>
-        public eXPositionSectorRelative IsBallInSector(int ballXcoordinate, int sectorStart, int sectorEnd)
+        public eXPositionSectorRelative IsBallInSector(int ballXcoordinate, int rodCoordinates, int dynamicSectorWidth)
         {
+            int sectorStart = Convert.ToInt32(rodCoordinates - dynamicSectorWidth / 2.0);
+            int sectorEnd = Convert.ToInt32(rodCoordinates + dynamicSectorWidth / 2.0);
             if (ballXcoordinate < sectorStart)
                 return eXPositionSectorRelative.BEHIND_SECTOR;
             else if (ballXcoordinate > sectorEnd)
@@ -136,12 +151,12 @@ namespace Foosbot.DecisionUnit
         /// <param name="playerIndex">Chosen player index to perform action (index 1 based)</param>
         /// <returns>Chosen player Y coordinate</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown in case player index is out of range</exception>
-        public int CalculateCurrentPlayerYCoordinate(Rod rod, int currentRodYCoordinate, int playerIndex)
+        public int CalculateCurrentPlayerYCoordinate(IRod rod, int currentRodYCoordinate, int playerIndex)
         {
-            if (playerIndex > rod.PlayersCount || playerIndex < 1)
+            if (playerIndex > rod.PlayerCount || playerIndex < 1)
                 throw new ArgumentOutOfRangeException(String.Format(
                     "Player index {0} for rod type {1} is wrong! Players count is {2}",
-                        playerIndex, rod.RodType, rod.PlayersCount));
+                        playerIndex, rod.RodType, rod.PlayerCount));
 
             return rod.OffsetY + currentRodYCoordinate + rod.PlayerDistance * (playerIndex - 1);
         }
@@ -161,6 +176,18 @@ namespace Foosbot.DecisionUnit
                     MethodBase.GetCurrentMethod().Name, coordinateY, min, max));
         }
 
+        /// <summary>
+        /// Get Y coordinate of rod stopper to bring responding player to desired Y coordinate
+        /// </summary>
+        /// <param name="rod">Current rod</param>
+        /// <param name="desiredY">Desired Y coordinate to reach by responding player</param>
+        /// <param name="respondingPlayer">One-Based Player Index in rod</param>
+        /// <returns>Y coordinate of rod stopper to bring palyer to desired Y coordinate</returns>
+        public int LocateRespondingPlayer(IRod rod, int desiredY, int respondingPlayer)
+        {
+            return desiredY - rod.OffsetY - rod.PlayerDistance * (respondingPlayer - 1);
+        }
+
         #region private methods
 
         /// <summary>
@@ -168,11 +195,11 @@ namespace Foosbot.DecisionUnit
         /// </summary>
         /// <param name="rod">Current rod</param>
         /// <exception cref="ArgumentException">Thrown in case player count on rod is not in range of 1 to 5</exception>
-        private void VerifyPlayerCountOnRod(Rod rod)
+        private void VerifyPlayerCountOnRod(IRod rod)
         {
-            if (rod.PlayersCount < 1 || rod.PlayersCount > 5)
+            if (rod.PlayerCount < 1 || rod.PlayerCount > 5)
                 throw new ArgumentException(String.Format("[{0}] Number of players on rod {1} is incorrect {2}!",
-                    MethodBase.GetCurrentMethod().Name, rod.RodType.ToString(), rod.PlayersCount));
+                    MethodBase.GetCurrentMethod().Name, rod.RodType.ToString(), rod.PlayerCount));
         }
 
 
