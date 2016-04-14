@@ -8,7 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
-using Foosbot.Common.Protocols;
+using Foosbot.Common.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,16 +18,14 @@ using System.Threading.Tasks;
 namespace Foosbot.DecisionUnit.Contracts
 {
     /// <summary>
-    /// Interface for Decision Class
+    /// Initializable Action Provider Interface
     /// </summary>
-    public interface IDecisionTree
+    public interface IInitializableDecisionManager : IInitializable, IActionProvider
     {
         /// <summary>
-        /// Main Decision Flow Method
+        /// Initialize with parameters
         /// </summary>
-        /// <param name="rod">Rod to use for decision</param>
-        /// <param name="bfc">Ball Future coordinates</param>
-        /// <returns>Rod Action to perform</returns>
-        RodAction Decide(IRod rod, BallCoordinates bfc);
+        /// <param name="systemDelays">Mechanical, Calculation and Networking system delays in ms</param>
+        void Initialize(int systemDelays);
     }
 }

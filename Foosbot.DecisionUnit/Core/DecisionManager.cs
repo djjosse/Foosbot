@@ -12,6 +12,7 @@ using Foosbot.Common.Contracts;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.VectorCalculation;
+using Foosbot.VectorCalculation.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Foosbot.DecisionUnit.Core
     /// <summary>
     /// Decisides on actions to be taken
     /// </summary>
-    public class DecisionManager : IActionProvider, IInitializable
+    public class DecisionManager : IInitializableDecisionManager
     {
         /// <summary>
         /// Mechanical, Calculation and other delays
@@ -53,20 +54,23 @@ namespace Foosbot.DecisionUnit.Core
         /// </summary>
         /// <param name="surveyor">Convertion and table size storage unit. 
         /// (If null [default] - will be instantiated in constructor)</param>
+        /// <param name="ricochetCalc">Ricochet calc unit. NOTE: working in mm. 
+        /// (If null [default] - will be instantiated in constructor)</param>
         /// <param name="predictor">Predictor for ball coordinates
+        /// (If null [default] - will be instantiated in constructor)</param>
+        /// <param name="decisionTree">Full decision tree to make decisions per eacch rod.
         /// (If null [default] - will be instantiated in constructor)</param>
         /// <param name="controlledRods">Rods to be controlled by manager
         /// (If null [default] - will be instantiated in constructor)</param>
-        public DecisionManager(ISurveyor surveyor = null, IPredictor predictor = null, IDecisionTree decisionTree = null, List<IInitializableRod> controlledRods = null)
+        public DecisionManager(ISurveyor surveyor = null, IInitializableRicochet ricochetCalc = null, IPredictor predictor = null, IDecisionTree decisionTree = null, List<IInitializableRod> controlledRods = null)
         {
             _surveyor = (surveyor != null) ?  surveyor : new Surveyor();
 
-            //ToDo: Change this as in Surveyor and Predictor
-            RicochetCalc vectorUtils = new RicochetCalc(true, eUnits.Mm);
+            IInitializableRicochet ricochetCalculator = (ricochetCalc != null) ? ricochetCalc : new RicochetCalc(true, eUnits.Mm);
 
             _decisionTree = (decisionTree != null) ? decisionTree : new FullDecisionTree();
 
-            _predictor = (predictor != null) ? predictor : new Predictor(_surveyor, vectorUtils);
+            _predictor = (predictor != null) ? predictor : new Predictor(_surveyor, ricochetCalculator);
 
             //use given rods if not null
             if (controlledRods != null)
@@ -79,7 +83,7 @@ namespace Foosbot.DecisionUnit.Core
                 _controlledRods = new List<IInitializableRod>();
                 foreach (eRod type in Enum.GetValues(typeof(eRod)))
                 {
-                    IInitializableRod rod = new ControlRod(type, _surveyor, vectorUtils);
+                    IInitializableRod rod = new ControlRod(type, _surveyor, ricochetCalculator);
                     rod.Initialize();
                     _controlledRods.Add(rod);
                 }
@@ -124,18 +128,32 @@ namespace Foosbot.DecisionUnit.Core
             return actions;
         }
 
+        #region Initialization Related
+
+        /// <summary>
+        /// Initialize Method
+        /// </summary>
         public void Initialize()
         {
             SystemDelays = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
             IsInitialized = true;
         }
 
+        /// <summary>
+        /// Initialize with parameters
+        /// </summary>
+        /// <param name="systemDelays">Mechanical, Calculation and Networking system delays in ms</param>
         public void Initialize(int systemDelays)
         {
             SystemDelays = TimeSpan.FromMilliseconds(systemDelays);
             IsInitialized = true;
         }
 
+        /// <summary>
+        /// Is Initialized Property
+        /// </summary>
         public bool IsInitialized { get; private set; }
+
+        #endregion Initialization Related
     }
 }

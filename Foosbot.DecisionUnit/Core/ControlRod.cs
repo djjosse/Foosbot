@@ -12,6 +12,7 @@ using Foosbot.Common.Exceptions;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.VectorCalculation;
+using Foosbot.VectorCalculation.Contracts;
 using System;
 using System.Reflection;
 namespace Foosbot.DecisionUnit.Core
@@ -32,7 +33,7 @@ namespace Foosbot.DecisionUnit.Core
         /// <summary>
         /// Used for ricochet in vector intersection calculation
         /// </summary>
-        private RicochetCalc _vectorUtils;
+        private IInitializableRicochet _vectorUtils;
 
         #region IRod private members
 
@@ -261,7 +262,7 @@ namespace Foosbot.DecisionUnit.Core
         /// <param name="tableHeight">Foosbot table height - rod length (Y) in mm</param>
         /// <param name="tableHeight">Minimal point can be reached by stopper (Y) in mm</param>
         /// <param name="rodState">Rod state will be created in initialization method if passed null</param>
-        public ControlRod(eRod rodType, ISurveyor surveyor, RicochetCalc vectorUtils, 
+        public ControlRod(eRod rodType, ISurveyor surveyor, IInitializableRicochet vectorUtils, 
             int tableHeight = -1, int rodStopperMin = -1, IRodState rodState = null)
         {
             _rodType = rodType;
