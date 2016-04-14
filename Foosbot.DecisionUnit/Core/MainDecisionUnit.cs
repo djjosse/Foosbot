@@ -64,7 +64,7 @@ namespace Foosbot.DecisionUnit.Core
             try
             {
                 _publisher.Dettach(this);
-                BallCoordinates ballCoordinates = _publisher.Data;
+                BallCoordinates ballCoordinates = _currentData;//_publisher.Data;
                 List<RodAction> actions = _manager.Decide(ballCoordinates);
                 foreach (RodAction action in actions)
                 {
