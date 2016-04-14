@@ -41,10 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts\IDecisionTree.cs" />
+    <Compile Include="Contracts\IInitializableDecisionManager.cs" />
     <Compile Include="Contracts\IPredictor.cs" />
     <Compile Include="Contracts\IInitializableRod.cs" />
     <Compile Include="Contracts\IRod.cs" />
     <Compile Include="Contracts\IRodState.cs" />
+    <Compile Include="Core\DecisionTree.cs" />
     <Compile Include="Core\Predictor.cs" />
     <Compile Include="Core\DecisionManager.cs" />
     <Compile Include="Contracts\IActionProvider.cs" />

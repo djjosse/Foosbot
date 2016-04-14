@@ -24,7 +24,7 @@ namespace Foosbot.DecisionUnit.Core
     /// <summary>
     /// Decisides on actions to be taken
     /// </summary>
-    public class DecisionManager : IActionProvider, IInitializable
+    public class DecisionManager : IInitializableDecisionManager
     {
         /// <summary>
         /// Mechanical, Calculation and other delays
@@ -125,18 +125,32 @@ namespace Foosbot.DecisionUnit.Core
             return actions;
         }
 
+        #region Initialization Related
+
+        /// <summary>
+        /// Initialize Method
+        /// </summary>
         public void Initialize()
         {
             SystemDelays = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
             IsInitialized = true;
         }
 
+        /// <summary>
+        /// Initialize with parameters
+        /// </summary>
+        /// <param name="systemDelays">Mechanical, Calculation and Networking system delays in ms</param>
         public void Initialize(int systemDelays)
         {
             SystemDelays = TimeSpan.FromMilliseconds(systemDelays);
             IsInitialized = true;
         }
 
+        /// <summary>
+        /// Is Initialized Property
+        /// </summary>
         public bool IsInitialized { get; private set; }
+
+        #endregion Initialization Related
     }
 }
