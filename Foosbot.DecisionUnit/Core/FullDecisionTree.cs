@@ -23,8 +23,6 @@ namespace Foosbot.DecisionUnit.Core
     /// </summary>
     public class FullDecisionTree : DecisionTree
     {
-       
-
         #region Constructors
 
         /// <summary>

@@ -11,6 +11,7 @@
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.VectorCalculation;
+using Foosbot.VectorCalculation.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,19 +29,19 @@ namespace Foosbot.DecisionUnit.Core
         private ISurveyor _surveyor;
 
         /// <summary>
-        /// Vector Utils instance for calculating Ricochet
+        /// Ricochet Calc Unit instance for calculating Ricochet
         /// </summary>
-        private RicochetCalc _vectorUtils;
+        private IInitializableRicochet _ricochetCalc;
 
         /// <summary>
         /// Predictor class constructor
         /// </summary>
         /// <param name="surveyor">Surveyor for calculating and verify table size vs. coordinates</param>
-        /// <param name="vectorUtils">VectorUtils class instance for calculating ricochet</param>
-        public Predictor(ISurveyor surveyor, RicochetCalc vectorUtils)
+        /// <param name="ricochetCalc">Ricochet Calc Unit instance for calculating ricochet</param>
+        public Predictor(ISurveyor surveyor, IInitializableRicochet ricochetCalc)
         {
             _surveyor = surveyor;
-            _vectorUtils = vectorUtils;
+            _ricochetCalc = ricochetCalc;
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace Foosbot.DecisionUnit.Core
                 }
                 else
                 {
-                    BallCoordinates ricoshetCoordiantes = _vectorUtils.Ricochet(currentCoordinates);
+                    BallCoordinates ricoshetCoordiantes = _ricochetCalc.Ricochet(currentCoordinates);
                     return FindBallFutureCoordinates(ricoshetCoordiantes, actionTime);
                 }
             }
