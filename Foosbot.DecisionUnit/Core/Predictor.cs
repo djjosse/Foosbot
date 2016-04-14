@@ -30,14 +30,14 @@ namespace Foosbot.DecisionUnit.Core
         /// <summary>
         /// Vector Utils instance for calculating Ricochet
         /// </summary>
-        private VectorUtils _vectorUtils;
+        private RicochetCalc _vectorUtils;
 
         /// <summary>
         /// Predictor class constructor
         /// </summary>
         /// <param name="surveyor">Surveyor for calculating and verify table size vs. coordinates</param>
         /// <param name="vectorUtils">VectorUtils class instance for calculating ricochet</param>
-        public Predictor(ISurveyor surveyor, VectorUtils vectorUtils)
+        public Predictor(ISurveyor surveyor, RicochetCalc vectorUtils)
         {
             _surveyor = surveyor;
             _vectorUtils = vectorUtils;

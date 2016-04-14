@@ -62,8 +62,7 @@ namespace Foosbot.DecisionUnit.Core
             _surveyor = (surveyor != null) ?  surveyor : new Surveyor();
 
             //ToDo: Change this as in Surveyor and Predictor
-            VectorUtils vectorUtils = new VectorUtils();
-            vectorUtils.Initialize(true);
+            RicochetCalc vectorUtils = new RicochetCalc(true, eUnits.Mm);
 
             _decisionTree = (decisionTree != null) ? decisionTree : new FullDecisionTree();
 

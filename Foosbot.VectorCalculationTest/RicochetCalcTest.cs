@@ -2,19 +2,27 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Foosbot.Common.Protocols;
 using Foosbot.VectorCalculation;
+using Foosbot.VectorCalculation.Contracts;
 
 namespace Foosbot.VectorCalculationTest
 {
     [TestClass]
-    public class VectorUtilsTest
+    public class RicochetCalcTest
     {
         BallCoordinates _initialCoordinates;
-        VectorUtilsWrapper _vectorUtils;
+        IInitializableRicochet _testAsset;
+
+        public const int XMIN = 0;
+        public const int XMAX = 800;
+        public const int YMIN = 0;
+        public const int YMAX = 400;
+        public const double RICOCHE = 0.7;
 
         [TestInitialize]
         public void InitTestBed()
         {
-            _vectorUtils = new VectorUtilsWrapper();
+            _testAsset = new RicochetCalc();
+            _testAsset.InitializeRicochetCalc(eUnits.Mm, XMAX, YMAX, RICOCHE);
         }
 
         #region FindNearestIntersectionPoint
@@ -26,7 +34,7 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(0, 0);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
         }
 
         [TestMethod]
@@ -35,8 +43,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(-100, 0);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(VectorUtilsWrapper.XMIN, 50);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(XMIN, 50);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -48,8 +56,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(100, 0);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(VectorUtilsWrapper.XMAX, 50);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(XMAX, 50);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -61,8 +69,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(0, 100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(100, VectorUtilsWrapper.YMAX);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(100, YMAX);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -74,8 +82,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(0, -100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(100, VectorUtilsWrapper.YMIN);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(100, YMIN);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -87,8 +95,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(-50, 100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(VectorUtilsWrapper.XMIN, 150);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(XMIN, 150);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -100,8 +108,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(50, -100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(75, VectorUtilsWrapper.YMIN);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(75, YMIN);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -113,8 +121,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(-50, -100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(25, VectorUtilsWrapper.YMIN);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(25, YMIN);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -126,8 +134,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(50, 100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(225, VectorUtilsWrapper.YMAX);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(225, YMAX);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -139,8 +147,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(100, 0);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(VectorUtilsWrapper.XMAX, 100);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(XMAX, 100);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -152,8 +160,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(-100, 0);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(VectorUtilsWrapper.XMIN, 100);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(XMIN, 100);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -165,8 +173,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(0, 100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(50, VectorUtilsWrapper.YMAX);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(50, YMAX);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -178,8 +186,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(0, -100);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(50, VectorUtilsWrapper.YMIN);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(50, YMIN);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -191,8 +199,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(-100, 50);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(100, VectorUtilsWrapper.YMAX);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(100, YMAX);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -204,8 +212,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(100, -50);
             
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(VectorUtilsWrapper.XMAX, 50);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(XMAX, 50);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -217,8 +225,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(-100, -50);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(500, VectorUtilsWrapper.YMIN);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(500, YMIN);
             
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -230,8 +238,8 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(100, 50);
 
-            Coordinates2D actualResult = _vectorUtils.FindNearestIntersectionPoint(_initialCoordinates);
-            Coordinates2D expectedResult = new Coordinates2D(VectorUtilsWrapper.XMAX, 150);
+            Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
+            Coordinates2D expectedResult = new Coordinates2D(XMAX, 150);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
@@ -245,10 +253,10 @@ namespace Foosbot.VectorCalculationTest
         public void FindRicochetTime_Vector_minus100_50()
         {
             DateTime now = DateTime.Now;
-            Coordinates2D intersection = new Coordinates2D(500, VectorUtilsWrapper.YMAX);
+            Coordinates2D intersection = new Coordinates2D(500, YMAX);
             BallCoordinates ballCoordinates = new BallCoordinates(700, 300, now);
             ballCoordinates.Vector = new Vector2D(-100, 50);
-            DateTime actualTime = _vectorUtils.FindRicochetTime(ballCoordinates, intersection);
+            DateTime actualTime = _testAsset.FindRicochetTime(ballCoordinates, intersection);
             DateTime expected = now + TimeSpan.FromSeconds(2.0);
             Assert.AreEqual(expected, actualTime);
         }
@@ -257,10 +265,10 @@ namespace Foosbot.VectorCalculationTest
         public void FindRicochetTime_Vector_minus140_minus20()
         {
             DateTime now = DateTime.Now;
-            Coordinates2D intersection = new Coordinates2D(VectorUtilsWrapper.XMIN, 200);
+            Coordinates2D intersection = new Coordinates2D(XMIN, 200);
             BallCoordinates ballCoordinates = new BallCoordinates(700, 300, now);
             ballCoordinates.Vector = new Vector2D(-140, -20);
-            DateTime actualTime = _vectorUtils.FindRicochetTime(ballCoordinates, intersection);
+            DateTime actualTime = _testAsset.FindRicochetTime(ballCoordinates, intersection);
             DateTime expected = now + TimeSpan.FromSeconds(5.0);
             Assert.AreEqual(expected, actualTime);
         }
@@ -269,10 +277,10 @@ namespace Foosbot.VectorCalculationTest
         public void FindRicochetTime_Vector_50_minus300()
         {
             DateTime now = DateTime.Now;
-            Coordinates2D intersection = new Coordinates2D(750, VectorUtilsWrapper.YMIN);
+            Coordinates2D intersection = new Coordinates2D(750, YMIN);
             BallCoordinates ballCoordinates = new BallCoordinates(700, 300, now);
             ballCoordinates.Vector = new Vector2D(50, -300);
-            DateTime actualTime = _vectorUtils.FindRicochetTime(ballCoordinates, intersection);
+            DateTime actualTime = _testAsset.FindRicochetTime(ballCoordinates, intersection);
             DateTime expected = now + TimeSpan.FromSeconds(1.0);
             Assert.AreEqual(expected, actualTime);
         }
@@ -281,10 +289,10 @@ namespace Foosbot.VectorCalculationTest
         public void FindRicochetTime_Vector_100_50()
         {
             DateTime now = DateTime.Now;
-            Coordinates2D intersection = new Coordinates2D(VectorUtilsWrapper.XMAX, 350);
+            Coordinates2D intersection = new Coordinates2D(XMAX, 350);
             BallCoordinates ballCoordinates = new BallCoordinates(700, 300, now);
             ballCoordinates.Vector = new Vector2D(100, 50);
-            DateTime actualTime = _vectorUtils.FindRicochetTime(ballCoordinates, intersection);
+            DateTime actualTime = _testAsset.FindRicochetTime(ballCoordinates, intersection);
             DateTime expected = now + TimeSpan.FromSeconds(1.0);
             Assert.AreEqual(expected, actualTime);
         }
@@ -296,10 +304,10 @@ namespace Foosbot.VectorCalculationTest
         [TestMethod]
         public void FindIntersectionVector_UpperBorder()
         {
-            Coordinates2D intersection = new Coordinates2D(500, VectorUtilsWrapper.YMAX);
+            Coordinates2D intersection = new Coordinates2D(500, YMAX);
             Vector2D vector = new Vector2D(-100,50);
-            Vector2D actualVector = _vectorUtils.FindIntersectionVector(vector, intersection);
-            Vector2D expectedVector = new Vector2D(-100 * VectorUtilsWrapper.RICOCHE, -50 * VectorUtilsWrapper.RICOCHE);
+            Vector2D actualVector = _testAsset.FindIntersectionVector(vector, intersection);
+            Vector2D expectedVector = new Vector2D(-100 * RICOCHE, -50 * RICOCHE);
             Assert.AreEqual(expectedVector.X, actualVector.X);
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
@@ -307,10 +315,10 @@ namespace Foosbot.VectorCalculationTest
         [TestMethod]
         public void FindIntersectionVector_LeftBorder()
         {
-            Coordinates2D intersection = new Coordinates2D(VectorUtilsWrapper.XMIN, 200);
+            Coordinates2D intersection = new Coordinates2D(XMIN, 200);
             Vector2D vector = new Vector2D(-140, -20);
-            Vector2D actualVector = _vectorUtils.FindIntersectionVector(vector, intersection);
-            Vector2D expectedVector = new Vector2D(140 * VectorUtilsWrapper.RICOCHE, -20 * VectorUtilsWrapper.RICOCHE);
+            Vector2D actualVector = _testAsset.FindIntersectionVector(vector, intersection);
+            Vector2D expectedVector = new Vector2D(140 * RICOCHE, -20 * RICOCHE);
             Assert.AreEqual(expectedVector.X, actualVector.X);
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
@@ -318,10 +326,10 @@ namespace Foosbot.VectorCalculationTest
         [TestMethod]
         public void FindIntersectionVector_ButtomBorder()
         {
-            Coordinates2D intersection = new Coordinates2D(750, VectorUtilsWrapper.YMIN);
+            Coordinates2D intersection = new Coordinates2D(750, YMIN);
             Vector2D vector = new Vector2D(50, -300);
-            Vector2D actualVector = _vectorUtils.FindIntersectionVector(vector, intersection);
-            Vector2D expectedVector = new Vector2D(50 * VectorUtilsWrapper.RICOCHE, 300 * VectorUtilsWrapper.RICOCHE);
+            Vector2D actualVector = _testAsset.FindIntersectionVector(vector, intersection);
+            Vector2D expectedVector = new Vector2D(50 * RICOCHE, 300 * RICOCHE);
             Assert.AreEqual(expectedVector.X, actualVector.X);
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
@@ -329,10 +337,10 @@ namespace Foosbot.VectorCalculationTest
         [TestMethod]
         public void FindIntersectionVector_RightBorder()
         {
-            Coordinates2D intersection = new Coordinates2D(VectorUtilsWrapper.XMAX, 350);
+            Coordinates2D intersection = new Coordinates2D(XMAX, 350);
             Vector2D vector = new Vector2D(100, 50);
-            Vector2D actualVector = _vectorUtils.FindIntersectionVector(vector, intersection);
-            Vector2D expectedVector = new Vector2D(-100 * VectorUtilsWrapper.RICOCHE, 50 * VectorUtilsWrapper.RICOCHE);
+            Vector2D actualVector = _testAsset.FindIntersectionVector(vector, intersection);
+            Vector2D expectedVector = new Vector2D(-100 * RICOCHE, 50 * RICOCHE);
             Assert.AreEqual(expectedVector.X, actualVector.X);
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
@@ -341,9 +349,9 @@ namespace Foosbot.VectorCalculationTest
         [ExpectedException(typeof(NotSupportedException))]
         public void FindIntersectionVector_InvalidIntersectionPoint()
         {
-            Coordinates2D intersection = new Coordinates2D(VectorUtilsWrapper.XMAX - 5, VectorUtilsWrapper.XMIN - 5);
+            Coordinates2D intersection = new Coordinates2D(XMAX - 5, XMIN - 5);
             Vector2D vector = new Vector2D(100, 50);
-            Vector2D actualVector = _vectorUtils.FindIntersectionVector(vector, intersection);
+            Vector2D actualVector = _testAsset.FindIntersectionVector(vector, intersection);
         }
 
         #endregion FindIntersectionVector
@@ -355,7 +363,7 @@ namespace Foosbot.VectorCalculationTest
         public void Ricochet_UndefinedCoordinates()
         {
             _initialCoordinates = new BallCoordinates(DateTime.Now);
-            _vectorUtils.Ricochet(_initialCoordinates);
+            _testAsset.Ricochet(_initialCoordinates);
         }
 
         [TestMethod]
@@ -363,7 +371,7 @@ namespace Foosbot.VectorCalculationTest
         public void Ricochet_NullCoordinates()
         {
             _initialCoordinates = null;
-            _vectorUtils.Ricochet(_initialCoordinates);
+            _testAsset.Ricochet(_initialCoordinates);
         }
 
         [TestMethod]
@@ -372,7 +380,7 @@ namespace Foosbot.VectorCalculationTest
         {
             _initialCoordinates = new BallCoordinates(10, 10, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D();
-            _vectorUtils.Ricochet(_initialCoordinates);
+            _testAsset.Ricochet(_initialCoordinates);
         }
 
         [TestMethod]
@@ -380,7 +388,7 @@ namespace Foosbot.VectorCalculationTest
         public void Ricochet_NullVector()
         {
             _initialCoordinates = new BallCoordinates(10, 10, DateTime.Now);
-            _vectorUtils.Ricochet(_initialCoordinates);
+            _testAsset.Ricochet(_initialCoordinates);
         }
 
         [TestMethod]
@@ -389,7 +397,7 @@ namespace Foosbot.VectorCalculationTest
         {
             _initialCoordinates = new BallCoordinates(10, 10, DateTime.Now);
             _initialCoordinates.Vector = new Vector2D(0, 0);
-            _vectorUtils.Ricochet(_initialCoordinates);
+            _testAsset.Ricochet(_initialCoordinates);
         }
 
         [TestMethod]
@@ -400,10 +408,10 @@ namespace Foosbot.VectorCalculationTest
             _initialCoordinates.Vector = new Vector2D(-100, 0);
 
             DateTime expectedTime = initTime + TimeSpan.FromSeconds(1);
-            BallCoordinates expectedResult = new BallCoordinates(VectorUtilsWrapper.XMIN, 50, expectedTime);
-            expectedResult.Vector = new Vector2D(100 * VectorUtilsWrapper.RICOCHE, 0);
+            BallCoordinates expectedResult = new BallCoordinates(XMIN, 50, expectedTime);
+            expectedResult.Vector = new Vector2D(100 * RICOCHE, 0);
 
-            BallCoordinates actualResult = _vectorUtils.Ricochet(_initialCoordinates);
+            BallCoordinates actualResult = _testAsset.Ricochet(_initialCoordinates);
 
             Assert.AreEqual(expectedResult.X, actualResult.X);
             Assert.AreEqual(expectedResult.Y, actualResult.Y);

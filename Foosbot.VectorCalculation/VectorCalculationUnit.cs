@@ -18,7 +18,7 @@ using System.Threading;
 
 namespace Foosbot.VectorCalculation
 {
-    public class VectorCallculationUnit : Observer<BallCoordinates>
+    public class VectorCalculationUnit : Observer<BallCoordinates>
     {
         /// <summary>
         /// Ball Location Publisher
@@ -32,13 +32,13 @@ namespace Foosbot.VectorCalculation
 
         private Transformation _transformer;
 
-        private VectorUtils vectorUtils;
+        private RicochetCalc vectorUtils;
 
 
-        public VectorCallculationUnit(Publisher<BallCoordinates> coordinatesPublisher, int ballRadius) :
+        public VectorCalculationUnit(Publisher<BallCoordinates> coordinatesPublisher, int ballRadius = 5) :
             base(coordinatesPublisher)
         {
-            vectorUtils = new VectorUtils();
+            vectorUtils = new RicochetCalc();
             vectorUtils.Initialize();
 
             _transformer = new Transformation();

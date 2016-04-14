@@ -8,124 +8,184 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Exceptions;
 using Foosbot.Common.Protocols;
+using Foosbot.VectorCalculation.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace Foosbot.VectorCalculation
 {
-    public class VectorUtils
+    /// <summary>
+    /// Ricochet Calculation Class
+    /// </summary>
+    public class RicochetCalc : IInitializableRicochet
     {
+        #region Private Members
+
+        protected double _xMinBorder;
+        protected double _yMinBorder;
+        protected double _xMaxBorder;
+        protected double _yMaxBorder;
+        protected double _ricocheFactor;
+
+        #endregion Private Members
+
+        #region Constructor
+
+        /// <summary>
+        /// Ricochet Calculator Constructor
+        /// </summary>
+        /// <param name="doInit">Perform initialization flag [default is false]</param>
+        /// <param name="units">Desired units to work in [default is Points]</param>
+        public RicochetCalc(bool doInit = false, eUnits units = eUnits.Pts)
+        {
+            IsInitialized = false;
+            if (doInit)
+            {
+                InitializeRicochetCalc(units);
+            }
+        }
+
+        #endregion Constructor
+
+        #region IInitializable Implementation
+
+        /// <summary>
+        /// Is Initialized property
+        /// </summary>
+        public bool IsInitialized { get; private set; }
+
+        /// <summary>
+        /// Initialization Method
+        /// </summary>
+        public void Initialize()
+        {
+            InitializeRicochetCalc();
+        }
+
         /// <summary>
         /// Initialization Method - reads all constants from Configuration file
         /// </summary>
-        /// <param name="isMM">If [True] all will be calculated in mm, [False] otherwise in points [default is points (False)]</param>
-        public void Initialize(bool isMM = false)
+        /// <param name="units">Desired units to work in [default is Points]</param>
+        /// <param name="xMaxBorder">X Max Limit for Ricochet Calculations</param>
+        /// <param name="yMaxBorder">Y Max Limit for Ricochet Calculations</param>
+        /// <param name="ricochetFactor">Ricochet Factor to use in calculations</param>
+        public void InitializeRicochetCalc(eUnits units = eUnits.Pts, double xMaxBorder = -1, double yMaxBorder = -1, double ricochetFactor = -1)
         {
-            if (!_isInitilized)
+            if (!IsInitialized)
             {
-                XMinBorder = 0;
-                YMinBorder = 0;
-                if (isMM) //use mm
+                _xMinBorder = 0;
+                _yMinBorder = 0;
+                _ricocheFactor = (ricochetFactor > 0) ? ricochetFactor
+                            : Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
+                switch(units)
                 {
-                    XMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_WIDTH);
-                    YMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_HEIGHT);
+                    case eUnits.Mm:
+                        _xMaxBorder = (xMaxBorder > 0) ? xMaxBorder 
+                            : Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_WIDTH);
+                        _yMaxBorder = (yMaxBorder > 0) ? yMaxBorder
+                            : Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_HEIGHT);
+                        break;
+                    case eUnits.Pts:
+                        _xMaxBorder = (xMaxBorder > 0) ? xMaxBorder
+                            : Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+                        _yMaxBorder = (yMaxBorder > 0) ? yMaxBorder
+                            : Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+                        break;
+                    default:
+                        throw new NotSupportedException(String.Format(
+                            "[{0}] Units [{1}] are not supported by RicochetCalc.",
+                                MethodBase.GetCurrentMethod().Name, units.ToString()));
+
                 }
-                else //use points
-                {
-                    XMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
-                    YMaxBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
-                }
-                RicocheFactor = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
-                _isInitilized = true;
+                IsInitialized = true;
             }
         }
 
-        #region Protected Static Properties
+        #endregion IInitializable Implementation
 
-        protected static double XMinBorder
+        #region IRicochet Properties Implementation
+
+        /// <summary>
+        /// Minimum border in x
+        /// </summary>
+        public double MinBorderX
         {
             get
             {
-                if (!_isInitilized)
-                    throw new NotSupportedException("VectorUtils not initialized!");
-                return _xMinBorder;
-            }
-            set
-            {
-                _xMinBorder = value;
+                if (IsInitialized)
+                    return _xMinBorder;
+                else
+                    throw new InitializationException(String.Format(
+                        "[{0}] Class must be initialized before used", GetType().Name));
             }
         }
 
-        protected static double YMinBorder
+        /// <summary>
+        /// Minimum border in y
+        /// </summary>
+        public double MinBorderY
         {
             get
             {
-                if (!_isInitilized)
-                    throw new NotSupportedException("VectorUtils not initialized!");
-                return _yMinBorder;
-            }
-            set
-            {
-                _yMinBorder = value;
+                if (IsInitialized)
+                    return _yMinBorder;
+                else
+                    throw new InitializationException(String.Format(
+                        "[{0}] Class must be initialized before used", GetType().Name));
             }
         }
 
-        protected static double XMaxBorder
+        /// <summary>
+        /// Maxmimum border in x
+        /// </summary>
+        public double MaxBorderX
         {
             get
             {
-                if (!_isInitilized)
-                    throw new NotSupportedException("VectorUtils not initialized!");
-                return _xMaxBorder;
-            }
-            set
-            {
-                _xMaxBorder = value;
+                if (IsInitialized)
+                    return _xMaxBorder;
+                else
+                    throw new InitializationException(String.Format(
+                        "[{0}] Class must be initialized before used", GetType().Name));
             }
         }
 
-        protected static double YMaxBorder
+        /// <summary>
+        /// Maximum border in x
+        /// </summary>
+        public double MaxBorderY
         {
             get
             {
-                if (!_isInitilized)
-                    throw new NotSupportedException("VectorUtils not initialized!");
-                return _yMaxBorder;
-            }
-            set
-            {
-                _yMaxBorder = value;
+                if (IsInitialized)
+                    return _yMaxBorder;
+                else
+                    throw new InitializationException(String.Format(
+                        "[{0}] Class must be initialized before used", GetType().Name));
             }
         }
 
-        protected static double RicocheFactor
+        /// <summary>
+        /// Ricochet factor
+        /// </summary>
+        public double RicochetFactor
         {
             get
             {
-                if (!_isInitilized)
-                    throw new NotSupportedException("VectorUtils not initialized!");
-                return _ricocheFactor;
-            }
-            set
-            {
-                _ricocheFactor = value;
+                if (IsInitialized)
+                    return _ricocheFactor;
+                else
+                    throw new InitializationException(String.Format(
+                        "[{0}] Class must be initialized before used", GetType().Name));
             }
         }
 
-        #endregion Protected Static Properties
+        #endregion IRicochet Properties Implementation
 
-        #region Static Members
-
-        private static double _xMinBorder;
-        private static double _yMinBorder;
-        private static double _xMaxBorder;
-        private static double _yMaxBorder;
-        private static double _ricocheFactor;
-        protected static bool _isInitilized = false;
-
-        #endregion Static Members
+        #region Method Implementation
 
         /// <summary>
         /// Ricochet coordinate calculation
@@ -178,15 +238,15 @@ namespace Foosbot.VectorCalculation
 
             if (ballCoordinates.Vector.X != 0)
             {
-                double yb = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMinBorder);
-                double yc = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, XMaxBorder);
+                double yb = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, MinBorderX);
+                double yc = CalculateY2OnLine(m, ballCoordinates.X, ballCoordinates.Y, MaxBorderX);
 
-                Coordinates2D B = new Coordinates2D(XMinBorder, yb);
+                Coordinates2D B = new Coordinates2D(MinBorderX, yb);
                 Vector2D vB = new Vector2D(B.X - ballCoordinates.X, B.Y - ballCoordinates.Y);
                 vectors.Add(vB);
                 borderIntersection.Add(vB, B); //B
 
-                Coordinates2D C = new Coordinates2D(XMaxBorder, yc);
+                Coordinates2D C = new Coordinates2D(MaxBorderX, yc);
                 Vector2D vC = new Vector2D(C.X - ballCoordinates.X, C.Y - ballCoordinates.Y);
                 vectors.Add(vC);
                 borderIntersection.Add(vC, C); //C
@@ -194,15 +254,15 @@ namespace Foosbot.VectorCalculation
 
             if (ballCoordinates.Vector.Y != 0)
             {
-                double xa = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMinBorder);
-                double xd = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, YMaxBorder);
+                double xa = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, MinBorderY);
+                double xd = CalculateX2OnLine(m, ballCoordinates.X, ballCoordinates.Y, MaxBorderY);
 
-                Coordinates2D A = new Coordinates2D(xa, YMinBorder);
+                Coordinates2D A = new Coordinates2D(xa, MinBorderY);
                 Vector2D vA = new Vector2D(A.X - ballCoordinates.X, A.Y - ballCoordinates.Y);
                 vectors.Add(vA);
                 borderIntersection.Add(vA, A); //A
 
-                Coordinates2D D = new Coordinates2D(xd, YMaxBorder);
+                Coordinates2D D = new Coordinates2D(xd, MaxBorderY);
                 Vector2D vD = new Vector2D(D.X - ballCoordinates.X, D.Y - ballCoordinates.Y);
                 vectors.Add(vD);
                 borderIntersection.Add(vD, D); //D
@@ -224,7 +284,7 @@ namespace Foosbot.VectorCalculation
 
             //get nearest point
             Coordinates2D intersectionPoint = null;
-            double minDistance = XMaxBorder * YMaxBorder;
+            double minDistance = MaxBorderX * MaxBorderY;
             foreach (Coordinates2D intersection in borderIntersection.Values)
             {
                 double dist = intersection.Distance(ballCoordinates);
@@ -284,15 +344,15 @@ namespace Foosbot.VectorCalculation
                         MethodBase.GetCurrentMethod().Name));
 
             bool isDirectionChanged = false;
-            double x = vector.X * RicocheFactor;
-            double y = vector.Y * RicocheFactor;
+            double x = vector.X * RicochetFactor;
+            double y = vector.Y * RicochetFactor;
 
-            if (intersection.Y == YMinBorder || intersection.Y == YMaxBorder)
+            if (intersection.Y == MinBorderY || intersection.Y == MaxBorderY)
             {
                 y *= (-1);
                 isDirectionChanged = true;
             }
-            if (intersection.X == XMinBorder || intersection.X == XMaxBorder)
+            if (intersection.X == MinBorderX || intersection.X == MaxBorderX)
             {
                 x *= (-1);
                 isDirectionChanged = true;
@@ -305,10 +365,7 @@ namespace Foosbot.VectorCalculation
             return new Vector2D(x, y);
         }
 
-        public static int ScalarProduct(DefinableCartesianCoordinate<int> coordA, DefinableCartesianCoordinate<int> coordB)
-        {
-            return coordA.X * coordB.X + coordA.Y * coordB.Y;
-        }
+        #endregion Method Implementation
 
         #region Private Member Functions
 

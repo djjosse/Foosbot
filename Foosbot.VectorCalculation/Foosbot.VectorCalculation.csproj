@@ -48,11 +48,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BallCoordinatesUpdater.cs" />
+    <Compile Include="Contracts\IInitializableRicochet.cs" />
+    <Compile Include="Contracts\IRicochet.cs" />
     <Compile Include="Coordinates2D.cs" />
     <Compile Include="CoordinatesStabilizer.cs" />
-    <Compile Include="VectorCallculationUnit.cs" />
+    <Compile Include="VectorCalculationUnit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VectorUtils.cs" />
+    <Compile Include="RicochetCalc.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">

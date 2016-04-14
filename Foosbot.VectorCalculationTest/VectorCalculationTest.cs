@@ -12,17 +12,19 @@ using System.Threading.Tasks;
 namespace Foosbot.VectorCalculationTest
 {
     [TestClass]
-    class VectorCalculationTest
+    public class VectorCalculationTest
     {
         private static int XMAX_PTS;
         private static int YMAX_PTS;
         private static int XMAX_MM;
         private static int YMAX_MM;
         private static double RICOCHET_FACTOR;
+
         private static Publisher<BallCoordinates> _mockPublisher;
 
-        [TestInitialize]
-        public static void DecisionTestInitialize(TestContext context)
+
+        [ClassInitialize]
+        public static void VectorCalculationTestInitialize(TestContext context)
         {
             _mockPublisher = Substitute.For<Publisher<BallCoordinates>>();
 
@@ -34,7 +36,6 @@ namespace Foosbot.VectorCalculationTest
             RICOCHET_FACTOR = Configuration.Attributes.GetValue<double>(Configuration.Names.KEY_RICOCHET_FACTOR);
         }
 
-
         #region Vector Calculation Algorithm Test
 
 
@@ -42,7 +43,7 @@ namespace Foosbot.VectorCalculationTest
         [ExpectedException(typeof(ArgumentException))]
         public void VectorCalculationAlgorithm_Ball_Coordinates_Null_Test()
         {
-            PrivateObject po = new PrivateObject(typeof(VectorCallculationUnit), _mockPublisher);
+            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher , 5);
             Vector2D actual = (Vector2D)po.Invoke("VectorCalculationAlgorithm",
                                                 new Type[] { typeof(BallCoordinates) },
                                                 new Object[] { null },
@@ -50,19 +51,35 @@ namespace Foosbot.VectorCalculationTest
         }
 
         [TestMethod]
-        public void VectorCalculationAlgorithm_BallCoordinates_Not_Defined_Test()
+        public void VectorCalculationAlgorithm_Stored_BallCoordinates_Not_Defined_Test()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(DateTime.Now);
-            PrivateObject po = new PrivateObject(typeof(VectorCallculationUnit), _mockPublisher);
+            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher, 5);
 
             Vector2D expected = new Vector2D();
             Vector2D actual = (Vector2D)po.Invoke("VectorCalculationAlgorithm",
-                                                new Type[] { typeof(BallCoordinates) }, 
+                                                new Type[] { typeof(BallCoordinates) },
                                                 new Object[] { ballCoordinates },
                                                 new Type[] { typeof(BallCoordinates) });
             Assert.AreEqual(actual, actual);
 
         }
+
+        [TestMethod]
+        public void VectorCalculationAlgorithm_BallCoordinates_Not_Defined_Test()
+        {
+            BallCoordinates ballCoordinates = new BallCoordinates(DateTime.Now);
+            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher, 5);
+
+            Vector2D expected = new Vector2D();
+            Vector2D actual = (Vector2D)po.Invoke("VectorCalculationAlgorithm",
+                                                new Type[] { typeof(BallCoordinates) },
+                                                new Object[] { ballCoordinates },
+                                                new Type[] { typeof(BallCoordinates) });
+            Assert.AreEqual(actual, actual);
+
+        }
+
 
         #endregion Vector Calculation Algorithm Test
     }

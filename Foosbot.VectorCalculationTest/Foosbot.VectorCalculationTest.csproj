@@ -55,9 +55,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="VectorCalculationTest.cs" />
-    <Compile Include="VectorUtilsTest.cs" />
+    <Compile Include="RicochetCalcTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VectorUtilsWrapper.cs" />
+    <Compile Include="VectorCalculationWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">

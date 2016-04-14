@@ -139,7 +139,7 @@ namespace Foosbot.UI
                // {
               //      while (!_ipu.IsCallibrated) { Thread.Sleep(100);/* wait till calibrated*/}
 
-                    VectorCallculationUnit vectorCalcullationUnit = new VectorCallculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
+                    VectorCalculationUnit vectorCalcullationUnit = new VectorCalculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
                     vectorCalcullationUnit.Start();
 
                     MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
