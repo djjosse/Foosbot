@@ -395,8 +395,8 @@ namespace Foosbot.DecisionUnit.Core
                     if (_surveyor.IsCoordinatesYInRange(yintersection))
                     {
                         Intersection = new TimedPoint(xintersection, yintersection, currentCoordinates.Timestamp + intersectionTime);
-                        Log.Common.Debug(String.Format("[{0}] Found intersection point with rod [{1}]: [{2}x{3}]",
-                            MethodBase.GetCurrentMethod().Name, _rodType, xintersection, yintersection));
+                       // Log.Common.Debug(String.Format("[{0}] Found intersection point with rod [{1}]: [{2}x{3}]",
+                       //     MethodBase.GetCurrentMethod().Name, _rodType, xintersection, yintersection));
                     }
                     else
                     {

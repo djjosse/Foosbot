@@ -26,17 +26,22 @@ namespace Foosbot
     {
         private static double _actualWidthRate;
         private static double _actualHeightRate;
+
         private static Canvas _canvas;
         private static Dispatcher _dispatcher;
+
         private static double DEVICE_MAX_Y;
         private static double DEVICE_MAX_X;
         private static double TABLE_MAX_Y_MM;
         private static double TABLE_MAX_X_MM;
+
         private static Dictionary<eMarks, int> _rods;
         private static Dictionary<eMarks, int> _players;
 
+        private static Dictionary<eMarks, int> _rodPlayerCount;
+        private static Dictionary<eMarks, int> _rodsPlayersDistance;
+        private static Dictionary<eMarks, int> _rodsOffsetY;
         
-
         /// <summary>
         /// Markup shape dictionary
         /// Contains markup key and related shape
@@ -52,17 +57,29 @@ namespace Foosbot
             DEVICE_MAX_X = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
 
             TABLE_MAX_Y_MM = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_HEIGHT);
-            TABLE_MAX_X_MM = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_WIDTH); 
+            TABLE_MAX_X_MM = Configuration.Attributes.GetValue<double>(Configuration.Names.TABLE_WIDTH);
 
-            _rods = new Dictionary<eMarks,int>();
+            _rods = new Dictionary<eMarks, int>();
+            _rodPlayerCount = new Dictionary<eMarks, int>();
+            _rodsPlayersDistance = new Dictionary<eMarks, int>();
+            _rodsOffsetY = new Dictionary<eMarks, int>();
+
             foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
 	        {
+                int rodPlayersCount = Configuration.Attributes.GetPlayersCountPerRod(rodType);
+                int yDistance = Configuration.Attributes.GetPlayersDistancePerRod(rodType);
+                int firstPlayerOffsetY = Configuration.Attributes.GetPlayersOffsetYPerRod(rodType);
+
                 int x = Configuration.Attributes.GetRodXCoordinate(rodType);
+
                 eMarks mark;
                 Enum.TryParse<eMarks>(rodType.ToString(), out mark);
                 if (!mark.Equals(eMarks.NA))
                 {
                     _rods.Add(mark, x);
+                    _rodPlayerCount.Add(mark, rodPlayersCount);
+                    _rodsPlayersDistance.Add(mark, yDistance);
+                    _rodsOffsetY.Add(mark, firstPlayerOffsetY);
                 }
 	        }
 
@@ -195,7 +212,7 @@ namespace Foosbot
         /// </summary>
         /// <param name="thickness">the thickness of the rods</param>
         /// <param name="color">the color of the rods</param>
-        public static void DrawRods(int thickness = 3, SolidColorBrush color = null ,bool isLocation = true)
+        public static void DrawRods(int thickness = 6,bool isLocation = true)
         {
             try
             {
@@ -212,7 +229,7 @@ namespace Foosbot
                            ConvertToLocation(ref x, ref y);
 
                         (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
-                        (_markups[key + eMarksCounter] as Shape).Stroke = (color == null) ? Brushes.White : color;
+                        (_markups[key + eMarksCounter] as Shape).Stroke = Brushes.White;
 
                         (_markups[key + eMarksCounter] as Line).X1 = x * _actualWidthRate;
                         (_markups[key + eMarksCounter] as Line).Y1 = 0;
@@ -248,28 +265,24 @@ namespace Foosbot
         /// <param name="rod">eMark of the wanted rod : GOALKEEPER , Defence , Midfield, Attack</param>
         /// <param name="deltaYMovment">the change on the linear movement</param>
         /// <param name="rotationalMove">eRotationalMove of the rod : DEFENCE, RISE, ATTACK</param>
-        public static void DrawRodPlayers(eMarks rod, int deltaYMovment, eRotationalMove rotationalMove ,bool isLocation = true)
+        public static void DrawRodPlayers(eRod rod, int linearMoveDestination, eRotationalMove rotationalMove ,bool isLocation = true)
         {
             try
             {
-                eRod mark;
-                Enum.TryParse<eRod>(rod.ToString(), out mark);
-                eMarks playersBase = 0;    
-   
-                int eMarkType = ((int)rod);       
-                int count = Configuration.Attributes.GetPlayersCountPerRod(mark);
-                int yDistance = Configuration.Attributes.GetPlayersDistancePerRod(mark);
-                int xDistance = 0;
-                int x = XTableToDeviceCoordinates(_rods[rod]);
-                int y = Configuration.Attributes.GetPlayersOffsetYPerRod(mark);
+                eMarks playersBase = 0;
+                eMarks mark;
+                Enum.TryParse<eMarks>(rod.ToString(), out mark);
 
-                int movmentOffset = y + deltaYMovment;
-                //int movmentOffset = y + deltaYMovment;
+                int eMarkType = ((int)mark);
+                int rodPlayersCount = _rodPlayerCount[mark];
+                int yDistance = _rodsPlayersDistance[mark];
+                int firstPlayerOffsetY = _rodsOffsetY[mark];
+                int x = XTableToDeviceCoordinates(_rods[mark]);
+                int movmentOffset = 0;
 
                 if (isLocation)
                 {
                     ConvertToLocation(ref x, ref movmentOffset);
-                    ConvertToLocation(ref xDistance, ref yDistance);
                 }
 
                 switch (eMarkType)
@@ -281,10 +294,14 @@ namespace Foosbot
                     default: break;
                 }
 
-                for (int i = 0; i < count; i++)
+                for (int rodPlayer = 0; rodPlayer < rodPlayersCount; rodPlayer++)
                 {
-                    if (i == 0) DrawPlayer(playersBase + i, new Point(x * _actualWidthRate, movmentOffset * _actualHeightRate), 12, rotationalMove);
-                    else DrawPlayer(playersBase + i, new Point(x * _actualWidthRate, (movmentOffset += yDistance) * _actualHeightRate), 12, rotationalMove);
+                    if (rodPlayer == 0) 
+                        DrawPlayer(playersBase + rodPlayer,
+                            new Point(x * _actualWidthRate, (linearMoveDestination += firstPlayerOffsetY) * _actualHeightRate), 12, rotationalMove);
+                    else 
+                        DrawPlayer(playersBase + rodPlayer,
+                            new Point(x * _actualWidthRate, (linearMoveDestination += yDistance) * _actualHeightRate), 12, rotationalMove);
                 }
             }
             catch (Exception e)

@@ -70,9 +70,11 @@ namespace Foosbot.DecisionUnit.Core
                 {
                     RodActionPublishers[action.RodType].UpdateAndNotify(action);
 
-                    //Log.Common.Debug(String.Format("[{0}] New action for [{1}] Rotate: [{2}] Linear: [{3}] Coordinate: [{4}] mm",
-                    //   MethodBase.GetCurrentMethod().Name, action.RodType.ToString(), action.Rotation.ToString(),
-                    //      action.Linear.ToString(), action.DcCoordinate));
+                    Marks.DrawRods();
+                    Marks.DrawRodPlayers(action.RodType, action.DcCoordinate, action.Rotation);
+
+                    //Log.Common.Debug(String.Format("[{0}] mm", action.DcCoordinate));
+
                 }
             }
             catch (Exception ex)
