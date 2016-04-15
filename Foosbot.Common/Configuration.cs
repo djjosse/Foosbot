@@ -53,6 +53,8 @@ namespace Foosbot
 
             public const string KEY_PLAYER_WIDTH = "PlayerWidth";
 
+            public const string KEY_ROD_INTERSECTION_MAX_TIMESPAN_SEC = "RodIntersectionMaxTimespan";
+
             public const string SUBKEY_DISTANCE = "_Distance";
             public const string SUBKEY_COUNT = "_Count";
             public const string SUBKEY_OFFSET_Y = "_OffsetY";

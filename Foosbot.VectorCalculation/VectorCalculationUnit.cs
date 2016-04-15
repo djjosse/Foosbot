@@ -73,7 +73,7 @@ namespace Foosbot.VectorCalculation
                 {
                     double x, y;
                     _transformer.InvertTransform(ballCoordinates.X, ballCoordinates.Y, out x, out y);
-                    Marks.DrawBall(new System.Windows.Point(x, y), _stabilizer.BallRadius);
+                    //Marks.DrawBall(new System.Windows.Point(x, y), _stabilizer.BallRadius);
                 }
                 else
                 {

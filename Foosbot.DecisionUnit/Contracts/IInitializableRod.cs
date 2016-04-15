@@ -31,7 +31,8 @@ namespace Foosbot.DecisionUnit.Contracts
         /// <param name="offsetY">Distance between stopper and first player on rod (in MM)</param>
         /// <param name="stopperDistance">Distance between start and end stoppers of current rod (in MM)</param>
         /// <param name="bestEffort">Coordinate (in MM) for first player to be on in BEST_EFFORT state</param>
+        /// <param name="intersectionPredictionTimespan">Maximal TimeSpan to predict intersections with rod (in seconds)</param>
         void Initialize(int rodXCoordinate, int minSectorWidth, double sectorFactor,
-            int playerDistance, int playerCount, int offsetY, int stopperDistance, int bestEffort);
+            int playerDistance, int playerCount, int offsetY, int stopperDistance, int bestEffort, int intersectionPredictionTimespan);
     }
 }

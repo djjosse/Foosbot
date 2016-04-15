@@ -92,6 +92,12 @@ namespace Foosbot.DecisionUnit.Contracts
         int MaximumPossibleStartStopperY { get; }
 
         /// <summary>
+        /// Maximum Intersection Prediction TimeSpan in seconds
+        /// (Predictions after this timespan from current time will be irrelevant in Intersection calculation)
+        /// </summary>
+        int PredictIntersectionMaxTimespan { get; }
+
+        /// <summary>
         /// Dynamic sector calculation method - sets DynamicSector property value.
         /// * if coordinates and vector are defined AND vector is to the rod THEN sets dynamic sector due to ball velocity
         /// * else sets minimal sector width

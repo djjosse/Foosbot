@@ -1,4 +1,14 @@
-﻿using Foosbot.Common.Exceptions;
+﻿// **************************************************************************************
+// **																				   **
+// **		(C) FOOSBOT - Final Software Engineering Project, 2015 - 2016			   **
+// **		(C) Authors: M.Toubian, M.Shimon, E.Kleinman, O.Sasson, J.Gleyzer          **
+// **			Advisors: Mr.Resh Amit & Dr.Hoffner Yigal							   **
+// **		The information and source code here belongs to Foosbot project			   **
+// **		and may not be reproduced or used without authors explicit permission.	   **
+// **																				   **
+// **************************************************************************************
+
+using Foosbot.Common.Exceptions;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.DecisionUnit.Core;
@@ -26,6 +36,7 @@ namespace DecisionUnitTest.Core
         const int OFFSET_Y = 25;
         const int STOPPER_DISTANCE = 275;
         const int BEST_EFFORT = 120;
+        const int MAX_PREDICTION_TIME = 60;
 
         private static IInitializableRod _testAsset;
 
@@ -55,7 +66,7 @@ namespace DecisionUnitTest.Core
         private void InitializeTestAsset()
         {
             _testAsset.Initialize(SECTOR_X_COORDINATE, SECTOR_MIN_WIDTH, SECTOR_FACTOR,
-                PLAYER_DISTANCE, PLAYER_COUNT, OFFSET_Y, STOPPER_DISTANCE, BEST_EFFORT);
+                PLAYER_DISTANCE, PLAYER_COUNT, OFFSET_Y, STOPPER_DISTANCE, BEST_EFFORT, MAX_PREDICTION_TIME);
         }
 
         #region Initializable Properties. Verify all properties throw InitializationException on get with no initialization

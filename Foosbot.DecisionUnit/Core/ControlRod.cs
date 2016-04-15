@@ -82,6 +82,12 @@ namespace Foosbot.DecisionUnit.Core
         /// </summary>
         private int _bestEffort;
 
+        /// <summary>
+        /// Maximum Intersection Prediction TimeSpan in seconds
+        /// (Predictions after this timespan from current time will be irrelevant in Intersection calculation)
+        /// </summary>
+        private int _predictIntersectionTimespan;
+
         #endregion IRod private members
 
         #region IInitializableRod properties
@@ -222,6 +228,22 @@ namespace Foosbot.DecisionUnit.Core
         }
 
         /// <summary>
+        /// Maximum Intersection Prediction TimeSpan in seconds
+        /// (Predictions after this timespan from current time will be irrelevant in Intersection calculation)
+        /// </summary>
+        public int PredictIntersectionMaxTimespan
+        {
+            get
+            {
+                if (IsInitialized)
+                    return _predictIntersectionTimespan;
+                else
+                    throw new InitializationException(String.Format(
+                        "Class [{0}] must be initialized before it can be used.", GetType().Name));
+            }
+        }
+
+        /// <summary>
         /// Minimum possible start stopper Y coordinate of rod
         /// </summary>
         public int MinimumPossibleStartStopperY { get; private set; }
@@ -287,8 +309,9 @@ namespace Foosbot.DecisionUnit.Core
         /// <param name="offsetY">Distance between stopper and first player on rod (in MM)</param>
         /// <param name="stopperDistance">Distance between start and end stoppers of current rod (in MM)</param>
         /// <param name="bestEffort">Coordinate (in MM) for first player to be on in BEST_EFFORT state</param>
+        /// <param name="intersectionPredictionTimespan">Maximal TimeSpan to predict intersections with rod (in seconds)</param>
         public void Initialize(int rodXCoordinate, int minSectorWidth, double sectorFactor,
-            int playerDistance, int playerCount, int offsetY, int stopperDistance, int bestEffort)
+            int playerDistance, int playerCount, int offsetY, int stopperDistance, int bestEffort, int intersectionPredictionTimespan)
         {
             if (!IsInitialized)
             {
@@ -300,6 +323,7 @@ namespace Foosbot.DecisionUnit.Core
                 _offsetY = offsetY;
                 _stopperDistance = stopperDistance;
                 _bestEffort = bestEffort;
+                _predictIntersectionTimespan = intersectionPredictionTimespan;
 
                 DynamicSector = _minSectorWidth;
                 MinimumPossibleStartStopperY = ROD_STOPPER_MIN;
@@ -329,6 +353,7 @@ namespace Foosbot.DecisionUnit.Core
                 _offsetY = Configuration.Attributes.GetPlayersOffsetYPerRod(_rodType);
                 _stopperDistance = Configuration.Attributes.GetRodDistanceBetweenStoppers(_rodType);
                 _bestEffort = Configuration.Attributes.GetFirstPlayerBestEffort(_rodType);
+                _predictIntersectionTimespan = Configuration.Attributes.GetValue<int>(Configuration.Names.KEY_ROD_INTERSECTION_MAX_TIMESPAN_SEC);
 
                 MinimumPossibleStartStopperY = ROD_STOPPER_MIN;
                 MaximumPossibleStartStopperY = TABLE_HEIGHT - ROD_STOPPER_MIN - _stopperDistance;
@@ -362,14 +387,20 @@ namespace Foosbot.DecisionUnit.Core
         }
 
         /// <summary>
-        /// Calculate Rod Intersection with current rod
+        /// Calculate Rod Intersection with current rod.
+        /// 
+        /// The Main Idea of this method is to set Intersection Property of 
+        /// ControlRod Class as Intersection Coordinate with Timestamp.
+        /// In current case both time and coordinates should be defined
+        /// if intersection exists or both undefined because if there is no
+        /// intersection found the timestamp is also not relevant.
         /// </summary>
         /// <param name="currentCoordinates">Current ball coordinates to calculate intersection</param>
         public void CalculateSectorIntersection(BallCoordinates currentCoordinates)
         {
             try
             {
-                //if unable to calculate or no intersection
+                //If unable to calculate OR no intersection - set Intersection as undefined and exit
                 if (currentCoordinates == null || !currentCoordinates.IsDefined
                     || currentCoordinates.Vector == null || !currentCoordinates.Vector.IsDefined
                         || currentCoordinates.Vector.X == 0)
@@ -377,19 +408,26 @@ namespace Foosbot.DecisionUnit.Core
                     Intersection = new TimedPoint();
                     return;
                 }
-
+                
+                /*
+                 * After practical simulations it seems we don't want to define
+                 * intersection with X using sector definition. Anyway if this need
+                 * to be changed, following code can be used:
+                 * 
+                 *  int xintersection = (RodXCoordinate > currentCoordinates.X) ?
+                 *      Convert.ToInt32(RodXCoordinate - DynamicSector / 2.0) :
+                 *      Convert.ToInt32(RodXCoordinate + DynamicSector / 2.0);
+                 * 
+                 */
                 int xintersection = RodXCoordinate;
-                /* //Define if we want to use dynamic sectors
-                   (RodXCoordinate > currentCoordinates.X) ?
-                     Convert.ToInt32(RodXCoordinate - DynamicSector / 2.0) :
-                     Convert.ToInt32(RodXCoordinate + DynamicSector / 2.0);
-                */
 
-                double inSec = (xintersection - currentCoordinates.X) / currentCoordinates.Vector.X;
-                //if timespan is bigger than 0 && Vector X is also bigger than 0
-                if (inSec >= 0 && Math.Abs(currentCoordinates.Vector.X) > 0)
+                //find intersection time using: T = dX/V in seconds
+                double intersectionTimestamp = (xintersection - currentCoordinates.X) / currentCoordinates.Vector.X;
+
+                //If intersecion will happen in the future but before maximum future time limit
+                if (intersectionTimestamp >= 0 && intersectionTimestamp < PredictIntersectionMaxTimespan)
                 {
-                    TimeSpan intersectionTime = TimeSpan.FromSeconds(inSec);
+                    TimeSpan intersectionTime = TimeSpan.FromSeconds(intersectionTimestamp);
 
                     int yintersection = Convert.ToInt32(currentCoordinates.Vector.Y * intersectionTime.TotalSeconds + currentCoordinates.Y);
                     if (_surveyor.IsCoordinatesYInRange(yintersection))
@@ -406,6 +444,7 @@ namespace Foosbot.DecisionUnit.Core
                 }
                 else
                 {
+                    //Intersection found is from the past or not in the near future and is irrelevant
                     Intersection = new TimedPoint();
                 }
             }
