@@ -258,16 +258,16 @@ namespace Foosbot.DecisionUnit.Core
         /// </summary>
         /// <param name="rodType">Rod Type to construct</param>
         /// <param name="surveyor">Used in for range check vector intersection calculation</param>
-        /// <param name="vectorUtils">Used for ricochet in vector intersection calculation</param>
+        /// <param name="ricochetCalc">Used for ricochet in vector intersection calculation</param>
         /// <param name="tableHeight">Foosbot table height - rod length (Y) in mm</param>
-        /// <param name="tableHeight">Minimal point can be reached by stopper (Y) in mm</param>
+        /// <param name="rodStopperMin">Minimal point can be reached by stopper (Y) in mm</param>
         /// <param name="rodState">Rod state will be created in initialization method if passed null</param>
-        public ControlRod(eRod rodType, ISurveyor surveyor, IInitializableRicochet vectorUtils, 
+        public ControlRod(eRod rodType, ISurveyor surveyor, IInitializableRicochet ricochetCalc, 
             int tableHeight = -1, int rodStopperMin = -1, IRodState rodState = null)
         {
             _rodType = rodType;
             _surveyor = surveyor;
-            _vectorUtils = vectorUtils;
+            _vectorUtils = ricochetCalc;
             State = rodState;
 
             TABLE_HEIGHT = (tableHeight > 0) ? tableHeight

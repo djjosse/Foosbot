@@ -144,24 +144,6 @@ namespace Foosbot.DecisionUnit.Core
         }
 
         /// <summary>
-        /// Calculate current Player Y coordinate
-        /// </summary>
-        /// <param name="rod">Current rod</param>
-        /// <param name="currentRodYCoordinate">Current Rod Y coordinates (stopper)</param>
-        /// <param name="playerIndex">Chosen player index to perform action (index 1 based)</param>
-        /// <returns>Chosen player Y coordinate</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown in case player index is out of range</exception>
-        public int CalculateCurrentPlayerYCoordinate(IRod rod, int currentRodYCoordinate, int playerIndex)
-        {
-            if (playerIndex > rod.PlayerCount || playerIndex < 1)
-                throw new ArgumentOutOfRangeException(String.Format(
-                    "Player index {0} for rod type {1} is wrong! Players count is {2}",
-                        playerIndex, rod.RodType, rod.PlayerCount));
-
-            return rod.OffsetY + currentRodYCoordinate + rod.PlayerDistance * (playerIndex - 1);
-        }
-
-        /// <summary>
         /// Verify Y Rod coordinate is in range
         /// </summary>
         /// <param name="rodStopperDistance">Distance beetween two stoppers of rod</param>
@@ -204,5 +186,27 @@ namespace Foosbot.DecisionUnit.Core
 
 
         #endregion private methods
+
+        /*
+         * Currently not in use methods. Need to verify if needed before TESTING
+         */
+
+        /// <summary>
+        /// Calculate current Player Y coordinate
+        /// </summary>
+        /// <param name="rod">Current rod</param>
+        /// <param name="currentRodYCoordinate">Current Rod Y coordinates (stopper)</param>
+        /// <param name="playerIndex">Chosen player index to perform action (index 1 based)</param>
+        /// <returns>Chosen player Y coordinate</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown in case player index is out of range</exception>
+        public int CalculateCurrentPlayerYCoordinate(IRod rod, int currentRodYCoordinate, int playerIndex)
+        {
+            if (playerIndex > rod.PlayerCount || playerIndex < 1)
+                throw new ArgumentOutOfRangeException(String.Format(
+                    "Player index {0} for rod type {1} is wrong! Players count is {2}",
+                        playerIndex, rod.RodType, rod.PlayerCount));
+
+            return rod.OffsetY + currentRodYCoordinate + rod.PlayerDistance * (playerIndex - 1);
+        }
     }
 }

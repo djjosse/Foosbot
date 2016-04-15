@@ -54,9 +54,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Core\ControlRodTest.cs" />
+    <Compile Include="Core\DecisionManagerTests.cs" />
+    <Compile Include="Core\PredictorTests.cs" />
     <Compile Include="Core\RodStateTest.cs" />
     <Compile Include="Core\SurveyorTest.cs" />
-    <Compile Include="DecisionTest.cs" />
     <Compile Include="DecisionHelperTest.cs" />
     <Compile Include="DecisionTreeTest.cs" />
     <Compile Include="DecisionWrapper.cs" />

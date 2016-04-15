@@ -14,6 +14,8 @@ namespace DecisionUnitTest.Core
     [TestClass]
     public class SurveyorTest
     {
+        private const string CATEGORY = "Surveyor";
+
         private const int X_MAX_PTS = 980;
         private const int Y_MAX_PTS = 580;
         private const int X_MAX_MM = 1100;
@@ -28,7 +30,7 @@ namespace DecisionUnitTest.Core
 
         #region Is Coordinates In Range Test
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesInRange_X_and_Y_In_Range()
         {
             int x = 100;
@@ -38,7 +40,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesInRange_X_In_Range_Y_Not_In_Range()
         {
             int x = 100;
@@ -48,7 +50,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesInRange_X_Not_In_Range_Y_In_Range()
         {
             int x = 1200;
@@ -58,7 +60,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesInRange_X_And_Y_Not_In_Range()
         {
             int x = 1000;
@@ -68,7 +70,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesYInRange_Y_In_Range()
         {
             int yCoord = 1;
@@ -77,7 +79,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesYInRange_Y_Not_In_Range()
         {
             int yCoord = 1000;
@@ -86,7 +88,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesXInRange_X_In_Range()
         {
             int xCoord = 1;
@@ -95,7 +97,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void IsCoordinatesXInRange_X_Not_In_Range()
         {
             int xCoord = 1000;
@@ -108,7 +110,7 @@ namespace DecisionUnitTest.Core
 
         #region Convert Points To Millimeters Test
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void PtsToMm_Coordinates_Null()
         {
             BallCoordinates expected = null;
@@ -116,7 +118,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void PtsToMm_Coordinates_Not_Defined()
         {
             BallCoordinates expected = new BallCoordinates(DateTime.Now);
@@ -124,7 +126,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual, expected);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void PtsToMm_Coordinates_Only()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);
@@ -139,7 +141,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual.Y, expected.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void PtsToMm_Vector_Null()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);
@@ -157,7 +159,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual.Vector, expected.Vector);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void PtsToMm_Vector_Not_Defined()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);
@@ -176,7 +178,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(actual.Vector.IsDefined, expected.Vector.IsDefined);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void PtsToMm__Vector_And_Coordinates()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);

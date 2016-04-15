@@ -135,8 +135,11 @@ namespace Foosbot.DecisionUnit.Core
         /// </summary>
         public void Initialize()
         {
-            SystemDelays = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
-            IsInitialized = true;
+            if (!IsInitialized)
+            {
+                SystemDelays = TimeSpan.FromMilliseconds(Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_DELAY));
+                IsInitialized = true;
+            }
         }
 
         /// <summary>
@@ -145,8 +148,11 @@ namespace Foosbot.DecisionUnit.Core
         /// <param name="systemDelays">Mechanical, Calculation and Networking system delays in ms</param>
         public void Initialize(int systemDelays)
         {
-            SystemDelays = TimeSpan.FromMilliseconds(systemDelays);
-            IsInitialized = true;
+            if (!IsInitialized)
+            {
+                SystemDelays = TimeSpan.FromMilliseconds(systemDelays);
+                IsInitialized = true;
+            }
         }
 
         /// <summary>

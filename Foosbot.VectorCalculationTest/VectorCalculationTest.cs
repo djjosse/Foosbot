@@ -14,6 +14,8 @@ namespace Foosbot.VectorCalculationTest
     [TestClass]
     public class VectorCalculationTest
     {
+        private const string CATEGORY = "VectorCalculation";
+
         private static int XMAX_PTS;
         private static int YMAX_PTS;
         private static int XMAX_MM;
@@ -39,7 +41,7 @@ namespace Foosbot.VectorCalculationTest
         #region Vector Calculation Algorithm Test
 
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void VectorCalculationAlgorithm_Ball_Coordinates_Null_Test()
         {
@@ -50,7 +52,7 @@ namespace Foosbot.VectorCalculationTest
                                                 new Type[] { typeof(BallCoordinates) });
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void VectorCalculationAlgorithm_Stored_BallCoordinates_Not_Defined_Test()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(DateTime.Now);
@@ -65,7 +67,7 @@ namespace Foosbot.VectorCalculationTest
 
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void VectorCalculationAlgorithm_BallCoordinates_Not_Defined_Test()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(DateTime.Now);

@@ -14,6 +14,8 @@ namespace DecisionUnitTest.Core
     [TestClass]
     public class RodStateTest
     {
+        private const string CATEGORY = "RodState";
+
         private const int MIN_LIMIT = 30;
         private const int MAX_LIMIT = 260;
         private static IRodState _rodState;
@@ -26,7 +28,7 @@ namespace DecisionUnitTest.Core
 
         #region DC Position Test
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void DcPosition_Positive()
         {
             int expected = MIN_LIMIT + 90;
@@ -35,7 +37,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DcPosition_Negative_ParameterToBig()
         {
@@ -43,7 +45,7 @@ namespace DecisionUnitTest.Core
             _rodState.DcPosition = param;
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void DcPosition_Negative_ParameterToSmall()
         {
@@ -55,7 +57,7 @@ namespace DecisionUnitTest.Core
 
         #region Servo Position Test
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void ServoPosition_Positive()
         {
             eRotationalMove expected = eRotationalMove.DEFENCE;
@@ -64,7 +66,7 @@ namespace DecisionUnitTest.Core
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void ServoPosition_Positive_NaNoConsiquence()
         {
             eRotationalMove expected = eRotationalMove.DEFENCE;

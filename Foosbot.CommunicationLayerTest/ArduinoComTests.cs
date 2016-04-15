@@ -11,6 +11,8 @@ namespace Foosbot.CommunicationLayerTest
     [TestClass]
     public class ArduinoComTests
     {
+        private const string CATEGORY = "ArduinoCom";
+
         ISerialPort _mockPort;
         ArduinoCom _arduino;
         int MAX_TICKS = 3100;
@@ -25,7 +27,7 @@ namespace Foosbot.CommunicationLayerTest
 
         #region InitializeTest
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void InitializeTest_PortNotOpen()
         {
@@ -33,7 +35,7 @@ namespace Foosbot.CommunicationLayerTest
             _arduino.Initialize();
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void InitializeTest_ExceptionOnWriteLine()
         {
@@ -45,7 +47,7 @@ namespace Foosbot.CommunicationLayerTest
             _arduino.Initialize();
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void InitializeTest_Positive()
         {
             _mockPort.IsOpen.Returns(true);
@@ -57,7 +59,7 @@ namespace Foosbot.CommunicationLayerTest
 
         #region OpenArduinoComPort
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void OpenArduinoComPort_Positive()
         {
             _mockPort.IsOpen.Returns(true);
@@ -65,7 +67,7 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort.Received(1).Open();
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void OpenArduinoComPort_Negative()
         {
@@ -80,14 +82,14 @@ namespace Foosbot.CommunicationLayerTest
 
         #region Move
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(InitializationException))]
         public void Move_NotInitialized()
         {
             _arduino.Move(200, eRotationalMove.DEFENCE);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void Move_TwiceSameCommandExecutedOnce()
         {
             _mockPort.IsOpen.Returns(true);
@@ -97,7 +99,7 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort.Received(1).Write(Arg.Any<string>());
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void Move_Write250_0()
         {
             _mockPort.IsOpen.Returns(true);
@@ -106,7 +108,7 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort.Received(1).Write("250&0");
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void Move_WriteMinus1_2()
         {
             _mockPort.IsOpen.Returns(true);
@@ -115,7 +117,7 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort.Received(1).Write("-1&2");
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void Move_Write333_1()
         {
             _mockPort.IsOpen.Returns(true);
@@ -124,7 +126,7 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort.Received(1).Write("333&1");
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Move_DcSmallerThanMinus1()
         {
@@ -133,7 +135,7 @@ namespace Foosbot.CommunicationLayerTest
             _arduino.Move(-5, eRotationalMove.KICK);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Move_DcBiggerThanMaxTicks()
         {

@@ -9,6 +9,8 @@ namespace Foosbot.VectorCalculationTest
     [TestClass]
     public class RicochetCalcTest
     {
+        private const string CATEGORY = "RicochetCalc";
+
         BallCoordinates _initialCoordinates;
         IInitializableRicochet _testAsset;
 
@@ -27,7 +29,7 @@ namespace Foosbot.VectorCalculationTest
 
         #region FindNearestIntersectionPoint
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         public void FindNearestIntersectionPoint_NoMove_from_50_50()
         {
@@ -37,7 +39,7 @@ namespace Foosbot.VectorCalculationTest
             Coordinates2D actualResult = _testAsset.FindNearestIntersectionPoint(_initialCoordinates);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveLeft_from_100_50()
         {
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
@@ -50,7 +52,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveRight_from_100_50()
         {
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
@@ -63,7 +65,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveUp_from_100_50()
         {
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
@@ -76,7 +78,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveDown_from_100_50()
         {
             _initialCoordinates = new BallCoordinates(100, 50, DateTime.Now);
@@ -89,7 +91,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveLeftUp_LeftFirst_from_50_50()
         {
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
@@ -102,7 +104,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveRightDown_DownFirst_from_50_50()
         {
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
@@ -115,7 +117,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveLeftDown_DownFirst_from_50_50()
         {
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
@@ -128,7 +130,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveRightUp_UpFirst_from_50_50()
         {
             _initialCoordinates = new BallCoordinates(50, 50, DateTime.Now);
@@ -141,7 +143,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveRight_from_50_100()
         {
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
@@ -154,7 +156,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveLeft_from_50_100()
         {
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
@@ -167,7 +169,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveUp_from_50_100()
         {
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
@@ -180,7 +182,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveDown_from_50_100()
         {
             _initialCoordinates = new BallCoordinates(50, 100, DateTime.Now);
@@ -193,7 +195,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveLeftUp_UpFirst_from_700_100()
         {
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
@@ -206,7 +208,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveRightDown_RightFirst_from_700_100()
         {
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
@@ -219,7 +221,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveLeftDown_LeftFirst_from_700_100()
         {
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
@@ -232,7 +234,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedResult.Y, actualResult.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindNearestIntersectionPoint_MoveRightUp_RightFirst_from_700_100()
         {
             _initialCoordinates = new BallCoordinates(700, 100, DateTime.Now);
@@ -249,7 +251,7 @@ namespace Foosbot.VectorCalculationTest
 
         #region FindRicochetTime
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindRicochetTime_Vector_minus100_50()
         {
             DateTime now = DateTime.Now;
@@ -261,7 +263,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expected, actualTime);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindRicochetTime_Vector_minus140_minus20()
         {
             DateTime now = DateTime.Now;
@@ -273,7 +275,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expected, actualTime);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindRicochetTime_Vector_50_minus300()
         {
             DateTime now = DateTime.Now;
@@ -285,7 +287,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expected, actualTime);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindRicochetTime_Vector_100_50()
         {
             DateTime now = DateTime.Now;
@@ -301,7 +303,7 @@ namespace Foosbot.VectorCalculationTest
 
         #region FindIntersectionVector
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindIntersectionVector_UpperBorder()
         {
             Coordinates2D intersection = new Coordinates2D(500, YMAX);
@@ -312,7 +314,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindIntersectionVector_LeftBorder()
         {
             Coordinates2D intersection = new Coordinates2D(XMIN, 200);
@@ -323,7 +325,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindIntersectionVector_ButtomBorder()
         {
             Coordinates2D intersection = new Coordinates2D(750, YMIN);
@@ -334,7 +336,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void FindIntersectionVector_RightBorder()
         {
             Coordinates2D intersection = new Coordinates2D(XMAX, 350);
@@ -345,7 +347,7 @@ namespace Foosbot.VectorCalculationTest
             Assert.AreEqual(expectedVector.Y, actualVector.Y);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         public void FindIntersectionVector_InvalidIntersectionPoint()
         {
@@ -358,7 +360,7 @@ namespace Foosbot.VectorCalculationTest
 
         #region Ricochet
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         public void Ricochet_UndefinedCoordinates()
         {
@@ -366,7 +368,7 @@ namespace Foosbot.VectorCalculationTest
             _testAsset.Ricochet(_initialCoordinates);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         public void Ricochet_NullCoordinates()
         {
@@ -374,7 +376,7 @@ namespace Foosbot.VectorCalculationTest
             _testAsset.Ricochet(_initialCoordinates);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         public void Ricochet_UndefinedVector()
         {
@@ -383,7 +385,7 @@ namespace Foosbot.VectorCalculationTest
             _testAsset.Ricochet(_initialCoordinates);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         public void Ricochet_NullVector()
         {
@@ -391,7 +393,7 @@ namespace Foosbot.VectorCalculationTest
             _testAsset.Ricochet(_initialCoordinates);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         public void Ricochet_ZeroVelocity()
         {
@@ -400,7 +402,7 @@ namespace Foosbot.VectorCalculationTest
             _testAsset.Ricochet(_initialCoordinates);
         }
 
-        [TestMethod]
+        [TestCategory(CATEGORY), TestMethod]
         public void Ricochet_FromCoord100_50_SpeedMinus100_0()
         {
             DateTime initTime = DateTime.Now;
