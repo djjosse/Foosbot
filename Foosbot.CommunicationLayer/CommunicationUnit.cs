@@ -100,18 +100,21 @@ namespace Foosbot.CommunicationLayer
                 _arduino.Move(proportinalMove, action.Rotation);
 
             }
-            catch (ThreadInterruptedException)
-            {
-                /* Got new data */
-            }
-            catch (InitializationException)
-            {
-                throw;
-            }
             catch (Exception ex)
             {
-                Log.Common.Error(String.Format("[{0}] Error occurred! Reason: [{1}]",
-                    MethodBase.GetCurrentMethod().Name, ex.Message));
+                if (ex is ThreadInterruptedException)
+                {
+                    /* Got new data */
+                }
+                else if (ex is InitializationException)
+                {
+                    throw ex;
+                }
+                else
+                {
+                    Log.Common.Error(String.Format("[{0}] Error occurred! Reason: [{1}]",
+                        MethodBase.GetCurrentMethod().Name, ex.Message));
+                }
             }
             finally
             {
