@@ -33,7 +33,7 @@ namespace DevDemos
         private double _leftBorder = 0;
         private volatile int _x = 0;
         private volatile int _y = 0;
-        private int _ballRadius = 10;
+        private int _ballRadius = 20;
         private DemoLastBallCoordinatesUpdater _coordinatesUpdater;
 
         #endregion private members
@@ -45,6 +45,9 @@ namespace DevDemos
         public DemoImageProcessingUnit(DemoStreamer streamer) : base(streamer)
         {
             IsCallibrated = true;
+
+            //Set ball radius property used for Draw Mark
+            BallRadius = _ballRadius;
 
             //Set Foosbot world sizes - axe X x axe Y
             _rightBorder = Configuration.Attributes.GetValue<double>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
@@ -129,7 +132,7 @@ namespace DevDemos
             //show current ball coordinates on screen and GUI
             Transformation transfromer = new Transformation();
             System.Drawing.PointF p = transfromer.InvertTransform(new System.Drawing.PointF(_x, _y));
-            Marks.DrawBall(new Point(p.X, p.Y), _ballRadius * 2);
+            Marks.DrawBall(new Point(p.X, p.Y), _ballRadius);
 
             Statistics.UpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
             
