@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DecisionUnitTest.Core
+namespace Foosbot.DecisionUnitTest.Core
 {
     [TestClass]
     public class ControlRodTest

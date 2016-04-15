@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ArduinoManualTests
+namespace Foosbot.ArduinoManualTests
 {
     class Program
     {

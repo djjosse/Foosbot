@@ -21,10 +21,8 @@ using System.Threading.Tasks;
 using NSubstitute;
 using Foosbot.DecisionUnit.Enums;
 
-namespace DecisionUnitTest.Core
+namespace Foosbot.DecisionUnitTest.Core
 {
-
-
     [TestClass]
     public class DecisionHelperTest
     {

@@ -10,7 +10,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace DecisionUnitTest
+//namespace Foosbot.DecisionUnitTest
 //{
 //    [TestClass]
 //    public class DecisionTreeTest

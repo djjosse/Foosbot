@@ -31,9 +31,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevDemos", "DevDemos\DevDem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.VectorCalculationTest", "Foosbot.VectorCalculationTest\Foosbot.VectorCalculationTest.csproj", "{F4AE2316-359B-4A83-9361-2C1EBD701A62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoManualTests", "ArduinoManualTests\ArduinoManualTests.csproj", "{33953F77-9F27-4BCA-BC38-5F70A38F30ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.ArduinoManualTests", "ArduinoManualTests\Foosbot.ArduinoManualTests.csproj", "{33953F77-9F27-4BCA-BC38-5F70A38F30ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecisionUnitTest", "DecisionUnitTest\DecisionUnitTest.csproj", "{497943E7-F2A6-42EC-AF16-804AEB5C897D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.DecisionUnitTest", "DecisionUnitTest\Foosbot.DecisionUnitTest.csproj", "{497943E7-F2A6-42EC-AF16-804AEB5C897D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.CommunicationLayerTest", "Foosbot.CommunicationLayerTest\Foosbot.CommunicationLayerTest.csproj", "{443B34D7-1E51-447E-941D-86DDF63D471C}"
 EndProject
