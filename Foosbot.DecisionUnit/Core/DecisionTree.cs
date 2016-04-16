@@ -218,5 +218,20 @@ namespace Foosbot.DecisionUnit.Core
                     return rod.State.DcPosition;
             }
         }
+
+        /// <summary>
+        /// Get Current Ball Position relative to current rod in Axe X
+        /// </summary>
+        /// <param name="xBallPosition">X ball coordinate</param>
+        /// <param name="currentRod">Current rod</param>
+        /// <returns>X position relative to current rod</returns>
+        protected eXPositionRodRelative BallXPositionToRodXPosition(int xBallPosition, IRod currentRod)
+        {
+            if (xBallPosition - BALL_RADIUS > currentRod.RodXCoordinate)
+                return eXPositionRodRelative.FRONT;
+            if (xBallPosition + BALL_RADIUS < currentRod.RodXCoordinate)
+                return eXPositionRodRelative.BACK;
+            return eXPositionRodRelative.CENTER;
+        }
     }
 }
