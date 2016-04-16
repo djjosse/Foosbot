@@ -18,11 +18,11 @@ namespace Foosbot.CommunicationLayer
     {
         #region private members
 
+        private IRodConverter _converter;
         private ArduinoCom _arduino;
         private eRod _rodType;
         private double _rodLength; //mm
         private int _ticksPerRod;
-        private const int TICKS_BUFFER = 100;
         private bool _isInitialized = false;
 
         #endregion private members
@@ -44,6 +44,8 @@ namespace Foosbot.CommunicationLayer
 
             //Create arduino com object
             _arduino = new ArduinoCom(comPort);
+
+            _converter = new ArduinoConverter(rodType);
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace Foosbot.CommunicationLayer
                 //    action.Linear.ToString(), action.DcCoordinate));
 
                 //Convert mm to ticks
-                int proportinalMove = ConvertLengthToTicks(action.DcCoordinate);
+                int proportinalMove = _converter.MmToTicks(action.DcCoordinate);
 
                 //Invoke the arduino
                 _arduino.Move(proportinalMove, action.Rotation);
@@ -120,22 +122,6 @@ namespace Foosbot.CommunicationLayer
             {
                 _publisher.Attach(this);
             }
-        }
-
-        /// <summary>
-        /// Convert Length from mm to ticks
-        /// </summary>
-        /// <param name="movement">Position to go to from start of the rod in mm</param>
-        /// <returns>Position to go to from start of the rod in ticks</returns>
-        private int ConvertLengthToTicks(double movement)
-        {
-            int ticks = Convert.ToInt32((movement / _rodLength) * _ticksPerRod);
-            if (ticks >= _ticksPerRod - TICKS_BUFFER)
-                ticks = _ticksPerRod - TICKS_BUFFER;
-            if (ticks <= TICKS_BUFFER)
-                ticks = TICKS_BUFFER;
-            ticks = _ticksPerRod; // -ticks;
-            return ticks;
         }
     }
 }

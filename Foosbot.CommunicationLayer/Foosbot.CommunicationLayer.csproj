@@ -43,6 +43,8 @@
     <Compile Include="ArduinoCom.cs" />
     <Compile Include="CommunicationFactory.cs" />
     <Compile Include="CommunicationUnit.cs" />
+    <Compile Include="ArduinoConverter.cs" />
+    <Compile Include="IRodConverter.cs" />
     <Compile Include="ISerialPort.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerialPortWrapper.cs" />

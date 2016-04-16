@@ -54,6 +54,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ArduinoComTests.cs" />
+    <Compile Include="ArduinoConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
