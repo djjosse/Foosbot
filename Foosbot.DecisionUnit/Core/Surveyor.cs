@@ -96,7 +96,29 @@ namespace Foosbot.DecisionUnit.Core
         /// <returns>BallCoordinates in Points</returns>
         public BallCoordinates MmToPts(BallCoordinates mm)
         {
-            throw new NotImplementedException();
+            BallCoordinates pointsCoords = null;
+            if (mm != null && mm.IsDefined)
+            {
+                int xMm = mm.X * XMaxPts / XMaxMm;
+                int yMm = mm.Y * YMaxPts / YMaxMm;
+                pointsCoords = new BallCoordinates(xMm, yMm, mm.Timestamp);
+            }
+            else
+            {
+                return mm;
+            }
+
+            if (mm.Vector != null && mm.Vector.IsDefined)
+            {
+                double xMm = mm.Vector.X * (double)XMaxPts / (double)XMaxMm;
+                double yMm = mm.Vector.Y * (double)YMaxPts / (double)YMaxMm;
+                pointsCoords.Vector = new Vector2D(xMm, yMm);
+            }
+            else
+            {
+                pointsCoords.Vector = mm.Vector;
+            }
+            return pointsCoords;
         }
 
         /// <summary>

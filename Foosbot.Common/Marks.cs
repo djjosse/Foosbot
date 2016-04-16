@@ -204,8 +204,8 @@ namespace Foosbot
         /// <summary>
         /// Convert coord points to location points
         /// </summary>
-        /// <param name="x">x coord</param>
-        /// <param name="y">y coord</param>
+        /// <param name="x">X coord</param>
+        /// <param name="y">Y coord</param>
         private static void ConvertToLocation(ref int x, ref int y)
         {
             double outX, outY;
@@ -238,10 +238,10 @@ namespace Foosbot
         /// <summary>
         /// Draw the ricochet point of the ball on the border of the table 
         /// </summary>
-        /// <param name="x">x coord of the ricochet on the canvas</param>
-        /// <param name="y">y coord of the ricochet on the canvas</param>
-        /// <param name="isLocation">bool that convert between location and coord : optional</param>
-        /// <param name="circleColor">the color of the stroke of the ricochet mark : optional</param>
+        /// <param name="x">X coord of the ricochet on the canvas</param>
+        /// <param name="y">Y coord of the ricochet on the canvas</param>
+        /// <param name="isLocation">Bool that convert between location and coord : optional</param>
+        /// <param name="circleColor">The color of the stroke of the ricochet mark : optional</param>
         public static void DrawRicochetMark(int x, int y, bool isLocation = false, SolidColorBrush circleColor = null)
         {
             try
@@ -273,8 +273,8 @@ namespace Foosbot
         /// <summary>
         /// Init the rods lines on the canvas
         /// </summary>
-        /// <param name="thickness">optional thickness of the rods [default : 6]</param>
-        /// <param name="isLocation">optional isLocation [default : true]</param>
+        /// <param name="thickness">Optional thickness of the rods [default : 6]</param>
+        /// <param name="isLocation">Optional isLocation [default : true]</param>
         public static void DrawRods(int thickness = 6, bool isLocation = true)
         {
             try
@@ -313,10 +313,10 @@ namespace Foosbot
         /// <summary>
         /// Draw the given rod dynamic sector
         /// </summary>
-        /// <param name="rod">the rod for sector calculation</param>
-        /// <param name="dynamicSectorWidth">the dynamic sector of the rod</param>
-        /// <param name="thickness">optional thickness of the sector line [default : 2]</param>
-        /// <param name="isLocation">optional isLocation [default : true]</param>
+        /// <param name="rod">The rod for sector calculation</param>
+        /// <param name="dynamicSectorWidth">The dynamic sector of the rod</param>
+        /// <param name="thickness">Optional thickness of the sector line [default : 2]</param>
+        /// <param name="isLocation">Optional isLocation [default : true]</param>
         public static void DrawSector(eRod rod,int dynamicSectorWidth,int thickness = 2, bool isLocation = true)
         {
             try
@@ -373,7 +373,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw rods marks. Reason: {1}",
+                Log.Common.Error(String.Format("[{0}] Failed to draw rod dynamic sector marks. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }
@@ -382,7 +382,7 @@ namespace Foosbot
         /// Draw a rod by a given eMark sign , moving the rod on the linear and rotational axes
         /// </summary>
         /// <param name="rod">eMark of the wanted rod : GoalKeeper, Defence , Midfield, Attack</param>
-        /// <param name="deltaYMovment">the change on the linear movement</param>
+        /// <param name="deltaYMovment">The change on the linear movement</param>
         /// <param name="rotationalMove">eRotationalMove of the rod : DEFENCE, RISE, ATTACK</param>
         public static void DrawRodPlayers(eRod rod, int linearMoveDestination, eRotationalMove rotationalMove ,bool isLocation = true)
         {
@@ -435,9 +435,9 @@ namespace Foosbot
         /// Drawing a single player at a time , used by the DrawRodPlayers method to draw all rods players
         /// </summary>
         /// <param name="eNumKey">eMark of the wanted rod : GOALKEEPER , Defence , Midfield, Attack</param>
-        /// <param name="center">center of the players radius</param>
-        /// <param name="radius">radius size</param>
-        /// <param name="circleColor">color for the roational current pos</param>
+        /// <param name="center">Center of the players radius</param>
+        /// <param name="radius">Radius size</param>
+        /// <param name="circleColor">Color for the roational current pos</param>
         private static void DrawPlayer(eMarks eNumKey,Point center, int radius,
                     eRotationalMove rotationalMove, SolidColorBrush playerColor = null)
         {
@@ -487,9 +487,9 @@ namespace Foosbot
         /// <summary>
         /// Drawing the ball on the canvas
         /// </summary>
-        /// <param name="center">ball circle center</param>
-        /// <param name="radius">ball radius</param>
-        /// <param name="circleColor">ball color : optional</param>
+        /// <param name="center">Ball circle center</param>
+        /// <param name="radius">Ball radius</param>
+        /// <param name="circleColor">Ball color : optional</param>
         public static void DrawBall(Point center, int radius, SolidColorBrush circleColor = null)
         {
             try
@@ -521,12 +521,12 @@ namespace Foosbot
         /// <summary>
         /// Draw the calibration circles on the canvas
         /// </summary>
-        /// <param name="mark">the wanted calibration mark for drawing</param>
-        /// <param name="center">center of the given calibration mark</param>
-        /// <param name="radius">radius of the given calibration mark</param>
-        /// <param name="circleColor">optional color [default : Pink]</param>
-        /// <param name="textColor">optional text color [default : OrangeRed]</param>
-        /// <param name="fontSize">optional font size [default : 12 ]</param>
+        /// <param name="mark">The wanted calibration mark for drawing</param>
+        /// <param name="center">Center of the given calibration mark</param>
+        /// <param name="radius">Radius of the given calibration mark</param>
+        /// <param name="circleColor">Optional color [default : Pink]</param>
+        /// <param name="textColor">Optional text color [default : OrangeRed]</param>
+        /// <param name="fontSize">Optional font size [default : 12 ]</param>
         /// <param name="text"></param>
         public static void DrawCallibrationCircle(eCallibrationMark mark, Point center, int radius,
             SolidColorBrush circleColor = null, SolidColorBrush textColor = null, double fontSize = 12,
@@ -585,10 +585,10 @@ namespace Foosbot
         /// <summary>
         /// Drawing the vector of the ball
         /// </summary>
-        /// <param name="center">center point to draw vector from</param>
-        /// <param name="vector">the end of the vector</param>
-        /// <param name="isLocation">optional is location [default : true]</param>
-        /// <param name="color">optional color [default : Aqua]</param>
+        /// <param name="center">Center point to draw vector from</param>
+        /// <param name="vector">The end of the vector</param>
+        /// <param name="isLocation">Optional is location [default : true]</param>
+        /// <param name="color">Optional color [default : Aqua]</param>
         public static void DrawBallVector(Point center, Point vector, bool isLocation = true, SolidColorBrush color = null)
         {
             try
