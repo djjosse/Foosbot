@@ -68,7 +68,7 @@ namespace Foosbot.DecisionUnit.Core
 
             IInitializableRicochet ricochetCalculator = (ricochetCalc != null) ? ricochetCalc : new RicochetCalc(true, eUnits.Mm);
 
-            _decisionTree = (decisionTree != null) ? decisionTree : new FullDecisionTree();
+            _decisionTree = (decisionTree != null) ? decisionTree : new FullDecisionTree(new PartialDecisionTree());
 
             _predictor = (predictor != null) ? predictor : new Predictor(_surveyor, ricochetCalculator);
 

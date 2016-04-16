@@ -33,12 +33,17 @@ namespace Foosbot.DecisionUnit.Core
         #endregion Constants
 
         /// <summary>
+        /// Decision Subtree
+        /// </summary>
+        private IDecisionTree _subTree;
+
+        /// <summary>
         /// Decision helper instance
         /// </summary>
         protected IDecisionHelper _helper;
 
         /// <summary>
-        /// Decision Tree Constructor
+        /// Decision Tree Constructor for tree without Subtree
         /// </summary>
         /// <param name="decisionHelper">Decision Helper Instance [default is null then will be constructed using Configuration File]</param>
         /// <param name="ballRadius">Ball Radius in mm [default is -1 will be taken from Configuration File]</param>
@@ -66,6 +71,53 @@ namespace Foosbot.DecisionUnit.Core
         }
 
         /// <summary>
+        /// Decision Tree Constructor for Tree with a Subtree
+        /// </summary>
+        /// <param name="subTree">Decision Subtree</param>
+        /// <param name="decisionHelper">Decision Helper Instance [default is null then will be constructed using Configuration File]</param>
+        /// <param name="ballRadius">Ball Radius in mm [default is -1 will be taken from Configuration File]</param>
+        /// <param name="tableWidth">Table Width (Y Axe) in mm [default is -1 will be taken from Configuration File]</param>
+        /// <param name="playerWidth">Player Width in mm [default is -1 will be taken from Configuration File]</param>
+        public DecisionTree(IDecisionTree subTree, IDecisionHelper helper = null, int ballRadius = -1, int tableWidth = -1, int playerWidth = -1)
+            :this(helper, ballRadius, tableWidth, playerWidth)
+        {
+            _subTree = subTree;
+        }
+
+        /// <summary>
+        /// Is Subtree Defined property
+        /// </summary>
+        public bool IsSubtreeDefined
+        {
+            get
+            {
+                return (_subTree != null);
+            }
+        }
+
+        /// <summary>
+        /// SubTree Property
+        /// </summary>
+        public IDecisionTree SubTree
+        {
+            get
+            {
+                if (IsSubtreeDefined)
+                {
+                    return _subTree;
+                }
+                else
+                    throw new NotSupportedException(String.Format("[{0}] Subtree is not defined for current tree",
+                        GetType().Name));
+            }
+        }
+
+        /// <summary>
+        /// Responding Player index (1 based)
+        /// </summary>
+        public int RespondingPlayer { get; protected set; }
+
+        /// <summary>
         /// Main Decision Flow Method
         /// </summary>
         /// <param name="rod">Rod to use for decision</param>
@@ -74,14 +126,18 @@ namespace Foosbot.DecisionUnit.Core
         public abstract RodAction Decide(IRod rod, BallCoordinates bfc);
 
         /// <summary>
-        /// Define Ball Y position relative to responding player of current rod and re define index of responding rod (as out)
+        /// Define Ball Y position relative to responding player of current rod and
+        /// re define index of responding rod setting the property Responding Player
         /// </summary>
         /// <param name="yBallCoordinate">Current ball Y coordinate</param>
         /// <param name="currentRod">Current rod</param>
         /// <param name="playerToResponse">Responding player[out] (index base is 0)</param>
         /// <returns>Ball Y position relative to responding player</returns>
-        protected eYPositionPlayerRelative BallYPositionToPlayerYCoordinate(int yBallCoordinate, IRod currentRod, out int playerToResponse)
+        protected eYPositionPlayerRelative BallYPositionToPlayerYCoordinate(int yBallCoordinate, IRod currentRod)
         {
+            //set default responding player
+            RespondingPlayer = -1;
+
             //get array of players and their Y coordinates (player i stored in array index i - 1)
             int[] currentPlayerYs = _helper.AllCurrentPlayersYCoordinates(currentRod, currentRod.State.DcPosition);
 
@@ -107,13 +163,13 @@ namespace Foosbot.DecisionUnit.Core
             if (_helper.IsEnoughSpaceToMove(currentRod, currentRod.State.DcPosition, movements[minIndexFirst]))
             {
                 //as index starts from 0 => first one is 1
-                playerToResponse = minIndexFirst + 1;
+                RespondingPlayer = minIndexFirst + 1;
                 movement = movements[minIndexFirst];
             }
             else
             {
                 //as index starts from 0 => first one is 1
-                playerToResponse = minIndexSecond + 1;
+                RespondingPlayer = minIndexSecond + 1;
                 movement = movements[minIndexSecond];
             }
 

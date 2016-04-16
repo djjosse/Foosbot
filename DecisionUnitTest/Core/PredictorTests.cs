@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.DecisionUnit.Core;
 using Foosbot.VectorCalculation.Contracts;
@@ -43,6 +44,290 @@ namespace Foosbot.DecisionUnitTest.Core
         {
             _testAsset = new Predictor(_surveyorMock, _ricochetMock);
         }
+
+
+
+        //[TestMethod]
+        //public void AAA()
+        //{
+        //    _surveyorMock.IsCoordinatesInRange(Arg.Any<int>(), Arg.Any<int>()).Returns(true);
+
+        //}
+        #region FindBallFutureCoordinates Test
+
+        #region FindBallFutureCoordinates_BallCoordinatesVectorNull
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_BallCoordinatesVectorNull()
+        {
+            //arrange
+            BallCoordinates currentCoordinates = new BallCoordinates(100, 100, DateTime.Now);
+            DateTime actionTime = DateTime.Now + TimeSpan.FromSeconds(5);
+
+            //act
+            BallCoordinates actualCoordinates = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+
+            //assert
+            Assert.AreEqual(currentCoordinates.X, actualCoordinates.X);
+            Assert.AreEqual(currentCoordinates.Y, actualCoordinates.Y);
+            Assert.AreEqual(actionTime, actualCoordinates.Timestamp);
+            Assert.IsNull(actualCoordinates.Vector);
+
+        }
+        #endregion FindBallFutureCoordinates_BallCoordinatesVectorNull
+
+        #region FindBallFutureCoordinates_BallCoordinatesNull
+        [TestCategory(CATEGORY), TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void FindBallFutureCoordinates_BallCoordinatesNull()
+        {
+            _testAsset.FindBallFutureCoordinates(null, DateTime.Now);
+
+        }
+        #endregion FindBallFutureCoordinates_BallCoordinatesNull
+
+        #region FindBallFutureCoordinates_BallCoordinatesUndefined
+        [TestCategory(CATEGORY), TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void FindBallFutureCoordinates_BallCoordinatesUndefined()
+        {
+            _testAsset.FindBallFutureCoordinates(new BallCoordinates(DateTime.Now), DateTime.Now);
+
+        }
+        #endregion FindBallFutureCoordinates_BallCoordinatesUndefined
+
+        #region FindBallFutureCoordinates_VectorUndefined
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_VectorUndefined()
+        {
+            //arrange
+            BallCoordinates currentCoordinates = new BallCoordinates(100, 100, DateTime.Now);
+            currentCoordinates.Vector = new Vector2D();
+            DateTime actionTime = DateTime.Now + TimeSpan.FromSeconds(5);
+
+            //act
+            BallCoordinates actualCoordinates = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+            //assert
+            Assert.AreEqual(currentCoordinates.X, actualCoordinates.X);
+            Assert.AreEqual(currentCoordinates.Y, actualCoordinates.Y);
+            Assert.AreEqual(actionTime, actualCoordinates.Timestamp);
+            Assert.IsFalse(actualCoordinates.Vector.IsDefined);
+        }
+        #endregion FindBallFutureCoordinates_VectorUndefined
+
+        #region FindBallFutureCoordinates_VectorSpeedZero
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_VectorSpeedZero()
+        {
+            //arrange
+            DateTime now = DateTime.Now;
+            BallCoordinates currentCoordinates = new BallCoordinates(100, 100, now);
+            currentCoordinates.Vector = new Vector2D(0, 0);
+            _surveyorMock.IsCoordinatesInRange(Arg.Any<int>(), Arg.Any<int>()).Returns(true);
+
+            DateTime actionTime = now + TimeSpan.FromSeconds(5);
+
+            //act
+            BallCoordinates actualCoordinates = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+            //assert
+            Assert.AreEqual(currentCoordinates.X, actualCoordinates.X);
+            Assert.AreEqual(currentCoordinates.Y, actualCoordinates.Y);
+            Assert.AreEqual(actionTime, actualCoordinates.Timestamp);
+            Assert.AreEqual(currentCoordinates.Vector.X, actualCoordinates.Vector.X);
+            Assert.AreEqual(currentCoordinates.Vector.Y, actualCoordinates.Vector.Y);
+        }
+        #endregion FindBallFutureCoordinates_VectorSpeedZero
+
+        #region FindBallFutureCoordinates_ActionTimeIsEarlierThanTimeStamp
+        [TestCategory(CATEGORY), TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void FindBallFutureCoordinates_ActionTimeIsEarlierThanTimeStamp()
+        {
+            //arrange
+            DateTime timeStamp = DateTime.Now;
+            BallCoordinates currentCoordinates = new BallCoordinates(100, 100, timeStamp);
+
+            //act
+            DateTime actionTime = timeStamp - TimeSpan.FromSeconds(5);
+
+            //assert
+            _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+        }
+        #endregion FindBallFutureCoordinates_ActionTimeIsEarlierThanTimeStamp
+
+
+        #region FindBallFutureCoordinates_NoRicochetTest
+        //<summary>
+        //Current Coordinates: 90, 60, time - now; Vector 50 50
+        //Actual Time - current coordinates time stamp + 5 sec
+        //Expected Coordinates: 340, 310, time is actual time; Vector 50 50
+        //</summary>
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_NoRicochetTestOne()
+        {
+            //arrange
+            DateTime timeStamp = DateTime.Now;
+            BallCoordinates currentCoordinates = new BallCoordinates(90, 60, timeStamp);
+            currentCoordinates.Vector = new Vector2D(50, 50);
+            _surveyorMock.IsCoordinatesInRange(Arg.Any<int>(), Arg.Any<int>()).Returns(true);
+            //act
+            DateTime actionTime = timeStamp + TimeSpan.FromSeconds(5);
+            BallCoordinates actualResult = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+            //assert
+            Assert.AreEqual(actualResult.X, 340);
+            Assert.AreEqual(actualResult.Y, 310);
+            Assert.AreEqual(actualResult.Vector.X, currentCoordinates.Vector.X);
+            Assert.AreEqual(actualResult.Vector.Y, currentCoordinates.Vector.Y);
+            Assert.AreEqual(actualResult.Timestamp, actionTime);
+
+
+        }
+
+        //<summary>
+        //Current Coordinates: 700, 650, time - now; Vector -30 -40
+        //Actual Time - current coordinates time stamp + 4 sec
+        //Expected Coordinates: 580, 490, time is actual time; Vector -30 -40
+        //</summary>
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_NoRicochetTestTwo()
+        {
+            //arrange
+            DateTime timeStamp = DateTime.Now;
+            BallCoordinates currentCoordinates = new BallCoordinates(700, 650, timeStamp);
+            currentCoordinates.Vector = new Vector2D(-30, -40);
+            _surveyorMock.IsCoordinatesInRange(Arg.Any<int>(), Arg.Any<int>()).Returns(true);
+
+            //act
+            DateTime actionTime = timeStamp + TimeSpan.FromSeconds(4);
+            BallCoordinates actualResult = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+            //assert
+            Assert.AreEqual(actualResult.X, 580);
+            Assert.AreEqual(actualResult.Y, 490);
+            Assert.AreEqual(actualResult.Vector.X, currentCoordinates.Vector.X);
+            Assert.AreEqual(actualResult.Vector.Y, currentCoordinates.Vector.Y);
+            Assert.AreEqual(actualResult.Timestamp, actionTime);
+
+        }
+
+        //<summary>
+        //Current Coordinates: 500, 400, time - now; Vector -100 0
+        //Actual Time - current coordinates time stamp + 3 sec
+        //Expected Coordinates: 200, 400, time is actual time; Vector -100 0
+        //</summary>
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_NoRicochetTestThree()
+        {
+            //arrange
+            DateTime timeStamp = DateTime.Now;
+            BallCoordinates currentCoordinates = new BallCoordinates(500, 400, timeStamp);
+            currentCoordinates.Vector = new Vector2D(-100, 0);
+
+            //act
+            DateTime actionTime = timeStamp + TimeSpan.FromSeconds(3);
+            BallCoordinates actualResult = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+            //assert
+            Assert.AreEqual(actualResult.X, 200);
+            Assert.AreEqual(actualResult.Y, 400);
+            Assert.AreEqual(actualResult.Vector.X, currentCoordinates.Vector.X);
+            Assert.AreEqual(actualResult.Vector.Y, currentCoordinates.Vector.Y);
+            Assert.AreEqual(actualResult.Timestamp, actionTime);
+        }
+
+        //<summary>
+        //Current Coordinates: 250, 450, time - now; Vector 0 25
+        //Actual Time - current coordinates time stamp + 10 sec
+        //Expected Coordinates: 250, 700, time is actual time; Vector 0 25
+        //</summary>
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_NoRicochetTestFour()
+        {
+            //arrange
+            DateTime timeStamp = DateTime.Now;
+            BallCoordinates currentCoordinates = new BallCoordinates(250, 450, timeStamp);
+            currentCoordinates.Vector = new Vector2D(0, 25);
+
+            //act
+            DateTime actionTime = timeStamp + TimeSpan.FromSeconds(10);
+            BallCoordinates actualResult = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+            //assert
+            Assert.AreEqual(actualResult.X, 250);
+            Assert.AreEqual(actualResult.Y, 700);
+            Assert.AreEqual(actualResult.Vector.X, currentCoordinates.Vector.X);
+            Assert.AreEqual(actualResult.Vector.Y, currentCoordinates.Vector.Y);
+            Assert.AreEqual(actualResult.Timestamp, actionTime);
+        }
+
+
+        #endregion FindBallFutureCoordinates_NoRicochetTest
+
+        #region FindBallFutureCoordinates_RicochetTest
+        //<summary>
+        //Current Coordinates: 100, 500, time - now; Vector -50 0
+        //Actual Time - current coordinates time stamp + 4 sec
+        //Expected Coordinates: 70, 500, time is actual time; Vector 35 0
+        //</summary>
+        [TestCategory(CATEGORY), TestMethod]
+        public void FindBallFutureCoordinates_RicochetTestOne()
+        {
+            //arrange
+            DateTime timeStamp = DateTime.Now;
+            BallCoordinates currentCoordinates = new BallCoordinates(100, 500, timeStamp);
+            currentCoordinates.Vector = new Vector2D(-50, 0);
+            DateTime actionTime = timeStamp + TimeSpan.FromSeconds(10);
+            BallCoordinates ricocheteCoordinates = new BallCoordinates(70, 500, timeStamp + TimeSpan.FromSeconds(5));
+            ricocheteCoordinates.Vector = new Vector2D(30, 0);
+            _surveyorMock.IsCoordinatesInRange(Arg.Any<int>(), Arg.Any<int>()).Returns(false, true);
+            _ricochetMock.Ricochet(Arg.Any<BallCoordinates>()).Returns(ricocheteCoordinates);
+
+            double deltaT = (actionTime - ricocheteCoordinates.Timestamp).TotalSeconds;
+            int expectedX = Convert.ToInt32(ricocheteCoordinates.X + ricocheteCoordinates.Vector.X * deltaT);
+            int expectedY = Convert.ToInt32(ricocheteCoordinates.Y + ricocheteCoordinates.Vector.Y * deltaT);
+            double expectedVectorX = ricocheteCoordinates.Vector.X;
+            double expectedVectorY = ricocheteCoordinates.Vector.Y;
+
+            //act
+            BallCoordinates actualResult = _testAsset.FindBallFutureCoordinates(currentCoordinates, actionTime);
+
+            //assert
+            Assert.AreEqual(actualResult.X, expectedX);
+            Assert.AreEqual(actualResult.Y, expectedY);
+            Assert.AreEqual(actualResult.Vector.X, expectedVectorX);
+            Assert.AreEqual(actualResult.Vector.Y, expectedVectorY);
+            Assert.AreEqual(actualResult.Timestamp, actionTime);
+
+
+
+        }
+
+        //        [TestMethod]
+        //        public void FindBallFutureCoordinates_RicochetTestOne()
+        //        {
+        //            DateTime timeStamp = DateTime.Now;
+        //            BallCoordinates currentCoordinates = new BallCoordinates(100, 500, timeStamp);
+        //            currentCoordinates.Vector = new Vector2D(-50, 0);
+        //            DateTime actionTime = timeStamp + TimeSpan.FromSeconds(4);
+        //            BallCoordinates actualResult = _decision.FindBallFutureCoordinates(currentCoordinates, actionTime);
+        //            double speedXAfterRicochet = (-1) * RICOCHET_FACTOR * currentCoordinates.Vector.X;
+        //            double xCoordAfterRicochet = speedXAfterRicochet * 2;
+        //            Assert.AreEqual(actualResult.X, xCoordAfterRicochet);
+        //            Assert.AreEqual(actualResult.Y, 500);
+        //            Assert.AreEqual(actualResult.Vector.X, speedXAfterRicochet);
+        //            Assert.AreEqual(actualResult.Vector.Y, 0);
+        //            Assert.AreEqual(actualResult.Timestamp, actionTime);
+        //        }
+
+
+        #endregion FindBallFutureCoordinates_RicochetTest
+
+
+        #endregion FindBallFutureCoordinates Test
 
         /*
          * AR Idan: Please test following methods:
@@ -305,6 +590,6 @@ namespace Foosbot.DecisionUnitTest.Core
 
         //        #endregion FindBallFutureCoordinates Test
         //    }
-        
+
     }
 }
