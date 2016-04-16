@@ -118,6 +118,10 @@ namespace Foosbot.DecisionUnit.Core
             {
                 //Calculate dynamic sectors
                 rod.CalculateDynamicSector(currentCoordinates);
+
+                //Draw dynamic sector, better to use on one rod at a time because together is chaos on the screen
+                Marks.DrawSector(rod.RodType, rod.DynamicSector);
+                
                 //Calculate intersection point 
                 rod.CalculateSectorIntersection(bfc);
                 //Decide on action

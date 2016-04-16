@@ -56,6 +56,15 @@ namespace Foosbot.Common.Enums
         AttackPlayer3 = 242,
         AttackPlayer1Rect = 245,
         AttackPlayer2Rect = 246,
-        AttackPlayer3Rect = 247
+        AttackPlayer3Rect = 247,
+
+        GoalKeeperSector1 = 2000,
+        GoalKeeperSector2 = 2001,
+        DefenceSector1 = 2010,
+        DefenceSector2 = 2011,
+        MidfieldSector1 = 2020,
+        MidfieldSector2 = 2021,
+        AttackSector1 = 2030,
+        AttackSector2 = 2031
     }
 }
