@@ -1,5 +1,6 @@
 ﻿using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
+using Foosbot.DecisionUnit.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,10 +32,34 @@ namespace Foosbot.DecisionUnit.Core
         /// <returns>Rod Action to perform</returns>
         public override RodAction Decide(IRod rod, BallCoordinates bfc)
         {
-            //Set Default responding player
-            RespondingPlayer = -1;
+            //Get relative Y position and set Responding Player
+            eYPositionPlayerRelative relativeY = BallYPositionToPlayerYCoordinate(bfc.Y, rod);
 
-            return new RodAction(rod.RodType);
+            //Get relative X position
+            eXPositionRodRelative relativeX = BallXPositionToRodXPosition(bfc.X, rod);
+
+            RodAction action = new RodAction(rod.RodType);
+
+            /*
+             * For Alpha this is good enough to make a kick.
+             * For Beta need to define the actual sub tree.
+             */
+            if (relativeX.Equals(eXPositionRodRelative.FRONT))
+                action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.VECTOR_BASED);
+            if (relativeX.Equals(eXPositionRodRelative.BACK))
+                action = new RodAction(rod.RodType, eRotationalMove.RISE, eLinearMove.VECTOR_BASED);
+            if (relativeX.Equals(eXPositionRodRelative.CENTER))
+                action = new RodAction(rod.RodType, eRotationalMove.KICK, eLinearMove.BALL_Y);
+
+            //Define actual desired rod coordinate to move to
+            int startStopperDesiredY = CalculateNewRodCoordinate(rod, RespondingPlayer, bfc, action.Linear);
+            action.DcCoordinate = rod.NearestPossibleDcPosition(startStopperDesiredY);
+
+            //Set last decided rod and player coordinates 
+            rod.State.DcPosition = action.DcCoordinate;
+            rod.State.ServoPosition = action.Rotation;
+
+            return action;
         }
     }
 }

@@ -377,13 +377,20 @@ namespace Foosbot.DecisionUnit.Core
         /// <returns>Dynamic Sector Width</returns>
         public int CalculateDynamicSector(BallCoordinates currentCoordinates)
         {
-            if (currentCoordinates != null && currentCoordinates.Vector != null 
-                    && currentCoordinates.IsDefined && currentCoordinates.Vector.IsDefined
-                        && currentCoordinates.X > _rodXCoordinate)
-                DynamicSector = Convert.ToInt32(_minSectorWidth + Math.Abs(currentCoordinates.Vector.X) * _sectorFactor);
-            else
-                DynamicSector = _minSectorWidth;
             return DynamicSector;
+
+            /*
+             * //This makes Dynamic Sector to jump - for Alpha no Dynamic Sectors calculated
+             * 
+             * if (currentCoordinates != null && currentCoordinates.Vector != null 
+             *      && currentCoordinates.IsDefined && currentCoordinates.Vector.IsDefined
+             *          && currentCoordinates.X > _rodXCoordinate)
+             *  DynamicSector = Convert.ToInt32(_minSectorWidth + Math.Abs(currentCoordinates.Vector.X) * _sectorFactor);
+             * else
+             *   DynamicSector = _minSectorWidth;
+             * return DynamicSector;
+             * 
+             */
         }
 
         /// <summary>

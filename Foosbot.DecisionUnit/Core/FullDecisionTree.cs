@@ -317,20 +317,6 @@ namespace Foosbot.DecisionUnit.Core
 
         
 
-        ///// <summary>
-        ///// Get Current Ball Position relative to current rod in Axe X
-        ///// </summary>
-        ///// <param name="xBallPosition">X ball coordinate</param>
-        ///// <param name="currentRod">Current rod</param>
-        ///// <returns>X position relative to current rod</returns>
-        //private eXPositionRodRelative XPositionToRodXPosition(int xBallPosition, eRod currentRod)
-        //{
-        //    int xRodPosition = _rodXCoordinate[currentRod];
-        //    if (xBallPosition + BALL_RADIUS > xRodPosition)
-        //        return eXPositionRodRelative.FRONT;
-        //    if (xBallPosition - BALL_RADIUS < xRodPosition)
-        //        return eXPositionRodRelative.BACK;
-        //    return eXPositionRodRelative.CENTER;
-        //}
+        
     }
 }
