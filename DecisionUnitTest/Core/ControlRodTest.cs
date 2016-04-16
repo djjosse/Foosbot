@@ -171,5 +171,72 @@ namespace Foosbot.DecisionUnitTest.Core
          * 4. Use ExpectedException tag if needed.
          * 5. Better to prepare test plan before starting.
          */
+
+        #region NearestPossibleDcPosition
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void NearestPossibleDcPosition_desiredPositionLessThanMinimumPossibleStartStopperY()
+        {
+            //arrange
+            InitializeTestAsset();
+            int desiredPosition = 20;
+            int expected = ROD_STOPPER_MINIMAL;
+
+            //act
+            int actual = _testAsset.NearestPossibleDcPosition(desiredPosition);
+
+            //assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void NearestPossibleDcPosition_desiredPositionMoreThanMaximummPossibleStartStopperY()
+        {
+            //arrange
+            InitializeTestAsset();
+            int maximum = HEIGHT - STOPPER_DISTANCE - ROD_STOPPER_MINIMAL;
+            int desiredPosition = maximum + 100;
+            int expected = maximum;
+
+            //act
+            int actual = _testAsset.NearestPossibleDcPosition(desiredPosition);
+
+            //assert
+            Assert.AreEqual(expected, actual);
+
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void NearestPossibleDcPosition_desiredPositionInRange()
+        {
+            //arrange
+            InitializeTestAsset();
+            int maximum = HEIGHT - STOPPER_DISTANCE - ROD_STOPPER_MINIMAL;
+            int desiredPosition = maximum - 100;
+            int expected = desiredPosition;
+
+            //act
+            int actual = _testAsset.NearestPossibleDcPosition(desiredPosition);
+
+            //assert
+            Assert.AreEqual(expected, actual);
+
+        }
+
+        #endregion NearestPossibleDcPosition
+
+        
+            
+        #region CalculateDynamicSector
+
+       
+
+
+
+
+
+        #endregion CalculateDynamicSector
+
     }
+
 }
