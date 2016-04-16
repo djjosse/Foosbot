@@ -212,5 +212,100 @@ namespace Foosbot.DecisionUnitTest.Core
         }
 
         #endregion Convert Points To Millimeters Test
+
+        #region Convert Millimeters To Points Test
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void MmToPts_Coordinates_Null()
+        {
+            BallCoordinates expected = null;
+            BallCoordinates actual = _testAsset.MmToPts(expected);
+            Assert.AreEqual(actual, expected);
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void MmToPts_Coordinates_Not_Defined()
+        {
+            BallCoordinates expected = new BallCoordinates(DateTime.Now);
+            BallCoordinates actual = _testAsset.MmToPts(expected);
+            Assert.AreEqual(actual, expected);
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void MmToPts_Coordinates_Only()
+        {
+            BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);
+
+            int xMm = ballCoordinates.X * X_MAX_PTS / X_MAX_MM;
+            int yMm = ballCoordinates.Y * Y_MAX_PTS / Y_MAX_MM;
+
+            BallCoordinates expected = new BallCoordinates(xMm, yMm, ballCoordinates.Timestamp);
+            BallCoordinates actual = _testAsset.MmToPts(ballCoordinates);
+
+            Assert.AreEqual(actual.X, expected.X);
+            Assert.AreEqual(actual.Y, expected.Y);
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void MmToPts_Vector_Null()
+        {
+            BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);
+
+            int xMm = ballCoordinates.X * X_MAX_PTS / X_MAX_MM;
+            int yMm = ballCoordinates.Y * Y_MAX_PTS / Y_MAX_MM;
+
+            BallCoordinates expected = new BallCoordinates(xMm, yMm, ballCoordinates.Timestamp);
+            expected.Vector = null;
+
+            BallCoordinates actual = _testAsset.MmToPts(ballCoordinates);
+
+            Assert.AreEqual(actual.X, expected.X);
+            Assert.AreEqual(actual.Y, expected.Y);
+            Assert.AreEqual(actual.Vector, expected.Vector);
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void MmToPts_Vector_Not_Defined()
+        {
+            BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);
+            ballCoordinates.Vector = new Vector2D();
+
+            int xMm = ballCoordinates.X * X_MAX_PTS / X_MAX_MM;
+            int yMm = ballCoordinates.Y * Y_MAX_PTS / Y_MAX_MM;
+
+            BallCoordinates expected = new BallCoordinates(xMm, yMm, ballCoordinates.Timestamp);
+            expected.Vector = new Vector2D();
+
+            BallCoordinates actual = _testAsset.MmToPts(ballCoordinates);
+
+            Assert.AreEqual(actual.X, expected.X);
+            Assert.AreEqual(actual.Y, expected.Y);
+            Assert.AreEqual(actual.Vector.IsDefined, expected.Vector.IsDefined);
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        public void MmToPts__Vector_And_Coordinates()
+        {
+            BallCoordinates ballCoordinates = new BallCoordinates(50, 50, DateTime.Now);
+            ballCoordinates.Vector = new Vector2D(100, 100);
+
+            int xMm = ballCoordinates.X * X_MAX_PTS / X_MAX_MM;
+            int yMm = ballCoordinates.Y * Y_MAX_PTS / Y_MAX_MM;
+
+            double xMmVector = ballCoordinates.Vector.X * (double)X_MAX_PTS / (double)X_MAX_MM;
+            double yMmVector = ballCoordinates.Vector.Y * (double)Y_MAX_PTS / (double)Y_MAX_MM;
+
+            BallCoordinates expected = new BallCoordinates(xMm, yMm, ballCoordinates.Timestamp);
+            expected.Vector = new Vector2D(xMmVector, yMmVector);
+
+            BallCoordinates actual = _testAsset.MmToPts(ballCoordinates);
+
+            Assert.AreEqual(actual.X, expected.X);
+            Assert.AreEqual(actual.Y, expected.Y);
+            Assert.AreEqual(actual.Vector.X, expected.Vector.X);
+            Assert.AreEqual(actual.Vector.Y, expected.Vector.Y);
+        }
+
+        #endregion Convert Millimeters To Points Test
     }
 }
