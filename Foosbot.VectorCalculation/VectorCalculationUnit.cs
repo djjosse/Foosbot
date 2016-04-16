@@ -91,7 +91,7 @@ namespace Foosbot.VectorCalculation
                         LastBallLocationPublisher.UpdateAndNotify();
 
                         Marks.DrawBallVector(new Point(ballCoordinates.X, ballCoordinates.Y),
-                            new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)), true);
+                            new Point(Convert.ToInt32(ballCoordinates.Vector.X), Convert.ToInt32(ballCoordinates.Vector.Y)));
                     }
                     catch (Exception e)
                     {

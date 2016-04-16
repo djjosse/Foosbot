@@ -24,22 +24,64 @@ namespace Foosbot
 {
     public static class Marks
     {
+        /// <summary>
+        /// Holds the width rate of the table draw on the canvas
+        /// </summary>
         private static double _actualWidthRate;
+
+        /// <summary>
+        /// Holds the height rate of the table draw on the canvas
+        /// </summary>
         private static double _actualHeightRate;
 
+        /// <summary>
+        /// The canvas object 
+        /// </summary>
         private static Canvas _canvas;
+
+        /// <summary>
+        /// Dispatcher for drawing on the canvas in the UI thread
+        /// </summary>
         private static Dispatcher _dispatcher;
 
+        /// <summary>
+        /// Holds the maximum of the y coord in the device world
+        /// </summary>
         private static double DEVICE_MAX_Y;
+
+        /// <summary>
+        /// Holds the maximum of the x coord in the device world
+        /// </summary>
         private static double DEVICE_MAX_X;
+
+        /// <summary>
+        /// Holds the real life table max y in MM
+        /// </summary>
         private static double TABLE_MAX_Y_MM;
+
+        /// <summary>
+        /// Holds the real life table max x in MM
+        /// </summary>
         private static double TABLE_MAX_X_MM;
 
+        /// <summary>
+        /// The main dictionary that holds all the marks
+        /// </summary>
         private static Dictionary<eMarks, int> _rods;
-        private static Dictionary<eMarks, int> _players;
 
+        /// <summary>
+        /// Holds the number of player for each rod
+        /// </summary>
         private static Dictionary<eMarks, int> _rodPlayerCount;
+
+        /// <summary>
+        /// Holds the distance between 2 players in each rod
+        /// </summary>
         private static Dictionary<eMarks, int> _rodsPlayersDistance;
+
+        /// <summary>
+        /// Holds the offset of the first player for each rod from the stopper
+        /// </summary>
         private static Dictionary<eMarks, int> _rodsOffsetY;
         
         /// <summary>
@@ -49,7 +91,7 @@ namespace Foosbot
         private static Dictionary<int, FrameworkElement> _markups;
 
         /// <summary>
-        /// Must be called to use markups
+        /// Init the Marks 
         /// </summary>
         public static void Initialize(Dispatcher dispatcher, Canvas canvas, double actualWidthRate, double actualHeightRate)
         {
@@ -140,6 +182,14 @@ namespace Foosbot
                     case eMarks.Defence:
                     case eMarks.Midfield:
                     case eMarks.Attack:
+                    case eMarks.GoalKeeperSector1:
+                    case eMarks.GoalKeeperSector2:
+                    case eMarks.DefenceSector1:
+                    case eMarks.DefenceSector2:
+                    case eMarks.MidfieldSector1:
+                    case eMarks.MidfieldSector2:
+                    case eMarks.AttackSector1:
+                    case eMarks.AttackSector2:
                         _markups.Add((int)mark, new Line());
                         break;
                 }
@@ -151,6 +201,11 @@ namespace Foosbot
             }
         }
 
+        /// <summary>
+        /// Convert coord points to location points
+        /// </summary>
+        /// <param name="x">x coord</param>
+        /// <param name="y">y coord</param>
         private static void ConvertToLocation(ref int x, ref int y)
         {
             double outX, outY;
@@ -160,17 +215,28 @@ namespace Foosbot
             y = Convert.ToInt32(outY);
         }
 
-        private static void ConvertToCoord(ref int x, ref int y)
+        /// <summary>
+        /// Convert the a given x from MM to Device coord
+        /// </summary>
+        /// <param name="x">X in MM</param>
+        /// <returns>X in Coords</returns>
+        public static int XTableToDeviceCoordinates(int x)
         {
-            double outX, outY;
-            Transformation transformer = new Transformation();
-            transformer.Transform(x, y, out outX, out outY);
-            x = Convert.ToInt32(outX);
-            y = Convert.ToInt32(outY);
+            return Convert.ToInt32((x * DEVICE_MAX_X) / TABLE_MAX_X_MM);
         }
 
         /// <summary>
-        /// draw the ricochet point of the ball on the border of the table 
+        /// Convert the a given y from MM to Device coord
+        /// </summary>
+        /// <param name="x">Y in MM</param>
+        /// <returns>Y in Coords</returns>
+        public static int YTableToDeviceCoordinates(int y)
+        {
+            return Convert.ToInt32((y * DEVICE_MAX_Y) / TABLE_MAX_Y_MM);
+        }
+
+        /// <summary>
+        /// Draw the ricochet point of the ball on the border of the table 
         /// </summary>
         /// <param name="x">x coord of the ricochet on the canvas</param>
         /// <param name="y">y coord of the ricochet on the canvas</param>
@@ -180,10 +246,7 @@ namespace Foosbot
         {
             try
             {
-                if (isLocation)
-                {
-                    ConvertToLocation(ref x, ref y);
-                }
+                if (isLocation) ConvertToLocation(ref x, ref y);
 
                 const int radius = 10;
                 const int key = (int)eMarks.RicochetMark;
@@ -208,11 +271,11 @@ namespace Foosbot
         }
 
         /// <summary>
-        /// init the rods lines on the  canvas --> TODO fix the rods position problem
+        /// Init the rods lines on the canvas
         /// </summary>
-        /// <param name="thickness">the thickness of the rods</param>
-        /// <param name="color">the color of the rods</param>
-        public static void DrawRods(int thickness = 6,bool isLocation = true)
+        /// <param name="thickness">optional thickness of the rods [default : 6]</param>
+        /// <param name="isLocation">optional isLocation [default : true]</param>
+        public static void DrawRods(int thickness = 6, bool isLocation = true)
         {
             try
             {
@@ -225,21 +288,18 @@ namespace Foosbot
                         int x = XTableToDeviceCoordinates(_rods[(eMarksCounter + eMarks.GoalKeeper)]);
                         int y = ((int)DEVICE_MAX_Y);
 
-                        if(isLocation)
-                           ConvertToLocation(ref x, ref y);
+                        if (isLocation) ConvertToLocation(ref x, ref y);
 
                         (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
                         (_markups[key + eMarksCounter] as Shape).Stroke = Brushes.White;
-
                         (_markups[key + eMarksCounter] as Line).X1 = x * _actualWidthRate;
                         (_markups[key + eMarksCounter] as Line).Y1 = 0;
-
                         (_markups[key + eMarksCounter] as Line).X2 = x * _actualWidthRate;
                         (_markups[key + eMarksCounter] as Line).Y2 = y * _actualHeightRate;
 
                         Canvas.SetLeft(_markups[key + eMarksCounter], 0);
                         Canvas.SetTop(_markups[key + eMarksCounter], 0);
-                    }         
+                    }
                 }));
             }
             catch (Exception e)
@@ -249,20 +309,79 @@ namespace Foosbot
             }
         }
 
-        public static int XTableToDeviceCoordinates(int x)
-        {
-            return Convert.ToInt32((x * DEVICE_MAX_X) / TABLE_MAX_X_MM);
-        }
 
-        public static int YTableToDeviceCoordinates(int y)
+        /// <summary>
+        /// Draw the given rod dynamic sector
+        /// </summary>
+        /// <param name="rod">the rod for sector calculation</param>
+        /// <param name="dynamicSectorWidth">the dynamic sector of the rod</param>
+        /// <param name="thickness">optional thickness of the sector line [default : 2]</param>
+        /// <param name="isLocation">optional isLocation [default : true]</param>
+        public static void DrawSector(eRod rod,int dynamicSectorWidth,int thickness = 2, bool isLocation = true)
         {
-            return Convert.ToInt32((y * DEVICE_MAX_Y) / TABLE_MAX_Y_MM);
+            try
+            {
+                eMarks mark;
+                Enum.TryParse<eMarks>(rod.ToString(), out mark);
+
+                int x = XTableToDeviceCoordinates(_rods[mark]);
+                int sectorStart = Convert.ToInt32(x - dynamicSectorWidth / 2.0);
+                int sectorEnd = Convert.ToInt32(x + dynamicSectorWidth / 2.0);
+                int demyNumber = 0;
+
+                _dispatcher.Invoke(new ThreadStart(delegate
+                {
+                    int key = (int)mark;
+                    int y = ((int)DEVICE_MAX_Y);
+
+                    Brush color = null;
+                    switch (mark)
+                    {
+                        case eMarks.GoalKeeper: color = Brushes.Yellow; break;
+                        case eMarks.Defence: color = Brushes.Pink; break;
+                        case eMarks.Midfield: color = Brushes.Red; break;
+                        case eMarks.Attack: color = Brushes.DarkRed; break;
+                        default: break;
+                    }
+
+                    if (isLocation)
+                    {
+                        ConvertToLocation(ref sectorStart, ref y);
+                        ConvertToLocation(ref sectorEnd, ref demyNumber);
+                    }
+
+                    (_markups[key * 10] as Shape).StrokeThickness = thickness;
+                    (_markups[key * 10] as Shape).Stroke = color;
+                    (_markups[key * 10] as Line).X1 = sectorStart * _actualWidthRate;
+                    (_markups[key * 10] as Line).Y1 = 0;
+                    (_markups[key * 10] as Line).X2 = sectorStart * _actualWidthRate;
+                    (_markups[key * 10] as Line).Y2 = y * _actualHeightRate;
+
+                    (_markups[key * 10 + 1] as Shape).StrokeThickness = thickness;
+                    (_markups[key * 10 + 1] as Shape).Stroke = color;
+                    (_markups[key * 10 + 1] as Line).X1 = sectorEnd * _actualWidthRate;
+                    (_markups[key * 10 + 1] as Line).Y1 = 0;
+                    (_markups[key * 10 + 1] as Line).X2 = sectorEnd * _actualWidthRate;
+                    (_markups[key * 10 + 1] as Line).Y2 = y * _actualHeightRate;
+
+                    Canvas.SetLeft(_markups[key * 10], 0);
+                    Canvas.SetTop(_markups[key * 10], 0); 
+                    Canvas.SetLeft(_markups[key * 10 + 1], 0);
+                    Canvas.SetTop(_markups[key * 10 + 1], 0);
+
+                }));
+            }
+            catch (Exception e)
+            {
+                Log.Common.Error(String.Format("[{0}] Failed to draw rods marks. Reason: {1}",
+                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+            }
         }
 
         /// <summary>
-        /// draw a rod by a given eMark sign , moving the rod on the linear and rotational axes
+        /// Draw a rod by a given eMark sign , moving the rod on the linear and rotational axes
         /// </summary>
-        /// <param name="rod">eMark of the wanted rod : GOALKEEPER , Defence , Midfield, Attack</param>
+        /// <param name="rod">eMark of the wanted rod : GoalKeeper, Defence , Midfield, Attack</param>
         /// <param name="deltaYMovment">the change on the linear movement</param>
         /// <param name="rotationalMove">eRotationalMove of the rod : DEFENCE, RISE, ATTACK</param>
         public static void DrawRodPlayers(eRod rod, int linearMoveDestination, eRotationalMove rotationalMove ,bool isLocation = true)
@@ -313,7 +432,7 @@ namespace Foosbot
 
 
         /// <summary>
-        /// drawing a single player at a time , used by the DrawRodPlayers method to draw all rods players
+        /// Drawing a single player at a time , used by the DrawRodPlayers method to draw all rods players
         /// </summary>
         /// <param name="eNumKey">eMark of the wanted rod : GOALKEEPER , Defence , Midfield, Attack</param>
         /// <param name="center">center of the players radius</param>
@@ -325,10 +444,6 @@ namespace Foosbot
             try
             {
                 int key = (int)eNumKey;
-            
-                //Point presentationCenter = new Point(center.X * _actualWidthRate, center.Y * _actualHeightRate);
-                //int presentationRadius = Convert.ToInt32(radius * ((_actualWidthRate + _actualHeightRate) / 2));
-
                 int rotationalMoveFactor = 0;
                 SolidColorBrush rotationalColor = Brushes.DarkBlue;
 
@@ -370,7 +485,7 @@ namespace Foosbot
 
 
         /// <summary>
-        /// drawing the ball on the canvas
+        /// Drawing the ball on the canvas
         /// </summary>
         /// <param name="center">ball circle center</param>
         /// <param name="radius">ball radius</param>
@@ -404,14 +519,14 @@ namespace Foosbot
         }
 
         /// <summary>
-        /// draw the calibration circles on the canvas
+        /// Draw the calibration circles on the canvas
         /// </summary>
-        /// <param name="mark"></param>
-        /// <param name="center"></param>
-        /// <param name="radius"></param>
-        /// <param name="circleColor"></param>
-        /// <param name="textColor"></param>
-        /// <param name="fontSize"></param>
+        /// <param name="mark">the wanted calibration mark for drawing</param>
+        /// <param name="center">center of the given calibration mark</param>
+        /// <param name="radius">radius of the given calibration mark</param>
+        /// <param name="circleColor">optional color [default : Pink]</param>
+        /// <param name="textColor">optional text color [default : OrangeRed]</param>
+        /// <param name="fontSize">optional font size [default : 12 ]</param>
         /// <param name="text"></param>
         public static void DrawCallibrationCircle(eCallibrationMark mark, Point center, int radius,
             SolidColorBrush circleColor = null, SolidColorBrush textColor = null, double fontSize = 12,
@@ -468,13 +583,13 @@ namespace Foosbot
         }
 
         /// <summary>
-        /// drawing the vector of the ball
+        /// Drawing the vector of the ball
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="vector"></param>
-        /// <param name="isLocation"></param>
-        /// <param name="color"></param>
-        public static void DrawBallVector(Point center, Point vector, bool isLocation = false, SolidColorBrush color = null)
+        /// <param name="center">center point to draw vector from</param>
+        /// <param name="vector">the end of the vector</param>
+        /// <param name="isLocation">optional is location [default : true]</param>
+        /// <param name="color">optional color [default : Aqua]</param>
+        public static void DrawBallVector(Point center, Point vector, bool isLocation = true, SolidColorBrush color = null)
         {
             try
             {
