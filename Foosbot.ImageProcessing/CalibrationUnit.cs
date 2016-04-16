@@ -232,6 +232,56 @@ namespace Foosbot.ImageProcessing
                 {
                     Log.Image.Debug("Found callibration marks!");
 
+
+                    #region Recalculating the matrix and points in order to update coverage
+
+                    Dictionary<eCallibrationMark, CircleF> updatedMaks = new Dictionary<eCallibrationMark, CircleF>();
+                    foreach(var mark in CallibrationMarks)
+                    {
+                            switch (mark.Key)
+                            {
+                                case eCallibrationMark.BL:
+                                    updatedMaks.Add(mark.Key,
+                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X - mark.Value.Radius,
+                                                                                mark.Value.Center.Y + mark.Value.Radius),
+                                                                                mark.Value.Radius));
+                                    break;
+                                case eCallibrationMark.BR:
+                                    updatedMaks.Add(mark.Key,
+                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X + mark.Value.Radius,
+                                                                                mark.Value.Center.Y + mark.Value.Radius),
+                                                                                mark.Value.Radius));
+                                    break;
+                                case eCallibrationMark.TL:
+                                    updatedMaks.Add(mark.Key,
+                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X - mark.Value.Radius,
+                                                                                mark.Value.Center.Y - mark.Value.Radius),
+                                                                                mark.Value.Radius));
+                                    break;
+                                case eCallibrationMark.TR:
+                                    updatedMaks.Add(mark.Key,
+                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X + mark.Value.Radius,
+                                                                                mark.Value.Center.Y - mark.Value.Radius),
+                                                                                mark.Value.Radius));
+                                    break;
+                            }
+                        
+                    }
+                    foreach(var mark in updatedMaks)
+                    {
+                        CallibrationMarks[mark.Key] = mark.Value;
+                    }
+                    ShowAllCallibrationMarks();
+                    //Calculate Homography Matrix
+                    int axeXLength = Configuration.Attributes.GetValue<int>("axeX");
+                    int axeYLength = Configuration.Attributes.GetValue<int>("axeY");
+
+                    SetTransformationMatrix(axeXLength, axeYLength);
+                    Log.Image.Info("Homography matrix re-calculated.");
+
+                    #endregion Recalculating the matrix and points in order to update coverage
+
+
                     /* ----------Extract Background Currently not in use-------------------*/
                     //Extract Background
                     //Background = image.Clone();//.Sub(_phaseOneFrame);

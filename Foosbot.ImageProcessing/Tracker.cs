@@ -207,7 +207,7 @@ namespace Foosbot.ImageProcessing
 
                 Log.Image.Info(String.Format("[{0}] Possible ball location in {1} area: {2}x{3}",
                     MethodBase.GetCurrentMethod().Name, area, x, y));
-                //Marks.DrawBall(new System.Windows.Point(x, y), Convert.ToInt32(pos[0].Radius));
+                Marks.DrawBall(new System.Windows.Point(x, y), Convert.ToInt32(pos[0].Radius));
                 
                 Transformation transformer = new Transformation();
                 System.Drawing.PointF coordinates = transformer.Transform(new System.Drawing.PointF(x, y));
