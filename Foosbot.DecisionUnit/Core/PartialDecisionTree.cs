@@ -45,7 +45,7 @@ namespace Foosbot.DecisionUnit.Core
              * For Beta need to define the actual sub tree.
              */
             if (relativeX.Equals(eXPositionRodRelative.FRONT))
-                action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.VECTOR_BASED);
+                action = new RodAction(rod.RodType, eRotationalMove.KICK, eLinearMove.VECTOR_BASED);
             if (relativeX.Equals(eXPositionRodRelative.BACK))
                 action = new RodAction(rod.RodType, eRotationalMove.RISE, eLinearMove.VECTOR_BASED);
             if (relativeX.Equals(eXPositionRodRelative.CENTER))
