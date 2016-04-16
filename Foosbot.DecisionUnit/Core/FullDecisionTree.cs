@@ -28,12 +28,13 @@ namespace Foosbot.DecisionUnit.Core
         /// <summary>
         /// Decision Tree Constructor
         /// </summary>
+        /// <param name="subtree">Decision Sub Tree</param>
         /// <param name="decisionHelper">Decision Helper [default is null then will be constructed using Configuration File]</param>
         /// <param name="ballRadius">Ball Radius in mm [default is -1 will be taken from Configuration File]</param>
         /// <param name="tableWidth">Table Width (Y Axe) in mm [default is -1 will be taken from Configuration File]</param>
         /// <param name="playerWidth">Player Width in mm [default is -1 will be taken from Configuration File]</param>
-        public FullDecisionTree(IDecisionHelper decisionHelper = null, int ballRadius = -1, int tableWidth = -1, int playerWidth = -1)
-            : base(decisionHelper, ballRadius, tableWidth, playerWidth)
+        public FullDecisionTree(IDecisionTree subtree, IDecisionHelper decisionHelper = null, int ballRadius = -1, int tableWidth = -1, int playerWidth = -1)
+            : base(subtree, decisionHelper, ballRadius, tableWidth, playerWidth)
         {
         }
 
@@ -94,9 +95,15 @@ namespace Foosbot.DecisionUnit.Core
             {
                 //Ball is in Current Rod Sector
                 case eXPositionSectorRelative.IN_SECTOR:
-                //The Big Sub Tree
-                //action = EnterDecisionTreeBallInSector(rod, bfc, out respondingPlayer);
-                //break;
+                    action = SubTree.Decide(rod, bfc);
+                    respondingPlayer = SubTree.RespondingPlayer;
+                    break;
+
+                    /* OLD :
+                     *  //The Big Sub Tree
+                     *  action = EnterDecisionTreeBallInSector(rod, bfc, out respondingPlayer);
+                     */
+
                 //Ball is ahead of Current Rod Sector
                 case eXPositionSectorRelative.AHEAD_SECTOR:
                     //Ball Vector Direction is TO Current Rod and we have intersection point
@@ -104,8 +111,10 @@ namespace Foosbot.DecisionUnit.Core
                             rod.Intersection.IsDefined)
                     {
                         action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.VECTOR_BASED);
+                        
                         //Define responding player index
-                        BallYPositionToPlayerYCoordinate(bfc.Y, rod, out respondingPlayer);
+                        BallYPositionToPlayerYCoordinate(bfc.Y, rod);
+                        respondingPlayer = this.RespondingPlayer;
                     }
                     else
                     {

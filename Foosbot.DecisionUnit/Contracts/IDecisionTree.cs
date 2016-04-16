@@ -23,6 +23,21 @@ namespace Foosbot.DecisionUnit.Contracts
     public interface IDecisionTree
     {
         /// <summary>
+        /// Is Subtree Defined property
+        /// </summary>
+        bool IsSubtreeDefined { get; }
+
+        /// <summary>
+        /// SubTree Property
+        /// </summary>
+        IDecisionTree SubTree { get; }
+
+        /// <summary>
+        /// Responding Player index (1 based)
+        /// </summary>
+        int RespondingPlayer { get; }
+
+        /// <summary>
         /// Main Decision Flow Method
         /// </summary>
         /// <param name="rod">Rod to use for decision</param>
