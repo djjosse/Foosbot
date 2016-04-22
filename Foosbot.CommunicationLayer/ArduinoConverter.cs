@@ -10,7 +10,7 @@ namespace Foosbot.CommunicationLayer
     public class ArduinoConverter : IRodConverter
     {
         /// <summary>
-        /// Currrent Rod Type
+        /// Current Rod Type
         /// </summary>
         public eRod RodType { get; private set; }
 
@@ -79,21 +79,45 @@ namespace Foosbot.CommunicationLayer
         }
 
         /// <summary>
-        /// Convert coordinate from mm to ticks
+        /// Convert and FLIP coordinate from mm to ticks
         /// </summary>
         /// <param name="mmCoord">Coordinate in mm</param>
+        /// <param name="flipAxe">Flips the end to start if true [Default is True]</param>
         /// <returns>Coordinate in ticks</returns>
-        public int MmToTicks(int mmCoord)
+        public int MmToTicks(int mmCoord, bool flipAxe = true)
         {
             if (!IsInitialized) Initialize();
 
             //m = (y2 - y1)/(x2 - x1)
             double slope = (double)(TicksPerRod) / (double)(RodMaximalCoordinate - RodMinimalCoordinate);
-
+            
             //y = m(x-x1) + y1
             double result = slope * (mmCoord - RodMinimalCoordinate);
 
+            //Flip the Axe if required
+            if (flipAxe)
+                result = TicksPerRod - result;
+
+            //return value according to safety buffer
+            if (result > TicksPerRod - Communication.SAFETY_TICKS_BUFFER)
+                result = TicksPerRod - Communication.SAFETY_TICKS_BUFFER;
+            if (result < Communication.SAFETY_TICKS_BUFFER)
+                result = Communication.SAFETY_TICKS_BUFFER;
+
             return Convert.ToInt32(result);
+        }
+
+        /// <summary>
+        /// Convert ticks value to 6 bit corresponding value 
+        /// between 1 (0x00000001) and 62 (0x00111110)
+        /// </summary>
+        /// <param name="dcInTicks">Coordinate in Ticks</param>
+        /// <returns>Coordinate as integer</returns>
+        public int TicksToBits(int dcInTicks)
+        {
+            if (!IsInitialized) Initialize();
+            float m = (float)(Communication.MAX_DC_VALUE_TO_ENCODE - Communication.MIN_DC_VALUE_TO_ENCODE) / (float)TicksPerRod;
+            return Convert.ToInt32(m * dcInTicks);
         }
     }
 }

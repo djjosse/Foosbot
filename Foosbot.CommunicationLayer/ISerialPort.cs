@@ -26,12 +26,6 @@ namespace Foosbot.CommunicationLayer
         /// Write port method
         /// </summary>
         /// <param name="command">Command to be sent to port</param>
-        void Write(string command);
-
-        /// <summary>
-        /// Write port method
-        /// </summary>
-        /// <param name="command">Command to be sent to port</param>
-        void WriteLine(string command);
+        void Write(byte command);
     }
 }

@@ -11,7 +11,7 @@ namespace Foosbot.CommunicationLayer
     public interface IRodConverter : IInitializable
     {
         /// <summary>
-        /// Currrent Rod Type
+        /// Current Rod Type
         /// </summary>
         eRod RodType { get; }
 
@@ -43,7 +43,16 @@ namespace Foosbot.CommunicationLayer
         /// Convert coordinate from mm to ticks
         /// </summary>
         /// <param name="mmCoord">Coordinate in mm</param>
+        /// <param name="flipAxe">Flips the end to start if true [Default is True]</param>
         /// <returns>Coordinate in ticks</returns>
-        int MmToTicks(int mmCoord);
+        int MmToTicks(int mmCoord, bool flipAxe = true);
+
+        /// <summary>
+        /// Convert ticks value to 6 bit corresponding value 
+        /// between 1 (0x00000001) and 62 (0x00111110)
+        /// </summary>
+        /// <param name="dcInTicks">Coordinate in Ticks</param>
+        /// <returns>Coordinate as integer</returns>
+        int TicksToBits(int dcInTicks);
     }
 }

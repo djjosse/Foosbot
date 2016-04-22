@@ -15,7 +15,7 @@ namespace Foosbot.CommunicationLayerTest
         private const string CATEGORY = "ArduinoConverter";
 
         private static eRod ROD_TYPE = eRod.Defence;
-        private static int TICKS_PER_ROD = 3100;
+        private static int TICKS_PER_ROD = 2600;
         private static int MIN_STOPPER_COORD_MM = 30;
         private static int TABLE_HEIGHT = 700;
         private static int STOPPER_DIST = 460;
@@ -29,21 +29,23 @@ namespace Foosbot.CommunicationLayerTest
             _testAsset.Initialize(TICKS_PER_ROD, MIN_STOPPER_COORD_MM, TABLE_HEIGHT, STOPPER_DIST);
         }
 
+        
+
         [TestCategory(CATEGORY), TestMethod]
-        public void MmToTicks_Minimal()
+        public void MmToTicks_Minimal_WithFlip()
         {
             int inMm = MIN_STOPPER_COORD_MM;
-            int expected = 0;
-            int actual = _testAsset.MmToTicks(inMm);
+            int expected = _testAsset.TicksPerRod - Communication.SAFETY_TICKS_BUFFER;
+            int actual = _testAsset.MmToTicks(inMm, true);
             Assert.AreEqual(expected, actual);
         }
 
         [TestCategory(CATEGORY), TestMethod]
-        public void MmToTicks_Maximal()
+        public void MmToTicks_Maximal_WithFlip()
         {
             int inMm = TABLE_HEIGHT - MIN_STOPPER_COORD_MM - STOPPER_DIST;
-            int expected = TICKS_PER_ROD;
-            int actual = _testAsset.MmToTicks(inMm);
+            int expected = _testAsset.TicksPerRod - (TICKS_PER_ROD - Communication.SAFETY_TICKS_BUFFER);
+            int actual = _testAsset.MmToTicks(inMm, true);
             Assert.AreEqual(expected, actual);
         }
     }

@@ -40,10 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionEncoder.cs" />
     <Compile Include="ArduinoCom.cs" />
+    <Compile Include="Communication.cs" />
     <Compile Include="CommunicationFactory.cs" />
     <Compile Include="CommunicationUnit.cs" />
     <Compile Include="ArduinoConverter.cs" />
+    <Compile Include="IEncoder.cs" />
     <Compile Include="IRodConverter.cs" />
     <Compile Include="ISerialPort.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

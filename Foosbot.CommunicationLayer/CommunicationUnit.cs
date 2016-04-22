@@ -42,10 +42,10 @@ namespace Foosbot.CommunicationLayer
             //set rod type for current rod
             _rodType = rodType;
 
-            //Create arduino com object
-            _arduino = new ArduinoCom(comPort);
-
             _converter = new ArduinoConverter(rodType);
+
+            //Create arduino com object
+            _arduino = new ArduinoCom(comPort, new ActionEncoder(_converter));
         }
 
         /// <summary>
