@@ -134,28 +134,21 @@ namespace Foosbot.UI
                 };
                 worker.RunWorkerAsync();
 
-               // BackgroundWorker worker2 = new BackgroundWorker();
-               // worker2.DoWork += (s, z) =>
-               // {
-              //      while (!_ipu.IsCallibrated) { Thread.Sleep(100);/* wait till calibrated*/}
+                VectorCalculationUnit vectorCalcullationUnit = new VectorCalculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
+                vectorCalcullationUnit.Start();
 
-                    VectorCalculationUnit vectorCalcullationUnit = new VectorCalculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
-                    vectorCalcullationUnit.Start();
+                MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
+                decisionUnit.Start();
 
-                    MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
-                    decisionUnit.Start();
-
-                    if (_isArduinoConnected)
+                if (_isArduinoConnected)
+                {
+                    Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(decisionUnit.RodActionPublishers);
+                    foreach (eRod key in communication.Keys)
                     {
-                        Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(decisionUnit.RodActionPublishers);
-                        foreach (eRod key in communication.Keys)
-                        {
-                            if (communication[key] != null)
-                                communication[key].Start();
-                        }
+                        if (communication[key] != null)
+                            communication[key].Start();
                     }
-              //  };
-              //  worker2.RunWorkerAsync();
+                }
             }
             catch(Exception ex)
             {
