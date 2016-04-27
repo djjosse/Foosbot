@@ -61,6 +61,7 @@
     <Compile Include="ConfigurationExtension.cs" />
     <Compile Include="Contracts\IInitializable.cs" />
     <Compile Include="Enums\eMarks.cs" />
+    <Compile Include="Exceptions\CalibrationException.cs" />
     <Compile Include="Exceptions\ConfigurationException.cs" />
     <Compile Include="Exceptions\InitializationException.cs" />
     <Compile Include="Multithreading\BackgroundFlow.cs" />

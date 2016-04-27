@@ -88,7 +88,7 @@ namespace Foosbot.ImageProcessing
         /// <returns>Image after adjustments</returns>
         private Image<Gray, byte> PrepareImage(Image<Gray, byte> image)
         {
-            image = CropAndStoreOffset(image, _calibrator.CallibrationMarks.Values.ToList());
+            image = CropAndStoreOffset(image, _calibrator.CalibrationMarks.Values.ToList());
             image = NoiseRemove(image);
             image._EqualizeHist();
             return image;

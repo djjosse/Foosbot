@@ -11,6 +11,8 @@
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Foosbot.Common;
+using Foosbot.Common.Contracts;
+using Foosbot.Common.Exceptions;
 using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
@@ -22,25 +24,57 @@ using System.Windows.Controls;
 namespace Foosbot.ImageProcessing
 {
     /// <summary>
-    /// Callibration Unit Class
-    /// Responsible for camera and Image Callibration in Image Processing Unit
+    /// Calibration Unit Class
+    /// Responsible for camera and Image Calibration in Image Processing Unit
     /// </summary>
-    public class CalibrationUnit : Detector, ICallibration
+    public class CalibrationUnit : Detector, ICalibration, IInitializable
     {
-        #region Callibration Constants
+        #region IInitializable and Set parameters
 
         /// <summary>
-        /// Approx. Inner Radius of Callibration Circle
+        /// Foosbot World AXE X length
+        /// </summary>
+        private int AXE_X_LENGTH;
+
+        /// <summary>
+        /// Foosbot World AXE Y length
+        /// </summary>
+        private int AXE_Y_LENGTH;
+
+        /// <summary>
+        /// Is Initialized property
+        /// </summary>
+        public bool IsInitialized { get; private set; }
+
+        /// <summary>
+        /// Initialization method
+        /// </summary>
+        public void Initialize()
+        {
+            if (!IsInitialized)
+            {
+                AXE_X_LENGTH = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_X_SIZE);
+                AXE_Y_LENGTH = Configuration.Attributes.GetValue<int>(Configuration.Names.FOOSBOT_AXE_Y_SIZE);
+                IsInitialized = true;
+            }
+        }
+        
+        #endregion IInitializable and Set parameters
+
+        #region Calibration Constants
+
+        /// <summary>
+        /// Approx. Inner Radius of Calibration Circle
         /// </summary>
         public const int INNER_RADIUS = 30;//60;
 
         /// <summary>
-        /// Approx. Outer Radius of Callibration Circle
+        /// Approx. Outer Radius of Calibration Circle
         /// </summary>
         public const int OUTER_RADIUS = 50;//80;
 
         /// <summary>
-        /// Possible error for inner and outer radiuses
+        /// Possible error for inner and outer radius
         /// </summary>
         public const double RADIUS_THRESHOLD = 1;
 
@@ -50,7 +84,7 @@ namespace Foosbot.ImageProcessing
         public const double DISTANCE_ERROR = 0.1;
 
         /// <summary>
-        /// Frames to skip in case of unsucessfull calibration before retry
+        /// Frames to skip in case of unsuccessful calibration before retry
         /// </summary>
         public const int FRAMES_TO_SKIP = 10;
 
@@ -59,38 +93,28 @@ namespace Foosbot.ImageProcessing
         #region private members
 
         /// <summary>
-        /// Callibration mark coordinates on table by names in dictionary
+        /// Calibration mark coordinates on table by names in dictionary
         /// </summary>
         private Dictionary<eCallibrationMark, System.Drawing.PointF> _markCoordinates;
 
         /// <summary>
-        /// First Callibration Phase Frame Stored
-        /// </summary>
-        private Image<Gray, byte> _phaseOneFrame;
-
-        /// <summary>
-        /// Frames to skip counter in case of unsuccessful callibration
+        /// Frames to skip counter in case of unsuccessful calibration
         /// </summary>
         private int _skipFrames = 0;
 
         #endregion private members
 
-        #region ICallibration
+        #region ICalibration
 
         /// <summary>
-        /// Current Callibration State
+        /// Current Calibration State
         /// </summary>
-        public eCallibrationState CallibrationState { get; private set; }
+        public eCalibrationState CalibrationState { get; private set; }
 
         /// <summary>
-        /// Sorted Callibration Marks Coordinates on original image
+        /// Sorted Calibration Marks Coordinates on original image
         /// </summary>
-        public Dictionary<eCallibrationMark, CircleF> CallibrationMarks { get; set; }
-
-        /// <summary>
-        /// Background Image Found in callibration
-        /// </summary>
-        public Image<Gray, Byte> Background { get; set; }
+        public Dictionary<eCallibrationMark, CircleF> CalibrationMarks { get; set; }
 
         /// <summary>
         /// Ball Radius
@@ -105,41 +129,42 @@ namespace Foosbot.ImageProcessing
         #endregion ICallibration
 
         /// <summary>
-        /// Callibration Unit Constructor
+        /// Calibration Unit Constructor
         /// </summary>
         public CalibrationUnit() { }
 
         /// <summary>
-        /// Start callibration process
+        /// Start calibration process
         /// </summary>
-        /// <param name="source">Image to perform callibration on it</param>
-        /// <returns>[True] if callibration finished, [False] otherwise</returns>
+        /// <param name="source">Image to perform calibration on it</param>
+        /// <returns>[True] if calibration finished, [False] otherwise</returns>
         public bool InvokeCallibration(Image<Gray, byte> source)
         {
-            switch (CallibrationState)
+            Initialize();
+            switch (CalibrationState)
             {
-                case eCallibrationState.NotStarted:
-                    CallibrationPhaseI(source);
+                case eCalibrationState.NotStarted:
+                    CalibrationPhaseI(source);
                     break;
-                case eCallibrationState.FinishedPhaseI:
-                    CallibrationPhaseII(source);
+                case eCalibrationState.FinishedPhaseI:
+                    CalibrationPhaseII(source);
                     break;
-                case eCallibrationState.Finished:
-                    Log.Image.Debug("Callibration already finished.");
+                case eCalibrationState.Finished:
+                    Log.Image.Debug("Calibration already finished.");
                     break;
             }
-            return CallibrationState.Equals(eCallibrationState.Finished);
+            return CalibrationState.Equals(eCalibrationState.Finished);
         }
 
         /// <summary>
-        /// First Phase of callibration
+        /// First Phase of calibration
         /// * Skip unstable frames
-        /// * Detect Callibration Circles and sort those
-        /// * Callculate Transformation Homography and Invert matrix
-        /// * Calcullate Ball Radius and possible Error
+        /// * Detect Calibration Circles and sort those
+        /// * Calculate Transformation Homography and Invert matrix
+        /// * Calculate Ball Radius and possible Error
         /// </summary>
-        /// <param name="source">Image from camera to perform callibration on</param>
-        private void CallibrationPhaseI(Image<Gray, byte> source)
+        /// <param name="source">Image from camera to perform calibration on</param>
+        private void CalibrationPhaseI(Image<Gray, byte> source)
         {
             //ignore first frames
             if (_skipFrames < FRAMES_TO_SKIP)
@@ -148,36 +173,31 @@ namespace Foosbot.ImageProcessing
             }
             else
             {
-                _skipFrames = 0;
-
-                Log.Image.Debug("Starting callibration Phase I...");
-                _phaseOneFrame = source.Clone();
-
-                Image<Gray, byte> image = _phaseOneFrame.Clone();
-
-                //Remove Noise from picture
-                CvInvoke.Canny(image, image, 100, 60);
-                image = NoiseRemove(image);
-
-                //Find Callibration Marks
-                List<CircleF> circles = FindCallibrationMarks(image);
-
-                if (circles.Count == 4)
+                try
                 {
-                    //Sort Callibration Marks and set value to property
-                    SortCallibrationMarks(circles);
+                    _skipFrames = 0;
 
-                    ShowAllCallibrationMarks();
-                    StringBuilder str = new StringBuilder("4 callibration Marks found and sorted: \n\t\t\t\t");
-                    foreach (var mark in CallibrationMarks)
+                    Log.Image.Debug("Starting calibration Phase I...");
+                    Image<Gray, byte> image = source.Clone();
+
+                    //Remove Noise from picture
+                    CvInvoke.Canny(image, image, 100, 60);
+                    image = NoiseRemove(image);
+
+                    //Find Calibration Marks
+                    List<CircleF> circles = FindCalibrationMarks(image);
+                    VerifyMarksFound(circles);
+
+                    //Sort Calibration Marks and set value to property
+                    SortCalibrationMarks(circles);
+
+                    ShowAllCalibrationMarks();
+                    StringBuilder str = new StringBuilder("4 calibration Marks found and sorted: \n\t\t\t\t");
+                    foreach (var mark in CalibrationMarks)
                         str.Append(String.Format("{0}:[{1}x{2}] ", mark.Key, mark.Value.Center.X, mark.Value.Center.Y));
                     Log.Image.Info(str.ToString());
 
-                    //Calculate Homography Matrix
-                    int axeXLength = Configuration.Attributes.GetValue<int>("axeX");
-                    int axeYLength = Configuration.Attributes.GetValue<int>("axeY");
-                    
-                    SetTransformationMatrix(axeXLength, axeYLength);
+                    SetTransformationMatrix(AXE_X_LENGTH, AXE_Y_LENGTH);
                     Log.Image.Info("Homography matrix calculated.");
 
                     //Calculate Ball Radius and Error
@@ -185,28 +205,25 @@ namespace Foosbot.ImageProcessing
                     CalculateBallRadiusAndError((float)originalBallRadius);
                     Log.Image.Info(String.Format("Expected ball radius is {0} +/- {1}", Radius, ErrorRate));
 
-                    //Check Calculated Radius
-                    //ToDo:
-                    //UpdateMarkup(Helpers.eMarkupKey.BALL_CIRCLE_MARK, new Point(300, 300), Radius);
-
-                    CallibrationState = eCallibrationState.FinishedPhaseI;
+                    CalibrationState = eCalibrationState.FinishedPhaseI;
                 }
-                else
+                catch(CalibrationException ex)
                 {
-                    Log.Image.Warning("Unable to find 4 corresponding circles in phase I");
+                    Log.Image.Warning(String.Format("Calibration failed in phase I. Will retry after [{0}] frames. Reason: {1}",
+                           FRAMES_TO_SKIP, ex.Message));
                 }
             }
         }
 
         /// <summary>
-        /// Second Phase of callibration
+        /// Second Phase of calibration
         /// * Skip unstable frames
-        /// * Find Callibration Circles
+        /// * Find Calibration Circles
         /// * Extract Background Image
-        /// * Crop background Image based o callibration marks
+        /// * Crop background Image based o calibration marks
         /// </summary>
-        /// <param name="source">Image from camera to perform callibration on</param>
-        private void CallibrationPhaseII(Image<Gray, byte> source)
+        /// <param name="source">Image from camera to perform calibration on</param>
+        private void CalibrationPhaseII(Image<Gray, byte> source)
         {
             if (_skipFrames < FRAMES_TO_SKIP)
             {
@@ -214,112 +231,51 @@ namespace Foosbot.ImageProcessing
             }
             else
             {
-                _skipFrames = 0;
-
-                Log.Image.Debug("Starting callibration Phase II...");
-                Image<Gray, byte> image = source.Clone();
-
-                Image<Gray, byte> tempImage = image.Clone();
-
-                //Remove Noise from picture
-                CvInvoke.Canny(tempImage, tempImage, 100, 60);
-                tempImage = NoiseRemove(tempImage);
-
-                //Find Callibration Marks
-                List<CircleF> circles = FindCallibrationMarks(tempImage);
-
-                if (circles.Count == 4)
+                try
                 {
-                    Log.Image.Debug("Found callibration marks!");
+                    _skipFrames = 0;
 
+                    Log.Image.Debug("Starting calibration Phase II...");
+                    Image<Gray, byte> image = source.Clone();
 
-                    #region Recalculating the matrix and points in order to update coverage
+                    Image<Gray, byte> tempImage = image.Clone();
 
-                    Dictionary<eCallibrationMark, CircleF> updatedMaks = new Dictionary<eCallibrationMark, CircleF>();
-                    foreach(var mark in CallibrationMarks)
-                    {
-                            switch (mark.Key)
-                            {
-                                case eCallibrationMark.BL:
-                                    updatedMaks.Add(mark.Key,
-                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X - mark.Value.Radius,
-                                                                                mark.Value.Center.Y + mark.Value.Radius),
-                                                                                mark.Value.Radius));
-                                    break;
-                                case eCallibrationMark.BR:
-                                    updatedMaks.Add(mark.Key,
-                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X + mark.Value.Radius,
-                                                                                mark.Value.Center.Y + mark.Value.Radius),
-                                                                                mark.Value.Radius));
-                                    break;
-                                case eCallibrationMark.TL:
-                                    updatedMaks.Add(mark.Key,
-                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X - mark.Value.Radius,
-                                                                                mark.Value.Center.Y - mark.Value.Radius),
-                                                                                mark.Value.Radius));
-                                    break;
-                                case eCallibrationMark.TR:
-                                    updatedMaks.Add(mark.Key,
-                                        new CircleF(new System.Drawing.PointF(mark.Value.Center.X + mark.Value.Radius,
-                                                                                mark.Value.Center.Y - mark.Value.Radius),
-                                                                                mark.Value.Radius));
-                                    break;
-                            }
-                        
-                    }
-                    foreach(var mark in updatedMaks)
-                    {
-                        CallibrationMarks[mark.Key] = mark.Value;
-                    }
-                    ShowAllCallibrationMarks();
-                    //Calculate Homography Matrix
-                    int axeXLength = Configuration.Attributes.GetValue<int>("axeX");
-                    int axeYLength = Configuration.Attributes.GetValue<int>("axeY");
+                    //Remove Noise from picture
+                    CvInvoke.Canny(tempImage, tempImage, 100, 60);
+                    tempImage = NoiseRemove(tempImage);
 
-                    SetTransformationMatrix(axeXLength, axeYLength);
-                    Log.Image.Info("Homography matrix re-calculated.");
+                    //Find Calibration Marks
+                    List<CircleF> circles = FindCalibrationMarks(tempImage);
+                    VerifyMarksFound(circles);
 
-                    #endregion Recalculating the matrix and points in order to update coverage
+                    //Update coverage
+                    UpdateCalibrationMarks();
 
-
-                    /* ----------Extract Background Currently not in use-------------------*/
-                    //Extract Background
-                    //Background = image.Clone();//.Sub(_phaseOneFrame);
-                   // image.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "image.png");
-                    //_phaseOneFrame.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "_phaseOneFrame.png");
-                    //Background.Save("test//" + DateTime.Now.ToString("HH_mm_ss_fff") + "back.png");
-                    //Log.Image.Debug("Background image extracted");
-
-                    //Crop background based on callibration marks
-                    //Background = CropAndStoreOffset(Background, CallibrationMarks.Values.ToList());
-
-                    //Log.Image.Debug("Background image cropped");
-
-                    Log.Image.Info("Callibration finished!");
-
-                    CallibrationState = eCallibrationState.Finished;
+                    CalibrationState = eCalibrationState.Finished;
+                    Log.Image.Info("Calibration finished!");
                 }
-                else
+                catch (CalibrationException ex)
                 {
-                    Log.Image.Warning("Unable to find 4 callibration circles in phase II.");
+                    Log.Image.Warning(String.Format("Calibration failed in phase II. Will retry after [{0}] frames. Reason: {1}",
+                           FRAMES_TO_SKIP, ex.Message));
                 }
             }
         }
 
         /// <summary>
-        /// Find Callibration Marks on image
+        /// Find Calibration Marks on image
         /// </summary>
         /// <param name="image">Source image to find circles on</param>
-        /// <returns>List of callibration marks as circles</returns>
-        private List<CircleF> FindCallibrationMarks(Image<Gray, byte> image)
+        /// <returns>List of calibration marks as circles</returns>
+        private List<CircleF> FindCalibrationMarks(Image<Gray, byte> image)
         {
             List<CircleF> circles = new List<CircleF>();
 
-            //Find Callibration Big Circles
+            //Find Calibration Big Circles
             CircleF[] possibleInnerCircles = DetectCircles(image, INNER_RADIUS, RADIUS_THRESHOLD, (double)OUTER_RADIUS * 5
                 , 180.0, 120.0, 2.0);
 
-            //Find Callibration Small Circles
+            //Find Calibration Small Circles
             CircleF[] possibleOuterCircles = DetectCircles(image, OUTER_RADIUS, RADIUS_THRESHOLD, (double)OUTER_RADIUS * 5
                 , 180.0, 120.0, 2.0);
 
@@ -342,17 +298,17 @@ namespace Foosbot.ImageProcessing
         /// Sort marks and fill the property
         /// CallibrationMarks
         /// </summary>
-        /// <param name="unsortedMarks">Unsorted callibration marks list</param>
-        private void SortCallibrationMarks(List<CircleF> unsortedMarks)
+        /// <param name="unsortedMarks">Unsorted calibration marks list</param>
+        private void SortCalibrationMarks(List<CircleF> unsortedMarks)
         {
             if (unsortedMarks.Count != 4)
                 throw new NotSupportedException("To find diagonal mark pairs exactly 4 marks must be detected!");
 
-            CallibrationMarks = new Dictionary<eCallibrationMark, CircleF>();
+            CalibrationMarks = new Dictionary<eCallibrationMark, CircleF>();
 
             Dictionary<CircleF, CircleF> diagonalPairs = FindDiagonalMarkPairs(unsortedMarks);
 
-            //In each pair find left point, right, buttom and top and set corresponding marks
+            //In each pair find left point, right, bottom and top and set corresponding marks
             foreach (CircleF key in diagonalPairs.Keys)
             {
                 CircleF buttom = (key.Center.Y > diagonalPairs[key].Center.Y) ? key : diagonalPairs[key];
@@ -361,18 +317,18 @@ namespace Foosbot.ImageProcessing
                 CircleF right = (key.Center.X > diagonalPairs[key].Center.X) ? key : diagonalPairs[key];
 
                 if (buttom.Equals(left))
-                    CallibrationMarks.Add(eCallibrationMark.BL, left);
+                    CalibrationMarks.Add(eCallibrationMark.BL, left);
                 if (top.Equals(left))
-                    CallibrationMarks.Add(eCallibrationMark.TL, left);
+                    CalibrationMarks.Add(eCallibrationMark.TL, left);
                 if (top.Equals(right))
-                    CallibrationMarks.Add(eCallibrationMark.TR, right);
+                    CalibrationMarks.Add(eCallibrationMark.TR, right);
                 if (buttom.Equals(right))
-                    CallibrationMarks.Add(eCallibrationMark.BR, right);
+                    CalibrationMarks.Add(eCallibrationMark.BR, right);
             }
         }
 
         /// <summary>
-        /// Find Diagonal pairs of detected callibration marks.
+        /// Find Diagonal pairs of detected calibration marks.
         /// Based on assumption those pairs have largest distance.
         /// </summary>
         /// <param name="unsortedMarks">Unsorted marks list</param>
@@ -406,7 +362,7 @@ namespace Foosbot.ImageProcessing
                 CircleF keyMark = pairs[unsortedMarks[i]];
                 CircleF valueMark = pairs[keyMark];
                 if (!valueMark.Equals(expectedMark))
-                    throw new Exception("Pairs Calculated Wrong!");
+                    throw new CalibrationException("Pairs Calculated Wrong!");
             }
 
             //Find and Remove duplicates
@@ -432,10 +388,10 @@ namespace Foosbot.ImageProcessing
             System.Drawing.PointF[] orriginalPointArray = _markCoordinates.Values.ToArray();
             System.Drawing.PointF[] arrangedPoints = new System.Drawing.PointF[4];
 
-            arrangedPoints[0] = CallibrationMarks[eCallibrationMark.BL].Center;
-            arrangedPoints[1] = CallibrationMarks[eCallibrationMark.TL].Center;
-            arrangedPoints[2] = CallibrationMarks[eCallibrationMark.TR].Center;
-            arrangedPoints[3] = CallibrationMarks[eCallibrationMark.BR].Center;
+            arrangedPoints[0] = CalibrationMarks[eCallibrationMark.BL].Center;
+            arrangedPoints[1] = CalibrationMarks[eCallibrationMark.TL].Center;
+            arrangedPoints[2] = CalibrationMarks[eCallibrationMark.TR].Center;
+            arrangedPoints[3] = CalibrationMarks[eCallibrationMark.BR].Center;
 
             _transformer = new Transformation();
             _transformer.FindHomographyMatrix(arrangedPoints, orriginalPointArray);
@@ -444,22 +400,22 @@ namespace Foosbot.ImageProcessing
         Transformation _transformer;
 
         /// <summary>
-        /// Show all callibration marks on screen
+        /// Show all calibration marks on screen
         /// </summary>
-        private void ShowAllCallibrationMarks()
+        private void ShowAllCalibrationMarks()
         {
-            foreach (KeyValuePair<eCallibrationMark, CircleF> mark in CallibrationMarks)
+            foreach (KeyValuePair<eCallibrationMark, CircleF> mark in CalibrationMarks)
             {
-                ShowCallibrationMark(mark.Value, mark.Key);
+                ShowCalibrationMark(mark.Value, mark.Key);
             }
         }
 
         /// <summary>
-        /// Show callibration mark on screen - circle and coordinates
+        /// Show calibration mark on screen - circle and coordinates
         /// </summary>
-        /// <param name="mark">Callibration mark as CircleF</param>
-        /// <param name="key">Caliibration mark type</param>
-        private void ShowCallibrationMark(CircleF mark, eCallibrationMark key)
+        /// <param name="mark">Calibration mark as CircleF</param>
+        /// <param name="key">Calibration mark type</param>
+        private void ShowCalibrationMark(CircleF mark, eCallibrationMark key)
         {
             switch (key)
             {
@@ -484,7 +440,7 @@ namespace Foosbot.ImageProcessing
         }
 
         /// <summary>
-        /// Callculate ball radius and possible error 
+        /// Calculate ball radius and possible error 
         /// </summary>
         /// <param name="origRadius">Original Ball Radius in mm</param>
         private void CalculateBallRadiusAndError(float origRadius)
@@ -511,6 +467,62 @@ namespace Foosbot.ImageProcessing
             Radius = Convert.ToInt32((minRadius + maxRadius) / 2);
             double possibleError = ((maxRadius - minRadius) / 2) + 1;
             ErrorRate = possibleError / Radius;
+        }
+
+        /// <summary>
+        /// Verifies exactly 4 calibration marks found
+        /// </summary>
+        /// <param name="circles">Calibration marks circles</param>
+        /// <exception cref="CalibrationException">Thrown in case not exactly 4 calibration marks found</exception>
+        private void VerifyMarksFound(List<CircleF> circles)
+        {
+            if (circles.Count != 4)
+            {
+                throw new CalibrationException(String.Format(
+                    "Number of marks found in calibration is [{0}], while expected [4] marks.", circles.Count));
+            }
+        }
+
+        /// <summary>
+        /// Update Calibration Marks in order to get better coverage
+        /// </summary>
+        private void UpdateCalibrationMarks()
+        {
+            //Create the updated marks
+            Dictionary<eCallibrationMark, CircleF> updatedMaks = new Dictionary<eCallibrationMark, CircleF>();
+            foreach (var mark in CalibrationMarks)
+            {
+                switch (mark.Key)
+                {
+                    case eCallibrationMark.BL:
+                        updatedMaks.Add(mark.Key, new CircleF(new System.Drawing.PointF(mark.Value.Center.X - mark.Value.Radius,
+                            mark.Value.Center.Y + mark.Value.Radius), mark.Value.Radius));
+                        break;
+                    case eCallibrationMark.BR:
+                        updatedMaks.Add(mark.Key, new CircleF(new System.Drawing.PointF(mark.Value.Center.X + mark.Value.Radius,
+                            mark.Value.Center.Y + mark.Value.Radius), mark.Value.Radius));
+                        break;
+                    case eCallibrationMark.TL:
+                        updatedMaks.Add(mark.Key, new CircleF(new System.Drawing.PointF(mark.Value.Center.X - mark.Value.Radius,
+                            mark.Value.Center.Y - mark.Value.Radius), mark.Value.Radius));
+                        break;
+                    case eCallibrationMark.TR:
+                        updatedMaks.Add(mark.Key, new CircleF(new System.Drawing.PointF(mark.Value.Center.X + mark.Value.Radius,
+                            mark.Value.Center.Y - mark.Value.Radius), mark.Value.Radius));
+                        break;
+                }
+            }
+
+            //set updated marks
+            foreach (var mark in updatedMaks)
+                CalibrationMarks[mark.Key] = mark.Value;
+
+            //Show updated marks
+            ShowAllCalibrationMarks();
+
+            //Recalculate Homography Matrix
+            SetTransformationMatrix(AXE_X_LENGTH, AXE_Y_LENGTH);
+            Log.Image.Info("Homography matrix re-calculated.");
         }
     }
 }

@@ -8,26 +8,38 @@
 // **																				   **
 // **************************************************************************************
 
+using Emgu.CV;
+using Emgu.CV.Structure;
+using Foosbot.Common.Protocols;
+using System;
+using System.Collections.Generic;
+
 namespace Foosbot.ImageProcessing
 {
     /// <summary>
-    /// Callibration State Enum
+    /// Interface for calibration implementing class
     /// </summary>
-    public enum eCallibrationState : int
+    public interface ICalibration
     {
         /// <summary>
-        /// Callibration current state - callibration not started
+        /// Current Calibration State
         /// </summary>
-        NotStarted = 0,
+        eCalibrationState CalibrationState { get; }
 
         /// <summary>
-        /// Callibration current state - callibration phase I finished
+        /// Sorted Calibration Marks Coordinates on original image
         /// </summary>
-        FinishedPhaseI = 1,
+        Dictionary<eCallibrationMark, CircleF> CalibrationMarks { get; set; }
 
         /// <summary>
-        /// Callibration current state - callibration phase II finished
+        /// Ball Radius
         /// </summary>
-        Finished = 2
+        int Radius { get; set; }
+
+        /// <summary>
+        /// Ball Radius Error +/- Radius
+        /// </summary>
+        double ErrorRate { get; set; }
+
     }
 }
