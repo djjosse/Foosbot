@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Windows;
 using Foosbot.Common;
 using System.Threading;
+using Foosbot.ImageProcessingUnit.Process.Contracts;
 
 namespace Foosbot.VectorCalculation
 {
@@ -34,8 +35,9 @@ namespace Foosbot.VectorCalculation
 
         private RicochetCalc vectorUtils;
 
+        private IImageData _imagingData;
 
-        public VectorCalculationUnit(Publisher<BallCoordinates> coordinatesPublisher, int ballRadius = 5) :
+        public VectorCalculationUnit(Publisher<BallCoordinates> coordinatesPublisher, IImageData imagingData) :
             base(coordinatesPublisher)
         {
             vectorUtils = new RicochetCalc();
@@ -43,7 +45,7 @@ namespace Foosbot.VectorCalculation
 
             _transformer = new Transformation();
 
-            _stabilizer = new CoordinatesStabilizer(ballRadius);
+            _imagingData = imagingData;
 
             _coordinatesUpdater = new BallCoordinatesUpdater();
             LastBallLocationPublisher = new BallLocationPublisher(_coordinatesUpdater);
@@ -53,16 +55,19 @@ namespace Foosbot.VectorCalculation
 
             D_ERR = Configuration.Attributes.GetValue<double>(Configuration.Names.VECTOR_CALC_DISTANCE_ERROR);
             ALPHA_ERR = Configuration.Attributes.GetValue<double>(Configuration.Names.VECTOR_CALC_ANGLE_ERROR);
-
-            //Marks.DrawRods(5);
         }
 
         public override void Job()
         {
             try
             {
-
                 _publisher.Dettach(this);
+
+                if (_stabilizer == null)
+                {
+                    int ballRadius = (_imagingData.BallRadius < 0) ? 5 : _imagingData.BallRadius;
+                    _stabilizer = new CoordinatesStabilizer(ballRadius);
+                }
 
                 //Get data and remove noise
                 BallCoordinates newCoordinates = _publisher.Data;

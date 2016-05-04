@@ -1,0 +1,15 @@
+﻿<Window x:Class="Foosbot.UI.ImageTool.ImageProcessingTool"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ImageProcessingTool" Height="700" Width="1250">
+    <Grid>
+        <Canvas Name="_guiImageA" HorizontalAlignment="Left" Height="300" Width="530" Margin="10,10,0,0" VerticalAlignment="Top" />
+        <Canvas Name="_guiImageB" HorizontalAlignment="Left" Height="300" Width="530" Margin="550,10,0,0" VerticalAlignment="Top" />
+        <Canvas Name="_guiImageC" HorizontalAlignment="Left" Height="300" Width="530" Margin="10,340,0,0" VerticalAlignment="Top" />
+        <Canvas Name="_guiImageD" HorizontalAlignment="Left" Height="300" Width="530" Margin="550,340,0,0" VerticalAlignment="Top" />
+        <Label Name="_labelA" Content="Label" HorizontalAlignment="Left" Margin="10,310,0,0" VerticalAlignment="Top" Width="530"/>
+        <Label Name="_labelB" Content="Label" HorizontalAlignment="Left" Margin="550,310,0,0" VerticalAlignment="Top" Width="530"/>
+        <Label Name="_labelC" Content="Label" HorizontalAlignment="Left" Margin="10,640,0,0" VerticalAlignment="Top" Width="530"/>
+        <Label Name="_labelD" Content="Label" HorizontalAlignment="Left" Margin="550,640,0,0" VerticalAlignment="Top" Width="530"/>
+    </Grid>
+</Window>

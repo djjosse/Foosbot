@@ -36,6 +36,10 @@ namespace Foosbot
 
             public const string KEY_IS_ARDUINOS_CONNECTED = "IsArduinosConnected";
 
+            public const string KEY_IPU_FRAME_WIDTH = "FrameWidth";
+            public const string KEY_IPU_FRAME_HEIGHT = "FrameHeight";
+            public const string KEY_IPU_FRAME_RATE= "FrameRate";
+
             public const string TABLE_WIDTH = "Width";
             public const string TABLE_HEIGHT = "Height";
             public const string BALL_DIAMETR = "BallDiameter";

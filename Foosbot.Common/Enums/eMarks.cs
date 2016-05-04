@@ -27,6 +27,11 @@ namespace Foosbot.Common.Enums
         TopLeftText = 106,
         TopRightText = 108,
 
+        LeftBorder = 111,
+        RightBorder = 112,
+        TopBorder = 113,
+        BottomBorder = 114,
+
         GoalKeeper = 200,
         Defence = 201,
         Midfield = 202,

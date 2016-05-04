@@ -35,6 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Emgu.CV, Version=3.0.0.2157, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Emgu\emgucv-windows-universal 3.0.0.2157\bin\Emgu.CV.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.Util, Version=3.0.0.2157, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Emgu\emgucv-windows-universal 3.0.0.2157\bin\Emgu.Util.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -55,7 +63,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ImageExtensions\FrameUiMonitor.cs" />
+    <Compile Include="ImageExtensions\ImageProcessPack.cs" />
+    <Compile Include="ImageTool\ImageProcessingTool.xaml.cs">
+      <DependentUpon>ImageProcessingTool.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UILogMessage.cs" />
+    <Page Include="ImageTool\ImageProcessingTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -64,7 +81,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UIFrameObserver.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -98,10 +114,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DevDemos\DevDemos.csproj">
-      <Project>{db02397f-544c-48b8-ad9f-a0ad4836b6e5}</Project>
-      <Name>DevDemos</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">
       <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
       <Name>Foosbot.Common</Name>
@@ -117,10 +129,13 @@
       <Name>Foosbot.DecisionUnit</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Foosbot.ImageProcessing\Foosbot.ImageProcessing.csproj">
-      <Project>{07a46440-a4e8-49cc-b9a6-b0dcc4cf19bc}</Project>
-      <Name>Foosbot.ImageProcessing</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\Foosbot.DevelopmentDemo\Foosbot.DevelopmentDemo.csproj">
+      <Project>{2a620fbf-4c68-486d-8319-e22530e079e4}</Project>
+      <Name>Foosbot.DevelopmentDemo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Foosbot.ImageProcessingUnit\Foosbot.ImageProcessingUnit.csproj">
+      <Project>{861b4209-391c-4fc2-9c83-1f0449359ddc}</Project>
+      <Name>Foosbot.ImageProcessingUnit</Name>
     </ProjectReference>
     <ProjectReference Include="..\Foosbot.VectorCalculation\Foosbot.VectorCalculation.csproj">
       <Project>{023c6c34-e785-4786-86ae-1b2d8daa06bf}</Project>
@@ -128,6 +143,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

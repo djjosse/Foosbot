@@ -9,6 +9,7 @@
 // **************************************************************************************
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Foosbot.Common.Multithreading
 {
@@ -68,6 +69,10 @@ namespace Foosbot.Common.Multithreading
             lock (_observerListModificationToken)
             {
                 _observerList.Add(observer);
+                //Stopwatch watch = Stopwatch.StartNew();
+                //Log.Common.Debug(_observerList.Count + " count!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                //watch.Stop();
+                //Log.Common.Debug("_____"+watch.ElapsedMilliseconds + " mili!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
 
@@ -79,6 +84,16 @@ namespace Foosbot.Common.Multithreading
         {
             lock (_observerListModificationToken)
             {
+                //Observer<T> toRemove = null;
+                //foreach (var obs in _observerList)
+                //{
+                //    if (obs.Equals(observer))
+                //    {
+                //        toRemove = obs;
+                //    }
+                //}
+
+                //if (toRemove != null) _observerList.Remove(toRemove);
                 _observerList.Remove(observer);
             }
         }
