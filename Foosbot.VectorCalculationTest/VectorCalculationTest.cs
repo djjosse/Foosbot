@@ -45,7 +45,7 @@ namespace Foosbot.VectorCalculationTest
         [ExpectedException(typeof(ArgumentException))]
         public void VectorCalculationAlgorithm_Ball_Coordinates_Null_Test()
         {
-            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher , 5);
+            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher , null);
             Vector2D actual = (Vector2D)po.Invoke("VectorCalculationAlgorithm",
                                                 new Type[] { typeof(BallCoordinates) },
                                                 new Object[] { null },
@@ -56,7 +56,7 @@ namespace Foosbot.VectorCalculationTest
         public void VectorCalculationAlgorithm_Stored_BallCoordinates_Not_Defined_Test()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(DateTime.Now);
-            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher, 5);
+            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher,null);
 
             Vector2D expected = new Vector2D();
             Vector2D actual = (Vector2D)po.Invoke("VectorCalculationAlgorithm",
@@ -71,7 +71,7 @@ namespace Foosbot.VectorCalculationTest
         public void VectorCalculationAlgorithm_BallCoordinates_Not_Defined_Test()
         {
             BallCoordinates ballCoordinates = new BallCoordinates(DateTime.Now);
-            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher, 5);
+            PrivateObject po = new PrivateObject(typeof(VectorCalculationUnit), _mockPublisher,null);
 
             Vector2D expected = new Vector2D();
             Vector2D actual = (Vector2D)po.Invoke("VectorCalculationAlgorithm",
