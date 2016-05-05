@@ -1,15 +1,20 @@
-﻿using Foosbot.Common.Contracts;
+﻿// **************************************************************************************
+// **																				   **
+// **		(C) FOOSBOT - Final Software Engineering Project, 2015 - 2016			   **
+// **		(C) Authors: M.Toubian, M.Shimon, E.Kleinman, O.Sasson, J.Gleyzer          **
+// **			Advisors: Mr.Resh Amit & Dr.Hoffner Yigal							   **
+// **		The information and source code here belongs to Foosbot project			   **
+// **		and may not be reproduced or used without authors explicit permission.	   **
+// **																				   **
+// **************************************************************************************
+
+using Foosbot.Common.Contracts;
 using Foosbot.Common.Multithreading;
 using Foosbot.ImageProcessingUnit.Process.Core;
 using Foosbot.ImageProcessingUnit.Streamer.Contracts;
-using Foosbot.ImageProcessingUnit.Streamer.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;

@@ -1,27 +1,57 @@
-﻿using Foosbot.DevelopmentDemo;
+﻿// **************************************************************************************
+// **																				   **
+// **		(C) FOOSBOT - Final Software Engineering Project, 2015 - 2016			   **
+// **		(C) Authors: M.Toubian, M.Shimon, E.Kleinman, O.Sasson, J.Gleyzer          **
+// **			Advisors: Mr.Resh Amit & Dr.Hoffner Yigal							   **
+// **		The information and source code here belongs to Foosbot project			   **
+// **		and may not be reproduced or used without authors explicit permission.	   **
+// **																				   **
+// **************************************************************************************
+
+using Foosbot.DevelopmentDemo;
+using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Core;
 using Foosbot.ImageProcessingUnit.Streamer.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace Foosbot.UI.ImageExtensions
 {
-    public class ImageProcessPack
+    /// <summary>
+    /// The Actual image processing pack contains all the elements for Image Processing
+    /// </summary>
+    public class ImageProcessPack : IImageProcessingPack
     {
+        /// <summary>
+        /// Is Image Procesing Pack Instance Already exists flag
+        /// </summary>
         private static bool _isCreated = false;
 
+        /// <summary>
+        /// Is Image Processing Pack Is Already Started and Working flag
+        /// </summary>
         private bool _isWorking = false;
 
+        /// <summary>
+        /// Streamer to get all the frames to work with
+        /// </summary>
         public FramePublisher Streamer { get; private set; }
 
-        public FrameUiMonitor UiMonitor { get; private set; }
+        /// <summary>
+        /// User Interface Monitor to publish the received frames
+        /// </summary>
+        public FrameObserver UiMonitor { get; private set; }
 
+        /// <summary>
+        /// Actual Image processing unit
+        /// </summary>
         public ImagingProcess ImageProcessUnit { get; private set; }
 
+        /// <summary>
+        /// Private Constructor for Image Processing Pack to be called in factory method
+        /// </summary>
+        /// <param name="framePublisher">Frame Publisher (streamer)</param>
+        /// <param name="uiMonitor">User Interface Frame monitor to show frames</param>
+        /// <param name="imagingProcess">Image Processing Unit</param>
         private ImageProcessPack(FramePublisher framePublisher, FrameUiMonitor uiMonitor, ImagingProcess imagingProcess)
         {
             Streamer = framePublisher;
@@ -30,11 +60,17 @@ namespace Foosbot.UI.ImageExtensions
             _isCreated = true;
         }
 
+        /// <summary>
+        /// Destrucor for Image Processing Pack
+        /// </summary>
         ~ImageProcessPack()
         {
             _isCreated = false;
         }
 
+        /// <summary>
+        /// Start working the image processing pack
+        /// </summary>
         public void Start()
         {
             if (!_isWorking)
@@ -52,7 +88,7 @@ namespace Foosbot.UI.ImageExtensions
         public static bool IsDemoMode { get; private set; }
 
         /// <summary>
-        /// Builds Image Processing Unit and all relevant components
+        /// Factory method - Builds Image Processing Unit and all relevant components
         /// </summary>
         /// <param name="dispatcher">Dispatcher used to present frames in GUI relevant thread</param>
         /// <param name="screen">Canvas to draw frames on</param>

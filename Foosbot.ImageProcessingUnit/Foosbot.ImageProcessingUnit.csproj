@@ -63,6 +63,7 @@
     <Compile Include="Detection\Contracts\ITracker.cs" />
     <Compile Include="Detection\Core\BallTracker.cs" />
     <Compile Include="Detection\Core\ImagePreProcessor.cs" />
+    <Compile Include="Process\Contracts\IImageProcessingPack.cs" />
     <Compile Include="Process\Contracts\ITimedLocation.cs" />
     <Compile Include="Process\Core\BallLocation.cs" />
     <Compile Include="Detection\Core\MotionDetector.cs" />
