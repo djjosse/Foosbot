@@ -4,14 +4,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.UI", "Foosbot.UI\Foosbot.UI.csproj", "{DDC67EFD-E3E2-40D1-8526-CFBC50445F60}"
+	ProjectSection(ProjectDependencies) = postProject
+		{861B4209-391C-4FC2-9C83-1F0449359DDC} = {861B4209-391C-4FC2-9C83-1F0449359DDC}
+		{2A620FBF-4C68-486D-8319-E22530E079E4} = {2A620FBF-4C68-486D-8319-E22530E079E4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.Common", "Foosbot.Common\Foosbot.Common.csproj", "{2DE4F554-4B27-4583-98BC-6772D0652B81}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE} = {CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.DecisionUnit", "Foosbot.DecisionUnit\Foosbot.DecisionUnit.csproj", "{D9A1501A-4B90-4835-96C1-B847BA54026D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Externals", "Externals", "{33FFCBD0-6414-4E64-9AFB-D1AFA146FAEB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.VectorCalculation", "Foosbot.VectorCalculation\Foosbot.VectorCalculation.csproj", "{023C6C34-E785-4786-86AE-1B2D8DAA06BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{861B4209-391C-4FC2-9C83-1F0449359DDC} = {861B4209-391C-4FC2-9C83-1F0449359DDC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.CommunicationLayer", "Foosbot.CommunicationLayer\Foosbot.CommunicationLayer.csproj", "{0629D0DC-E6CB-45A1-B0D3-02AEC535A800}"
 EndProject
