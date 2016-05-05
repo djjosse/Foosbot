@@ -288,6 +288,8 @@ namespace Foosbot
                         int x = XTableToDeviceCoordinates(_rods[(eMarksCounter + eMarks.GoalKeeper)]);
                         int y = ((int)DEVICE_MAX_Y);
 
+                        // int yTable = ((int)TABLE_MAX_Y_MM);
+
                         if (isLocation) ConvertToLocation(ref x, ref y);
 
                         (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
