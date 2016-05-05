@@ -229,7 +229,25 @@ namespace Foosbot.DecisionUnitTest.Core
             
         #region CalculateDynamicSector
 
-       
+        //[TestCategory(CATEGORY), TestMethod]
+        //public void CalculateDynamicSector_XCoordinatesBiggerThanRod_XVectorPositive_YVectorPositive()
+        //{
+        //    //arrange
+        //    InitializeTestAsset();
+        //    DateTime now = DateTime.Now;
+        //    BallCoordinates currentCoordinates = new BallCoordinates(400, 100, now);
+        //    currentCoordinates.Vector = new Vector2D(100, 0);
+        //    _surveyorMock.IsCoordinatesInRange(Arg.Any<int>(), Arg.Any<int>()).Returns(true);
+        //    int expected = SECTOR_MIN_WIDTH;
+
+        //    //act
+        //    int actual = _testAsset.CalculateDynamicSector(currentCoordinates);
+
+        //    //assert
+        //    Assert.AreEqual(expected, actual);
+           
+
+        //}
 
 
 

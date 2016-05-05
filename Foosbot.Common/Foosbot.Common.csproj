@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Emgu.CV, Version=3.0.0.2157, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
@@ -61,6 +63,7 @@
     <Compile Include="ConfigurationExtension.cs" />
     <Compile Include="Contracts\IInitializable.cs" />
     <Compile Include="Enums\eMarks.cs" />
+    <Compile Include="Exceptions\CalibrationException.cs" />
     <Compile Include="Exceptions\ConfigurationException.cs" />
     <Compile Include="Exceptions\InitializationException.cs" />
     <Compile Include="Multithreading\BackgroundFlow.cs" />

@@ -9,25 +9,12 @@ using Foosbot.Common.Protocols;
 using System.Reflection;
 using Foosbot.Common.Contracts;
 using Foosbot.Common.Exceptions;
+using System.Diagnostics;
 
 namespace Foosbot.CommunicationLayer
 {
     public class ArduinoCom : IInitializable
     {
-        #region constants
-
-        /// <summary>
-        /// Initialization key to sent to arduino
-        /// </summary>
-        public const string KEY_INIT = "init";
-
-        /// <summary>
-        /// Com port rate
-        /// </summary>
-        public const int RATE = 9600;
-
-        #endregion constants
-
         #region private members
 
         /// <summary>
@@ -39,6 +26,11 @@ namespace Foosbot.CommunicationLayer
         /// Current COM port
         /// </summary>
         private ISerialPort _comPort;
+
+        /// <summary>
+        /// Commands encoder
+        /// </summary>
+        private IEncoder _encoder;
 
         /// <summary>
         /// Flag for Arduino [TRUE] if initialized, [FALSE] otherwise
@@ -63,10 +55,12 @@ namespace Foosbot.CommunicationLayer
         /// Constructor
         /// </summary>
         /// <param name="comPort">COM port to open as string</param>
-        public ArduinoCom(string comPort)
+        /// <param name="encoder">Encoder for actions</param>
+        public ArduinoCom(string comPort, IEncoder encoder)
         {
             _comPort = null;
             _comPortName = comPort;
+            _encoder = encoder;
             _isInitialized = false;
             MaxTicks = 0;
         }
@@ -75,9 +69,11 @@ namespace Foosbot.CommunicationLayer
         /// Constructor receives ready serial port (USED in UT)
         /// </summary>
         /// <param name="openPort"></param>
-        public ArduinoCom(ISerialPort openPort)
+        /// <param name="encoder">Encoder for actions</param>
+        public ArduinoCom(ISerialPort openPort, IEncoder encoder)
         {
             _comPort = openPort;
+            _encoder = encoder;
             _isInitialized = false;
             MaxTicks = 0;
         }
@@ -110,12 +106,13 @@ namespace Foosbot.CommunicationLayer
                     "[{0}] Unable to initialize arduino because the port {1} is closed!",
                         MethodBase.GetCurrentMethod().Name, _comPortName));
 
-            Log.Common.Info(String.Format("[{0}] Initializing Arduino with key {1} on port {2} ...",
-                MethodBase.GetCurrentMethod().Name, KEY_INIT, _comPortName));
+            Log.Common.Info(String.Format("[{0}] Initializing Arduino with initialization byte on port {1} ...",
+                MethodBase.GetCurrentMethod().Name, _comPortName));
 
             try
             {
-                _comPort.WriteLine(KEY_INIT);
+                byte initByte = _encoder.EncodeInitialization();
+                _comPort.Write(initByte);
             }
             catch(Exception ex)
             {
@@ -134,7 +131,7 @@ namespace Foosbot.CommunicationLayer
         public void OpenArduinoComPort()
         {
             if (_comPort == null)
-                _comPort = new SerialPortWrapper(_comPortName, RATE);
+                _comPort = new SerialPortWrapper(_comPortName, Communication.BAUDRATE);
             try
             {
                 Log.Common.Info(String.Format("[{0}] Opening Arduino port {1}...",
@@ -149,6 +146,8 @@ namespace Foosbot.CommunicationLayer
             Log.Common.Info(String.Format("[{0}] Arduino port {1} is open!",
                         MethodBase.GetCurrentMethod().Name, _comPortName));
         }
+
+        Stopwatch watch = null;
 
         /// <summary>
         /// Move arduino DC and Servo
@@ -166,17 +165,21 @@ namespace Foosbot.CommunicationLayer
 
             if (dc < -1 || dc > MaxTicks)
                 throw new InvalidOperationException(String.Format(
-                   "[{0}] Unable to move arduino because received dc movement: [{1}] is not in range of rod: [{2} to {3}]",
+                   "[{0}] Unable to move arduino because received DC movement: [{1}] is not in range of rod: [{2} to {3}]",
                         MethodBase.GetCurrentMethod().Name, dc, 0, MaxTicks));
 
-            //Log.Common.Info(String.Format("[{0}] Moving rod on {1} DC: {2} SERVO: {3}",
-            //            MethodBase.GetCurrentMethod().Name, _comPortName, dc, servo.ToString()));
+            Log.Common.Info(String.Format("[{0}] {1} DC: {2} SERVO: {3}",
+                        MethodBase.GetCurrentMethod().Name, _comPortName, dc, servo.ToString()));
             if (_lastServo != servo || _lastDc != dc)
             {
-                String command = String.Format("{0}&{1}", dc, (int)servo);
-                _comPort.Write(command);
-                _lastServo = servo;
-                _lastDc = dc;
+                if (watch == null || watch.ElapsedMilliseconds > Communication.SLEEP)
+                {
+                    watch = Stopwatch.StartNew();
+                    byte command = _encoder.Encode(dc, servo);
+                    _comPort.Write(command);
+                    _lastServo = servo;
+                    _lastDc = dc;
+                }
             }
         }
     }

@@ -1,0 +1,79 @@
+﻿using Foosbot.Common.Protocols;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Foosbot.CommunicationLayer
+{
+    public class ActionEncoder : IEncoder
+    {
+        /// <summary>
+        /// Converter private member
+        /// </summary>
+        IRodConverter _converter;
+
+        /// <summary>
+        /// Action encoder constructor
+        /// </summary>
+        /// <param name="converter">Converter to get ticks per rod</param>
+        public ActionEncoder(IRodConverter converter)
+        {
+            _converter = converter;
+        }
+
+        /// <summary>
+        /// Get encoded initialization byte to sent to Arduino
+        /// </summary>
+        /// <returns>Encoded initialization byte</returns>
+        public byte EncodeInitialization()
+        {
+            return Communication.INIT_BYTE;
+        }
+
+        /// <summary>
+        /// Get actions coded in one byte to sent to Arduino
+        /// </summary>
+        /// <param name="dcInTicks">DC coordinate in ticks</param>
+        /// <param name="servo">Servo position</param>
+        /// <returns>Action as command in one byte</returns>
+        public byte Encode(int dcInTicks, eRotationalMove servo)
+        {
+            //Convert ticks to bits (0x00000000 (0) to 0x00111110 (62))
+            int dcBites = _converter.TicksToBits(dcInTicks);
+
+            //create empty command
+            byte command = 0x00000000;
+
+            /*
+             * Add Servo action as binary (YY) to empty command
+             * Possible Servo Actions:
+             * - 0x00 - NA
+             * - 0x01 - KICK
+             * - 0x10 - DEFENCE
+             * - 0x11 - RISE
+             * Command will look like: 0x000000YY             
+             */
+            command = (byte)(command | Convert.ToByte((int)servo));
+
+            /*
+             * Shift dc action in bites 2 bites left.
+             * For DC action 0xZZZZZZ shifted will be 0xZZZZZZ00
+             * Possible DC Actions:
+             * - 0x000000 - NA
+             * - 0x000001 - (1) minimal coordinate
+             * - 0x111110 - (62) maximal coordinate
+             */
+            byte dcShifted = (byte)(Convert.ToByte(dcBites) << 2);
+
+            /*
+             * Combine Servo 0x000000YY and DC 0xZZZZZZ00
+             * and get command as 0xZZZZZZYY
+             */
+            command = (byte)(command | dcShifted);
+
+            return command;
+        }
+    }
+}

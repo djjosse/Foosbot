@@ -8,14 +8,14 @@
 // **																				   **
 // **************************************************************************************
 
-using DevDemos;
 using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.CommunicationLayer;
 using Foosbot.DecisionUnit;
 using Foosbot.DecisionUnit.Core;
-using Foosbot.ImageProcessing;
+using Foosbot.UI.ImageExtensions;
+using Foosbot.UI.ImageTool;
 using Foosbot.VectorCalculation;
 using System;
 using System.Collections.Generic;
@@ -41,34 +41,14 @@ namespace Foosbot.UI
         #region private members
 
         /// <summary>
-        /// Streamer to get frames from
-        /// </summary>
-        private Streamer _streamer;
-
-        /// <summary>
-        /// Receives frames from streamer and shows them
-        /// </summary>
-        private UIFrameObserver _frameReceiver;
-
-        /// <summary>
-        /// Image Processing Unit to work with
-        /// </summary>
-        private AbstractImageProcessingUnit _ipu;
-
-        /// <summary>
-        /// Used to draw frame as canvas background
-        /// </summary>
-        private ImageBrush _imageBrush;
-
-        /// <summary>
-        /// Current Foosbot mode
-        /// </summary>
-        private bool _isDemoMode = false;
-
-        /// <summary>
         /// Current Foosbot mode
         /// </summary>
         private bool _isArduinoConnected = false;
+
+        /// <summary>
+        /// Imager Processing Pack - gui monitor, streamer, image processing unit
+        /// </summary>
+        private ImageProcessPack _imageProcessingPack;
 
         #endregion private members
 
@@ -92,70 +72,36 @@ namespace Foosbot.UI
             try
             {
                 InitializeStatistics();
+
                 //get operation mode from configuration file
-                _isDemoMode = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_DEMO_MODE);
                 _isArduinoConnected = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_ARDUINOS_CONNECTED);
 
-                //Set canvas background as green image
-                _guiImage.Background = System.Windows.Media.Brushes.Green;
-
-                //Init Gui Log
-                AutoscrollCheckbox = true;
-                Log.InitializeGuiLog(UpdateLog);
-                string startMessage = Configuration.Attributes.GetValue<string>("startMessage");
-                Log.Common.Debug(startMessage);
+                InitializeGuiLog();
 
                 //Start Diagnostics - Processor and Memory Usage
                 StartDiagnostics();
 
-                //Call the streamer to get capture from camera
-                if (!_isDemoMode) _streamer = new RealStreamer();
-                else _streamer = new DemoStreamer();
+                _imageProcessingPack = ImageProcessPack.Create(Dispatcher, _guiImage);
+                _imageProcessingPack.Start();
 
                 
-                Marks.Initialize(Dispatcher, _guiImage, _guiImage.Width / _streamer.FrameWidth, _guiImage.Height / _streamer.FrameHeight);
-                _streamer.Start();
-
-                //Call ImageProcessingUnit
-                _frameReceiver = new UIFrameObserver(_streamer);
-                _frameReceiver.Start();
-                if (!_isDemoMode) 
-                    _ipu = new ImageProcessingUnit(_streamer);
-                else 
-                    _ipu = new DemoImageProcessingUnit(_streamer as DemoStreamer);
-                _ipu.Start();
-
-                //Show frames in different thread
-                _imageBrush = new ImageBrush();
-                BackgroundWorker worker = new BackgroundWorker();
-                worker.DoWork += (s, z) =>
+                VectorCalculationUnit vectorCalcullationUnit = new VectorCalculationUnit(_imageProcessingPack.ImageProcessUnit.BallLocationUpdater, _imageProcessingPack.ImageProcessUnit.ImagingData);
+                vectorCalcullationUnit.Start();
+                
+                MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
+                decisionUnit.Start();
+                 
+                /*
+                if (_isArduinoConnected)
                 {
-                    ShowVideoStream();
-                };
-                worker.RunWorkerAsync();
-
-               // BackgroundWorker worker2 = new BackgroundWorker();
-               // worker2.DoWork += (s, z) =>
-               // {
-              //      while (!_ipu.IsCallibrated) { Thread.Sleep(100);/* wait till calibrated*/}
-
-                    VectorCalculationUnit vectorCalcullationUnit = new VectorCalculationUnit(_ipu.LastBallLocationPublisher, _ipu.BallRadius);
-                    vectorCalcullationUnit.Start();
-
-                    MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
-                    decisionUnit.Start();
-
-                    if (_isArduinoConnected)
+                    Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(decisionUnit.RodActionPublishers);
+                    foreach (eRod key in communication.Keys)
                     {
-                        Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(decisionUnit.RodActionPublishers);
-                        foreach (eRod key in communication.Keys)
-                        {
-                            if (communication[key] != null)
-                                communication[key].Start();
-                        }
+                        if (communication[key] != null)
+                            communication[key].Start();
                     }
-              //  };
-              //  worker2.RunWorkerAsync();
+                }
+                 */
             }
             catch(Exception ex)
             {
@@ -164,39 +110,18 @@ namespace Foosbot.UI
             }
         }
 
-        /// <summary>
-        /// Show video stream method
-        /// Must run in background thread.
-        /// Waits for a new frame in Streamer and shows it continuously
-        /// </summary>
-        public void ShowVideoStream()
-        {
-            while (true)
-            {
-                try
-                {
-                    while (!_frameReceiver.Set) { }
-
-                    //Get frame
-                    Foosbot.ImageProcessing.Frame frame = _streamer.Data;
-                    BitmapSource source = frame.ToBitmapSource();
-                    source.Freeze();
-
-                    //Show frame
-                    Dispatcher.BeginInvoke(new ThreadStart(delegate
-                    {
-                        _imageBrush.ImageSource = source;
-                        _guiImage.Background = _imageBrush;
-                    }));
-                }
-                catch(Exception e)
-                {
-                    Log.Common.Error(String.Format("[{0}] Unable to show frame in GUI. Reason: {1}", MethodBase.GetCurrentMethod().Name,e.Message));
-                }
-            }
-        }
-
         #region LOGGER
+
+        /// <summary>
+        /// Initialize GUI Log
+        /// </summary>
+        public void InitializeGuiLog()
+        {
+            AutoscrollCheckbox = true;
+            Log.InitializeGuiLog(UpdateLog);
+            string startMessage = Configuration.Attributes.GetValue<string>("startMessage");
+            Log.Common.Debug(startMessage);
+        }
 
         /// <summary>
         /// Update Log function to be passed as delegate
@@ -331,6 +256,12 @@ namespace Foosbot.UI
         }
 
         #endregion CPU and Memory Diagnostic Info
+
+        private void OpenImageProcessingTool(object sender, RoutedEventArgs e)
+        {
+            ImageProcessingTool iTool = new ImageProcessingTool(_imageProcessingPack);
+            iTool.Show();
+        }
 
     }
 }

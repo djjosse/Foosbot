@@ -178,6 +178,10 @@ namespace Foosbot
                         _markups.Add((int)eMarks.BallVectorArrow + 1, new Line());
                         _markups.Add((int)eMarks.BallVectorArrow + 2, new Line());
                         break;
+                    case eMarks.LeftBorder:
+                    case eMarks.RightBorder:
+                    case eMarks.TopBorder:
+                    case eMarks.BottomBorder:
                     case eMarks.GoalKeeper:
                     case eMarks.Defence:
                     case eMarks.Midfield:
@@ -266,6 +270,49 @@ namespace Foosbot
             catch (Exception e)
             {
                 Log.Common.Error(String.Format("[{0}] Failed to draw ricochet mark. Reason: {1}",
+                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+            }
+        }
+
+        /// <summary>
+        /// Show table borders calculated by IP Unit
+        /// </summary>
+        /// <param name="corners"></param>
+        public static void DrawTableBorders(Dictionary<eCallibrationMark, Emgu.CV.Structure.CircleF> marks)
+        {
+            try
+            {
+                Point[] corners = new Point[]
+                    {
+                        new Point(marks[eCallibrationMark.BL].Center.X, marks[eCallibrationMark.BL].Center.Y),
+                        new Point(marks[eCallibrationMark.TL].Center.X, marks[eCallibrationMark.TL].Center.Y),
+                        new Point(marks[eCallibrationMark.TR].Center.X, marks[eCallibrationMark.TR].Center.Y),
+                        new Point(marks[eCallibrationMark.BR].Center.X, marks[eCallibrationMark.BR].Center.Y)
+                    };
+
+                const int key = (int)eMarks.LeftBorder;
+                for (int start = 0; start < 4; start++)
+                {
+                    int end = (start + 1 > 3) ? 0 : start + 1;
+
+                    _dispatcher.Invoke(new ThreadStart(delegate
+                    {
+                        (_markups[key + start] as Shape).StrokeThickness = 2;
+                        (_markups[key + start] as Shape).Stroke = Brushes.Pink;
+
+                        (_markups[key + start] as Line).X1 = corners[start].X * _actualWidthRate;
+                        (_markups[key + start] as Line).Y1 = corners[start].Y * _actualHeightRate;
+                        (_markups[key + start] as Line).X2 = corners[end].X * _actualWidthRate;
+                        (_markups[key + start] as Line).Y2 = corners[end].Y * _actualHeightRate;
+
+                        Canvas.SetLeft(_markups[key + start], 0);
+                        Canvas.SetTop(_markups[key + start], 0);
+                    }));
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Common.Error(String.Format("[{0}] Failed to draw table borders. Reason: {1}",
                                                                 MethodBase.GetCurrentMethod().Name, e.Message));
             }
         }

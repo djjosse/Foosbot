@@ -53,10 +53,6 @@
       <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
       <Name>Foosbot.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Foosbot.ImageProcessing\Foosbot.ImageProcessing.csproj">
-      <Project>{07a46440-a4e8-49cc-b9a6-b0dcc4cf19bc}</Project>
-      <Name>Foosbot.ImageProcessing</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
