@@ -80,7 +80,8 @@ namespace Foosbot.ImageProcessingUnit.Streamer.Core
         /// </summary>
         public void Dispose()
         {
-            Image.Dispose();
+            if (Image != null)
+                Image.Dispose();
         }
     }
 }
