@@ -85,7 +85,9 @@ namespace Foosbot.UI
                 _imageProcessingPack.Start();
 
                 
-                VectorCalculationUnit vectorCalcullationUnit = new VectorCalculationUnit(_imageProcessingPack.ImageProcessUnit.BallLocationUpdater, _imageProcessingPack.ImageProcessUnit.ImagingData);
+                VectorCalculationUnit vectorCalcullationUnit = 
+                    new VectorCalculationUnit(_imageProcessingPack.ImageProcessUnit.BallLocationUpdater,
+                                                _imageProcessingPack.ImageProcessUnit.ImagingData);
                 vectorCalcullationUnit.Start();
                 
                 MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);

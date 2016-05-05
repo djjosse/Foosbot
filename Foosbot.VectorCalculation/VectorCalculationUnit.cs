@@ -57,6 +57,7 @@ namespace Foosbot.VectorCalculation
             ALPHA_ERR = Configuration.Attributes.GetValue<double>(Configuration.Names.VECTOR_CALC_ANGLE_ERROR);
         }
 
+
         public override void Job()
         {
             try
@@ -78,7 +79,7 @@ namespace Foosbot.VectorCalculation
                 {
                     double x, y;
                     _transformer.InvertTransform(ballCoordinates.X, ballCoordinates.Y, out x, out y);
-                    //Marks.DrawBall(new System.Windows.Point(x, y), _stabilizer.BallRadius);
+                    Marks.DrawBall(new System.Windows.Point(x, y), _stabilizer.BallRadius);
                 }
                 else
                 {

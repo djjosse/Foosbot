@@ -64,6 +64,10 @@
       <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
       <Name>Foosbot.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Foosbot.ImageProcessingUnit\Foosbot.ImageProcessingUnit.csproj">
+      <Project>{861b4209-391c-4fc2-9c83-1f0449359ddc}</Project>
+      <Name>Foosbot.ImageProcessingUnit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Foosbot.VectorCalculation\Foosbot.VectorCalculation.csproj">
       <Project>{023c6c34-e785-4786-86ae-1b2d8daa06bf}</Project>
       <Name>Foosbot.VectorCalculation</Name>
