@@ -1,6 +1,8 @@
 ﻿using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using Foosbot.CommunicationLayer;
+using Foosbot.CommunicationLayer.Contracts;
+using Foosbot.CommunicationLayer.Core;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
