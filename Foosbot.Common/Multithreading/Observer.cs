@@ -20,7 +20,7 @@ namespace Foosbot.Common.Multithreading
     /// and Job will be performed.
     /// To trigger the Job - use Start() method
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Data type to observe</typeparam>
     public abstract class Observer<T> : BackgroundFlow, IWorkingObserver<T>
     {
         /// <summary>
