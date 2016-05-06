@@ -48,7 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BallCoordinatesUpdater.cs" />
+    <Compile Include="BallLocationPublisher.cs" />
     <Compile Include="Contracts\IInitializableRicochet.cs" />
+    <Compile Include="Contracts\ILastBallCoordinatesUpdater.cs" />
     <Compile Include="Contracts\IRicochet.cs" />
     <Compile Include="Coordinates2D.cs" />
     <Compile Include="CoordinatesStabilizer.cs" />

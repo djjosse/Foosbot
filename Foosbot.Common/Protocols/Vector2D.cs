@@ -66,7 +66,7 @@ namespace Foosbot.Common.Protocols
             return X * coord.X + Y * coord.Y;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return String.Format("{0}x{1}", X, Y);
         }

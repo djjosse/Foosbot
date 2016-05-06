@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using System;
 namespace Foosbot.DecisionUnit.Contracts

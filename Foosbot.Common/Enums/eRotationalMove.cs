@@ -8,26 +8,32 @@
 // **																				   **
 // **************************************************************************************
 
-using Foosbot.Common.Enums;
-using Foosbot.Common.Protocols;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Foosbot.DecisionUnit.Contracts
+namespace Foosbot.Common.Enums
 {
-    public interface IRodState
+    /// <summary>
+    /// Player rotational position/move.
+    /// </summary>
+    public enum eRotationalMove : int
     {
         /// <summary>
-        /// Assumed for last known DC position (in mm)
+        /// Undefined player rotational position
         /// </summary>
-        int DcPosition { get; set; }
+        NA = 0,
 
         /// <summary>
-        /// Assumed for last known Servo position
+        /// Player is in 0 degrees (Legs back)
         /// </summary>
-        eRotationalMove ServoPosition { get; set; }
+        RISE = 3, 
+
+        /// <summary>
+        /// Player is in 90 degrees (Legs down)
+        /// </summary>
+        DEFENCE = 2,
+
+        /// <summary>
+        /// Player is in 180 degrees (Legs ahead to the competitors gate)
+        /// Also called Reverse-Rise
+        /// </summary>
+        KICK = 1
     }
 }

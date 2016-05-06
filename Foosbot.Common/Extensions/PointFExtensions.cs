@@ -11,12 +11,12 @@
 using System;
 using System.Drawing;
 
-namespace Foosbot.Common
+namespace Foosbot.Common.Extensions
 {
     /// <summary>
-    /// Common Utils Class
+    /// PointF Class Extension Methods
     /// </summary>
-    public static class Utils
+    public static class PointFExtensions
     {
         /// <summary>
         /// Distance beetween two points
@@ -24,24 +24,11 @@ namespace Foosbot.Common
         /// <param name="p1">Point A</param>
         /// <param name="p2">Point B</param>
         /// <returns>Distantce between A and B</returns>
-        public static double Distance(PointF p1, PointF p2)
+        public static double Distance(this PointF p1, PointF p2)
         {
             double dX = Math.Pow(p1.X - p2.X, 2);
             double dY = Math.Pow(p1.Y - p2.Y, 2);
             return Math.Sqrt(dX + dY);
-        }
-
-        /// <summary>
-        /// Convert radians to degrees
-        /// </summary>
-        /// <param name="radians"></param>
-        /// <returns></returns>
-        public static double ToDegrees(this double radians, int decimals = -1)
-        {
-            double degrees = radians * 180 / Math.PI;
-            if (decimals >= 0)
-                degrees = Math.Round(degrees, decimals);
-            return degrees;
         }
     }
 }

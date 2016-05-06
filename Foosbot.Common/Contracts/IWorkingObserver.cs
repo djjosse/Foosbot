@@ -8,28 +8,26 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Protocols
+namespace Foosbot.Common.Contracts
 {
-    public enum eStatisticsKey
+
+    /// <summary>
+    /// Observer with Job to perform Interface for pipeline publisher-observer pattern
+    /// </summary>
+    /// <typeparam name="T">Data Type to be observed</typeparam>
+    public interface IWorkingObserver<T>
     {
         /// <summary>
-        /// Current FPS, Width and Heigth
+        /// Update to be called by publisher
         /// </summary>
-        FrameInfo = 1,
+        void Update();
 
         /// <summary>
-        /// Foosbot Memory and CPU Info
+        /// Tasks to perfrom before go to sleep
+        /// Update will be received while sleeping and sleep will be 
+        /// enterrupted - Job() will be triggered again
+        /// If _currentData is null Job will not be performed and thread will go to sleep
         /// </summary>
-        ProccessInfo = 2,
-
-        /// <summary>
-        /// Percentage of successful ball detection and average detection time
-        /// </summary>
-        BasicImageProcessingInfo = 3,
-
-        /// <summary>
-        /// Ball Coordinates
-        /// </summary>
-        BallCoordinates = 4
+        void Job();
     }
 }

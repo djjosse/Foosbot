@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NSubstitute;
 using Foosbot.DecisionUnit.Enums;
+using Foosbot.Common.Enums;
 
 namespace Foosbot.DecisionUnitTest.Core
 {

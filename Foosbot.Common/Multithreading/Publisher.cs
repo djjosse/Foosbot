@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Contracts;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -20,7 +21,7 @@ namespace Foosbot.Common.Multithreading
     /// observers with new data stored in Data property
     /// </summary>
     /// <typeparam name="T">Type of data to be published</typeparam>
-    public abstract class Publisher<T>
+    public abstract class Publisher<T> : IPublisher<T>
     {
         /// <summary>
         /// Token for Stored data
@@ -56,7 +57,7 @@ namespace Foosbot.Common.Multithreading
         /// <summary>
         /// Observers list to update
         /// </summary>
-        private List<Observer<T>> _observerList = new List<Observer<T>>();
+        private List<IWorkingObserver<T>> _observerList = new List<IWorkingObserver<T>>();
 
         private object _observerListModificationToken = new object();
 
@@ -64,7 +65,7 @@ namespace Foosbot.Common.Multithreading
         /// Attach new observer
         /// </summary>
         /// <param name="observer"></param>
-        public void Attach(Observer<T> observer)
+        public void Attach(IWorkingObserver<T> observer)
         {
             lock (_observerListModificationToken)
             {
@@ -80,7 +81,7 @@ namespace Foosbot.Common.Multithreading
         /// Dettach existing observer
         /// </summary>
         /// <param name="observer"></param>
-        public void Dettach(Observer<T> observer)
+        public void Dettach(IWorkingObserver<T> observer)
         {
             lock (_observerListModificationToken)
             {

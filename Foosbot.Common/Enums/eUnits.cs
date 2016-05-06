@@ -8,15 +8,27 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Protocols
+
+namespace Foosbot.Common.Enums
 {
-    public enum eLinearMove
+    /// <summary>
+    /// Metric Units
+    /// </summary>
+    public enum eUnits
     {
-        NA,
-        BEST_EFFORT,
-        VECTOR_BASED,
-        BALL_Y,
-        LEFT_BALL_DIAMETER,
-        RIGHT_BALL_DIAMETER
+        /// <summary>
+        /// Pixels
+        /// </summary>
+        Pixels,
+
+        /// <summary>
+        /// Millimeters
+        /// </summary>
+        Mm,
+
+        /// <summary>
+        /// Points (Foosbot World)
+        /// </summary>
+        Pts
     }
 }

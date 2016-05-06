@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Contracts;
 using System;
 using System.Threading;
 
@@ -20,7 +21,7 @@ namespace Foosbot.Common.Multithreading
     /// To trigger the Job - use Start() method
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class Observer<T> : BackgroundFlow
+    public abstract class Observer<T> : BackgroundFlow, IWorkingObserver<T>
     {
         /// <summary>
         /// Sleep After Job performed or _currentData is null
@@ -30,7 +31,7 @@ namespace Foosbot.Common.Multithreading
         /// <summary>
         /// Publisher that updates this observer
         /// </summary>
-        protected Publisher<T> _publisher;
+        protected IPublisher<T> _publisher;
 
         /// <summary>
         /// Current Data - last data received from publisher
@@ -41,7 +42,7 @@ namespace Foosbot.Common.Multithreading
         /// Constructor
         /// </summary>
         /// <param name="publisher">Publisher to get attached to.</param>
-        protected Observer(Publisher<T> publisher)
+        protected Observer(IPublisher<T> publisher)
         {
             _publisher = publisher;
             _publisher.Attach(this);

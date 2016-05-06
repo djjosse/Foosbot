@@ -8,19 +8,29 @@
 // **																				   **
 // **************************************************************************************
 
-using Foosbot.Common.Protocols;
-using System;
-
-namespace Foosbot.Common.Protocols
+namespace Foosbot.Common.Contracts
 {
     /// <summary>
-    /// Last Ball Coordinates Interface for implementing interface
+    /// Publisher Interface for pipeline publisher-observer pattern
     /// </summary>
-    public interface ILastBallCoordinatesUpdater
+    /// <typeparam name="T">Data Type to be published</typeparam>
+    public interface IPublisher<T>
     {
         /// <summary>
-        /// Last stored ball coordinates
+        /// Stored Data property to take on update
         /// </summary>
-        BallCoordinates LastBallCoordinates { get; }
+        T Data { get; }
+
+        /// <summary>
+        /// Attach new observer
+        /// </summary>
+        /// <param name="observer"></param>
+        void Attach(IWorkingObserver<T> observer);
+
+        /// <summary>
+        /// Dettach existing observer
+        /// </summary>
+        /// <param name="observer"></param>
+        void Dettach(IWorkingObserver<T> observer);
     }
 }

@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Enums;
 namespace Foosbot.Common.Protocols
 {
     /// <summary>

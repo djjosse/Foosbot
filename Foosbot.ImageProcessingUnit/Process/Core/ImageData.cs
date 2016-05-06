@@ -9,6 +9,7 @@
 // **************************************************************************************
 
 using Emgu.CV.Structure;
+using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using System.Collections.Generic;

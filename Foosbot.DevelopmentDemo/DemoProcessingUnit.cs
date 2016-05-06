@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Data;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Core;
@@ -109,8 +110,7 @@ namespace Foosbot.DevelopmentDemo
             BallCoordinates coordinates = SampleCoordinates();
 
             //show current ball coordinates on screen and GUI
-            Transformation transfromer = new Transformation();
-            System.Drawing.PointF p = transfromer.InvertTransform(new System.Drawing.PointF(_x, _y));
+            System.Drawing.PointF p = TransformAgent.Data.InvertTransform(new System.Drawing.PointF(_x, _y));
             Marks.DrawBall(new Point(p.X, p.Y), _ballRadius);
 
             Statistics.UpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
@@ -150,8 +150,7 @@ namespace Foosbot.DevelopmentDemo
             transformedPoints[3] = new System.Drawing.PointF(worldWidth, worldHeight);
 
             //Calculate transformation matrix and store in static class
-            Transformation transformer = new Transformation();
-            transformer.FindHomographyMatrix(originalPoints, transformedPoints);
+            TransformAgent.Data.Initialize(originalPoints, transformedPoints);
         }
 
         /// <summary>

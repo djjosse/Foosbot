@@ -8,6 +8,7 @@
 //// **																				   **
 //// **************************************************************************************
 
+using Foosbot.Common.Enums;
 using Foosbot.Common.Exceptions;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;

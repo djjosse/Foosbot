@@ -8,21 +8,15 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot
+namespace Foosbot.Common.Enums
 {
-    /// <summary>
-    /// Represents a flow that can run in Separate Thread
-    /// </summary>
-    public interface IFlow
+    public enum eLinearMove
     {
-        /// <summary>
-        /// Function that will run in Separate Thread
-        /// </summary>
-        void Flow();
-
-        /// <summary>
-        /// Run the flow in Thread
-        /// </summary>
-        void Start();
+        NA,
+        BEST_EFFORT,
+        VECTOR_BASED,
+        BALL_Y,
+        LEFT_BALL_DIAMETER,
+        RIGHT_BALL_DIAMETER
     }
 }

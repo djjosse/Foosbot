@@ -8,7 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
-using Foosbot.Common.Protocols;
+using Foosbot.Common.Enums;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Controls;
@@ -16,18 +16,36 @@ using System.Windows.Threading;
 
 namespace Foosbot
 {
+    /// <summary>
+    /// Statistics Static Class
+    /// </summary>
     public static class Statistics
     {
-
+        /// <summary>
+        /// Dispatcher to run UI changes in relevant thread
+        /// </summary>
         private static Dispatcher _dispatcher;
 
+        /// <summary>
+        /// Elements Dictionary: Statistics key and Label to update in UI
+        /// </summary>
         private static Dictionary<eStatisticsKey, Label> _elements;
+
+        /// <summary>
+        /// Initialization Method
+        /// </summary>
+        /// <param name="dispatcher">Dispatcher to run UI changes in relevant thread</param>
+        /// <param name="elements">Labels to update by key</param>
         public static void Initialize(Dispatcher dispatcher, Dictionary<eStatisticsKey, Label> elements)
         {
             _dispatcher = dispatcher;
             _elements = elements;
         }
 
+        /// <summary>
+        /// Update Frame info
+        /// </summary>
+        /// <param name="info">New content</param>
         public static void UpdateFrameInfo(string info)
         {
             _dispatcher.Invoke(new ThreadStart(delegate
@@ -36,6 +54,10 @@ namespace Foosbot
             }));
         }
 
+        /// <summary>
+        /// Update Proccess info
+        /// </summary>
+        /// <param name="info">New content</param>
         public static void UpdateProccessInfo(string info)
         {
             _dispatcher.Invoke(new ThreadStart(delegate
@@ -44,6 +66,10 @@ namespace Foosbot
             }));
         }
 
+        /// <summary>
+        /// Update Basic Image Processing info
+        /// </summary>
+        /// <param name="info">New content</param>
         public static void UpdateBasicImageProcessingInfo(string info)
         {
             _dispatcher.Invoke(new ThreadStart(delegate
@@ -52,6 +78,10 @@ namespace Foosbot
             }));
         }
 
+        /// <summary>
+        /// Update Ball Coordinates info
+        /// </summary>
+        /// <param name="info">New content</param>
         public static void UpdateBallCoordinates(string info)
         {
             _dispatcher.Invoke(new ThreadStart(delegate
@@ -59,6 +89,5 @@ namespace Foosbot
                 _elements[eStatisticsKey.BallCoordinates].Content = info;
             }));
         }
-
     }
 }

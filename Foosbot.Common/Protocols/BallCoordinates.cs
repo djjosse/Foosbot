@@ -60,7 +60,7 @@ namespace Foosbot.Common.Protocols
             return Math.Sqrt(Math.Pow((x - X), 2) + Math.Pow((y - Y), 2));
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return String.Format("Coordinates: {0}x{1} Time: {2} Vector: {3}", X, Y, Timestamp.ToString("HH:mm:ss.ff"), Vector.ToString());
         }

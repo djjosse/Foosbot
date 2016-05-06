@@ -16,6 +16,8 @@ using System.Windows;
 using Foosbot.Common;
 using System.Threading;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
+using Foosbot.VectorCalculation.Contracts;
+using Foosbot.Common.Data;
 
 namespace Foosbot.VectorCalculation
 {
@@ -31,8 +33,6 @@ namespace Foosbot.VectorCalculation
 
         public CoordinatesStabilizer _stabilizer;
 
-        private Transformation _transformer;
-
         private RicochetCalc vectorUtils;
 
         private IImageData _imagingData;
@@ -42,8 +42,6 @@ namespace Foosbot.VectorCalculation
         {
             vectorUtils = new RicochetCalc();
             vectorUtils.Initialize();
-
-            _transformer = new Transformation();
 
             _imagingData = imagingData;
 
@@ -78,7 +76,7 @@ namespace Foosbot.VectorCalculation
                 if (ballCoordinates.IsDefined)
                 {
                     double x, y;
-                    _transformer.InvertTransform(ballCoordinates.X, ballCoordinates.Y, out x, out y);
+                    TransformAgent.Data.InvertTransform(ballCoordinates.X, ballCoordinates.Y, out x, out y);
                     Marks.DrawBall(new System.Windows.Point(x, y), _stabilizer.BallRadius);
                 }
                 else

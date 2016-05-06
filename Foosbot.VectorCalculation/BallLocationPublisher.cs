@@ -9,10 +9,12 @@
 // **************************************************************************************
 
 using Foosbot.Common.Multithreading;
+using Foosbot.Common.Protocols;
+using Foosbot.VectorCalculation.Contracts;
 using System;
 using System.Reflection;
 
-namespace Foosbot.Common.Protocols
+namespace Foosbot.VectorCalculation
 {
     /// <summary>
     /// Publish Latest Ball Coordinates and notifies observers on demand

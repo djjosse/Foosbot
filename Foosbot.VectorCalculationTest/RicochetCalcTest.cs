@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Foosbot.Common.Protocols;
 using Foosbot.VectorCalculation;
 using Foosbot.VectorCalculation.Contracts;
+using Foosbot.Common.Enums;
 
 namespace Foosbot.VectorCalculationTest
 {

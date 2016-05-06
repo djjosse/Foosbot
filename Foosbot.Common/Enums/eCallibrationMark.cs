@@ -8,31 +8,31 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Protocols
+namespace Foosbot.Common.Enums
 {
     /// <summary>
-    /// Rod enumeration
+    /// Callibration Mark Enum
     /// </summary>
-    public enum eRod : int
+    public enum eCallibrationMark
     {
         /// <summary>
-        /// Goal Keeper - First Rod
+        /// Buttom Left Callibration Mark
         /// </summary>
-        GoalKeeper = 1,
+        BL = 0,
 
         /// <summary>
-        /// Defence - First Rod
+        /// Top Left Callibration Mark
         /// </summary>
-        Defence = 2,
+        TL = 1,
 
         /// <summary>
-        /// Midfield - First Rod
+        /// Top Right Callibration Mark
         /// </summary>
-        Midfield = 3,
+        TR = 2,
 
         /// <summary>
-        /// Attack - First Rod
+        /// Buttom Right Callibration Mark
         /// </summary>
-        Attack = 4
+        BR = 3,
     }
 }

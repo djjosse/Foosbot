@@ -8,32 +8,31 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Protocols
+namespace Foosbot.Common.Enums
 {
     /// <summary>
-    /// Player rotational position/move.
+    /// Rod enumeration
     /// </summary>
-    public enum eRotationalMove : int
+    public enum eRod : int
     {
         /// <summary>
-        /// Undefined player rotational position
+        /// Goal Keeper - First Rod
         /// </summary>
-        NA = 0,
+        GoalKeeper = 1,
 
         /// <summary>
-        /// Player is in 0 degrees (Legs back)
+        /// Defence - First Rod
         /// </summary>
-        RISE = 3, 
+        Defence = 2,
 
         /// <summary>
-        /// Player is in 90 degrees (Legs down)
+        /// Midfield - First Rod
         /// </summary>
-        DEFENCE = 2,
+        Midfield = 3,
 
         /// <summary>
-        /// Player is in 180 degrees (Legs ahead to the competitors gate)
-        /// Also called Reverse-Rise
+        /// Attack - First Rod
         /// </summary>
-        KICK = 1
+        Attack = 4
     }
 }

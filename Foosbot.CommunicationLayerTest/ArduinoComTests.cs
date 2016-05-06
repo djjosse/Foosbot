@@ -5,6 +5,7 @@ using NSubstitute;
 using Foosbot.Common.Exceptions;
 using System.IO;
 using Foosbot.Common.Protocols;
+using Foosbot.Common.Enums;
 
 namespace Foosbot.CommunicationLayerTest
 {

@@ -10,6 +10,7 @@ using System.Reflection;
 using Foosbot.Common.Contracts;
 using Foosbot.Common.Exceptions;
 using System.Diagnostics;
+using Foosbot.Common.Enums;
 
 namespace Foosbot.CommunicationLayer
 {

@@ -8,8 +8,8 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Data;
 using Foosbot.Common.Enums;
-using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -22,6 +22,9 @@ using System.Windows.Threading;
 
 namespace Foosbot
 {
+    /// <summary>
+    /// Marks Static Class to display in UI
+    /// </summary>
     public static class Marks
     {
         /// <summary>
@@ -213,8 +216,7 @@ namespace Foosbot
         private static void ConvertToLocation(ref int x, ref int y)
         {
             double outX, outY;
-            Transformation transformer = new Transformation();
-            transformer.InvertTransform(x, y, out outX, out outY);
+            TransformAgent.Data.InvertTransform(x, y, out outX, out outY);
             x = Convert.ToInt32(outX);
             y = Convert.ToInt32(outY);
         }

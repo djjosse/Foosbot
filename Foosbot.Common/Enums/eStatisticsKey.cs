@@ -8,31 +8,28 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Protocols
+namespace Foosbot.Common.Enums
 {
-    /// <summary>
-    /// Callibration Mark Enum
-    /// </summary>
-    public enum eCallibrationMark
+    public enum eStatisticsKey
     {
         /// <summary>
-        /// Buttom Left Callibration Mark
+        /// Current FPS, Width and Heigth
         /// </summary>
-        BL = 0,
+        FrameInfo = 1,
 
         /// <summary>
-        /// Top Left Callibration Mark
+        /// Foosbot Memory and CPU Info
         /// </summary>
-        TL = 1,
+        ProccessInfo = 2,
 
         /// <summary>
-        /// Top Right Callibration Mark
+        /// Percentage of successful ball detection and average detection time
         /// </summary>
-        TR = 2,
+        BasicImageProcessingInfo = 3,
 
         /// <summary>
-        /// Buttom Right Callibration Mark
+        /// Ball Coordinates
         /// </summary>
-        BR = 3,
+        BallCoordinates = 4
     }
 }

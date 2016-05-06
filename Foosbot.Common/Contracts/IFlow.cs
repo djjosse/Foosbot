@@ -8,26 +8,21 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Protocols
+namespace Foosbot.Common.Contracts
 {
     /// <summary>
-    /// Metric Units
+    /// Represents a flow that can run in Separate Thread
     /// </summary>
-    public enum eUnits
+    public interface IFlow
     {
         /// <summary>
-        /// Pixels
+        /// Function that will run in Separate Thread
         /// </summary>
-        Pixels,
+        void Flow();
 
         /// <summary>
-        /// Millimeters
+        /// Run the flow in Thread
         /// </summary>
-        Mm,
-
-        /// <summary>
-        /// Points (Foosbot World)
-        /// </summary>
-        Pts
+        void Start();
     }
 }

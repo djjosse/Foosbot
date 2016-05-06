@@ -1,4 +1,5 @@
-﻿using Foosbot.Common.Protocols;
+﻿using Foosbot.Common.Enums;
+using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;

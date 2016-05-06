@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using System;
 
@@ -89,6 +90,12 @@ namespace Foosbot
                 String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_STOPPER_DIST));
         }
 
+        /// <summary>
+        /// Get Number of ticks per rod
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        /// <param name="rodType">Rod Type</param>
+        /// <returns>Number of ticks per rod</returns>
         public static int GetTicksPerRod(this Configuration configuration, eRod rodType)
         {
             return Configuration.Attributes.GetValue<int>(

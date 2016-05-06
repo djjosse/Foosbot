@@ -1,4 +1,5 @@
-﻿using Foosbot.Common.Exceptions;
+﻿using Foosbot.Common.Enums;
+using Foosbot.Common.Exceptions;
 using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using System;

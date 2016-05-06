@@ -10,6 +10,7 @@
 
 using Emgu.CV;
 using Emgu.CV.Structure;
+using Foosbot.Common.Data;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Detection.Enums;
@@ -241,8 +242,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
 
             Marks.DrawBall(new System.Windows.Point(x, y), Convert.ToInt32(20), detectionColor);
 
-            Transformation transformer = new Transformation();
-            System.Drawing.PointF coordinates = transformer.Transform(new System.Drawing.PointF(x, y));
+            System.Drawing.PointF coordinates = TransformAgent.Data.Transform(new System.Drawing.PointF(x, y));
 
             ImagingData.BallCoords = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), timeStamp);
 

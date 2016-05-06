@@ -11,6 +11,7 @@
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Foosbot.Common;
+using Foosbot.Common.Extensions;
 using Foosbot.Common.Exceptions;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
@@ -21,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Foosbot.Common.Contracts;
+using Foosbot.Common.Enums;
 
 namespace Foosbot.ImageProcessingUnit.Tools.Core
 {
@@ -314,7 +316,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
             {
                 foreach (CircleF outerCircle in possibleOuterCircles)
                 {
-                    if (Utils.Distance(innerCircle.Center, outerCircle.Center) < DISTANCE_ERROR * OUTER_RADIUS)
+                    if (innerCircle.Center.Distance(outerCircle.Center) < DISTANCE_ERROR * OUTER_RADIUS)
                     {
                         circles.Add(outerCircle);
                     }

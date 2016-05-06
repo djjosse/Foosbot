@@ -11,6 +11,8 @@
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Foosbot.Common;
+using Foosbot.Common.Extensions;
+using Foosbot.Common.Enums;
 using Foosbot.Common.Exceptions;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Tools.Contracts;
@@ -18,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using Foosbot.Common.Data;
 
 namespace Foosbot.ImageProcessingUnit.Tools.Core
 {
@@ -79,13 +82,12 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
             {
                 System.Drawing.PointF end = new System.Drawing.PointF(start.X + origRadius, start.Y);
 
-                double check = Utils.Distance(start, end);
+                double check = start.Distance(end);
 
-                Transformation transformer = new Transformation();
-                System.Drawing.PointF transformedStart = transformer.InvertTransform(start);
-                System.Drawing.PointF transformedEnd = transformer.InvertTransform(end);
+                System.Drawing.PointF transformedStart = TransformAgent.Data.InvertTransform(start);
+                System.Drawing.PointF transformedEnd = TransformAgent.Data.InvertTransform(end);
 
-                double radius = Utils.Distance(transformedStart, transformedEnd);
+                double radius = transformedStart.Distance(transformedEnd);
 
                 if (radius > maxRadius)
                     maxRadius = radius;
@@ -117,7 +119,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
                 double largestDist = 0;
                 for (int j = 0; j < 4; j++)
                 {
-                    double distance = Utils.Distance(unsortedMarks[i].Center, unsortedMarks[j].Center);
+                    double distance = unsortedMarks[i].Center.Distance(unsortedMarks[j].Center);
                     if (i != j && distance > largestDist)
                     {
                         pairs[unsortedMarks[i]] = unsortedMarks[j];
@@ -225,8 +227,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
             arrangedPoints[3] = calibrationMarks[eCallibrationMark.BR].Center;
 
             //Used to perform transformations and store transformation matrices for further calculations
-            Transformation transformer = new Transformation();
-            transformer.FindHomographyMatrix(arrangedPoints, orriginalPointArray);
+            TransformAgent.Data.Initialize(arrangedPoints, orriginalPointArray);
         }
 
         /// <summary>
@@ -239,19 +240,19 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
             switch (key)
             {
                 case eCallibrationMark.BL:
-                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BL,
+                    Marks.DrawCallibrationCircle(eCallibrationMark.BL,
                         new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
                 case eCallibrationMark.TL:
-                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.TL,
+                    Marks.DrawCallibrationCircle(eCallibrationMark.TL,
                         new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
                 case eCallibrationMark.TR:
-                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.TR,
+                    Marks.DrawCallibrationCircle(eCallibrationMark.TR,
                         new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
                 case eCallibrationMark.BR:
-                    Marks.DrawCallibrationCircle(Foosbot.Common.Protocols.eCallibrationMark.BR,
+                    Marks.DrawCallibrationCircle(eCallibrationMark.BR,
                         new Point(mark.Center.X, mark.Center.Y), Convert.ToInt32(mark.Radius));
                     break;
             }

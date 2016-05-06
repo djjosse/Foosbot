@@ -1,4 +1,5 @@
-﻿using Foosbot.Common.Protocols;
+﻿using Foosbot.Common.Enums;
+using Foosbot.Common.Protocols;
 using Foosbot.CommunicationLayer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

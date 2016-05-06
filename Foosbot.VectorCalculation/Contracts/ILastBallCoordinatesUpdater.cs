@@ -8,30 +8,19 @@
 // **																				   **
 // **************************************************************************************
 
-using System.Threading;
+using Foosbot.Common.Protocols;
+using System;
 
-namespace Foosbot.Common.Multithreading
+namespace Foosbot.VectorCalculation.Contracts
 {
-    public abstract class BackgroundFlowPublisher<T> : Publisher<T>
+    /// <summary>
+    /// Last Ball Coordinates Interface for implementing interface
+    /// </summary>
+    public interface ILastBallCoordinatesUpdater
     {
         /// <summary>
-        /// Running Thread
+        /// Last stored ball coordinates
         /// </summary>
-        protected Thread _thread;
-
-        /// <summary>
-        /// Function that will run in Separate Thread
-        /// </summary>
-        public abstract void Flow();
-
-        /// <summary>
-        /// Run the flow in Thread
-        /// </summary>
-        public void Start()
-        {
-            _thread = new Thread(() => { Flow(); });
-            _thread.IsBackground = true;
-            _thread.Start();
-        }
+        BallCoordinates LastBallCoordinates { get; }
     }
 }

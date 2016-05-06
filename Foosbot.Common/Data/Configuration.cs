@@ -20,53 +20,8 @@ namespace Foosbot
     /// Using this, configuration attributes
     /// can be easily accessed from any place in solution.
     /// </summary>
-    /// <author>Joseph Gleyzer</author>
-    /// <date>04.02.2016</date>
-    public sealed class Configuration
+    public sealed partial class Configuration
     {
-        /// <summary>
-        /// Configuration Names Static Inner Class
-        /// </summary>
-        public static class Names
-        {
-            /// <summary>
-            /// Key for current mode in configuration file
-            /// </summary>
-            public const string KEY_IS_DEMO_MODE = "IsDemoMode";
-
-            public const string KEY_IS_ARDUINOS_CONNECTED = "IsArduinosConnected";
-
-            public const string KEY_IPU_FRAME_WIDTH = "FrameWidth";
-            public const string KEY_IPU_FRAME_HEIGHT = "FrameHeight";
-            public const string KEY_IPU_FRAME_RATE= "FrameRate";
-
-            public const string TABLE_WIDTH = "Width";
-            public const string TABLE_HEIGHT = "Height";
-            public const string BALL_DIAMETR = "BallDiameter";
-            public const string FOOSBOT_AXE_X_SIZE = "axeX";
-            public const string FOOSBOT_AXE_Y_SIZE = "axeY";
-            public const string TABLE_RODS_DIST = "MinSectorWidth";
-            public const string SECTOR_FACTOR = "SectorFactor";
-            public const string FOOSBOT_DELAY = "TimeDelay";
-            public const string VECTOR_CALC_DISTANCE_ERROR = "DistanceErrorTh";
-            public const string VECTOR_CALC_ANGLE_ERROR = "AngleErrorTh";
-            public const string KEY_RICOCHET_FACTOR = "RicochetFactor";
-
-            public const string KEY_ROD_START_Y = "RodStartY";
-            public const string KEY_ROD_END_Y = "RodEndY";
-
-            public const string KEY_PLAYER_WIDTH = "PlayerWidth";
-
-            public const string KEY_ROD_INTERSECTION_MAX_TIMESPAN_SEC = "RodIntersectionMaxTimespan";
-
-            public const string SUBKEY_DISTANCE = "_Distance";
-            public const string SUBKEY_COUNT = "_Count";
-            public const string SUBKEY_OFFSET_Y = "_OffsetY";
-            public const string SUBKEY_STOPPER_DIST = "_StopperDistance";
-            public const string SUBKEY_BEST_EFFORT = "_BestEffort";
-            public const string SUBKEY_TICKS = "_Ticks";
-        }
-
         /// <summary>
         /// Configuration File Path Const
         /// </summary>
