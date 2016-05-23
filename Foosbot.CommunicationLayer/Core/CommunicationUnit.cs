@@ -45,7 +45,7 @@ namespace Foosbot.CommunicationLayer.Core
             : base(publisher)
         {
             //we don't wan't to receive anything before initialization finished
-            _publisher.Dettach(this);
+            _publisher.Detach(this);
 
             //set rod type for current rod
             _rodType = rodType;
@@ -94,7 +94,7 @@ namespace Foosbot.CommunicationLayer.Core
                             this.GetType().DeclaringType));
 
                 //we don't wan't to receive new data while not finished with old one
-                _publisher.Dettach(this);
+                _publisher.Detach(this);
 
                 //received command
                 RodAction action = _publisher.Data;

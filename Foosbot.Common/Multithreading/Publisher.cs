@@ -74,10 +74,10 @@ namespace Foosbot.Common.Multithreading
         }
 
         /// <summary>
-        /// Dettach existing observer
+        /// Detach existing observer
         /// </summary>
         /// <param name="observer"></param>
-        public void Dettach(IWorkingObserver<T> observer)
+        public void Detach(IWorkingObserver<T> observer)
         {
             lock (_observerListModificationToken)
             {

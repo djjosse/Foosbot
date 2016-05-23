@@ -67,7 +67,7 @@ namespace Foosbot.UI.ImageExtensions
         {
             try
             {
-                _publisher.Dettach(this);
+                _publisher.Detach(this);
                 Initialize();
                 
                 //Get frame

@@ -86,7 +86,7 @@ namespace Foosbot.UI.ImageTool
         public void OnWindowClosing(object sender, CancelEventArgs e)
         {
             if (_monitorA != null)
-                _imagePack.Streamer.Dettach(_monitorA);
+                _imagePack.Streamer.Detach(_monitorA);
         }
     }
 }

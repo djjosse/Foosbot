@@ -60,7 +60,7 @@ namespace Foosbot.VectorCalculation
         {
             try
             {
-                _publisher.Dettach(this);
+                _publisher.Detach(this);
 
                 if (_stabilizer == null)
                 {

@@ -95,7 +95,7 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
         {
             try
             {
-                _publisher.Dettach(this);
+                _publisher.Detach(this);
                 using (_currentFrame = _publisher.Data.Clone())
                 {
 

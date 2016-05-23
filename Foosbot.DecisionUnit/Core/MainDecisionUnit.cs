@@ -43,11 +43,11 @@ namespace Foosbot.DecisionUnit.Core
         public MainDecisionUnit(Publisher<BallCoordinates> vectorPublisher, IActionProvider decisionManager = null)
             : base(vectorPublisher) 
         {
-            _manager = (decisionManager != null) ? _manager : new DecisionManager();
+            _manager = decisionManager ?? new DecisionManager();
         }
 
         /// <summary>
-        /// Initialize publishers and start decision continious process
+        /// Initialize publishers and start decision contentious process
         /// </summary>
         public override void Start()
         {
@@ -56,14 +56,14 @@ namespace Foosbot.DecisionUnit.Core
         }
 
         /// <summary>
-        /// Performed in defferent thread in loop task each time
+        /// Performed in different thread in loop task each time
         /// we receive new coordinates and vector
         /// </summary>
         public override void Job()
         {
             try
             {
-                _publisher.Dettach(this);
+                _publisher.Detach(this);
                 BallCoordinates ballCoordinates = _currentData;//_publisher.Data;
                 List<RodAction> actions = _manager.Decide(ballCoordinates);
                 foreach (RodAction action in actions)

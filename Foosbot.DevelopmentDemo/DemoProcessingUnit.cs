@@ -104,7 +104,7 @@ namespace Foosbot.DevelopmentDemo
             Initialize();
 
             //Detach from streamer
-            _publisher.Dettach(this);
+            _publisher.Detach(this);
 
             //get current ball coordinates
             BallCoordinates coordinates = SampleCoordinates();

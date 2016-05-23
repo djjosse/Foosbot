@@ -65,13 +65,13 @@ namespace Foosbot.DecisionUnit.Core
         /// (If null [default] - will be instantiated in constructor)</param>
         public DecisionManager(ISurveyor surveyor = null, IInitializableRicochet ricochetCalc = null, IPredictor predictor = null, IDecisionTree decisionTree = null, List<IInitializableRod> controlledRods = null)
         {
-            _surveyor = (surveyor != null) ?  surveyor : new Surveyor();
+            _surveyor =  surveyor ?? new Surveyor();
 
-            IInitializableRicochet ricochetCalculator = (ricochetCalc != null) ? ricochetCalc : new RicochetCalc(true, eUnits.Mm);
+            IInitializableRicochet ricochetCalculator = ricochetCalc ?? new RicochetCalc(true, eUnits.Mm);
 
-            _decisionTree = (decisionTree != null) ? decisionTree : new FullDecisionTree(new PartialDecisionTree());
+            _decisionTree = decisionTree ?? new FullDecisionTree(new PartialDecisionTree());
 
-            _predictor = (predictor != null) ? predictor : new Predictor(_surveyor, ricochetCalculator);
+            _predictor = predictor ?? new Predictor(_surveyor, ricochetCalculator);
 
             //use given rods if not null
             if (controlledRods != null)
