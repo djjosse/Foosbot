@@ -21,7 +21,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Contracts
         /// <summary>
         /// Gray Threshold for image Pre-Processing before motion detection
         /// </summary>
-        int ImagePreProcessingGrayThreshold { get; set; }
+        int GrayThreshold { get; set; }
 
         /// <summary>
         /// Prepare Image

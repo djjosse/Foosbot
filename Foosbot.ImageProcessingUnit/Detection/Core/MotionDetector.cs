@@ -15,6 +15,8 @@ using Emgu.CV.VideoSurveillance;
 using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Tools.Contracts;
+using Foosbot.ImageProcessingUnit.Tools.Core;
+using System;
 using System.Drawing;
 
 namespace Foosbot.ImageProcessingUnit.Detection.Core
@@ -28,14 +30,19 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         #region constants
 
         /// <summary>
+        /// Factor to reduce image size on image preparation
+        /// </summary>
+        public const double SCALE_ON_PREPARE = 0.2;
+
+        /// <summary>
         /// Default threshold to define a motion area, reduce the value to detect smaller motion
         /// </summary>
-        public const double DEFAULT_MIN_MOTION_AREA_THRESHOLD = 1000;
+        public const double DEFAULT_MIN_MOTION_AREA_THRESHOLD = 10;//1000;
 
         /// <summary>
         /// Default factor to reject the area that contains too few motion
         /// </summary>
-        public const double DEFAULT_MIN_MOTION_PIXEL_FACTOR = 0.5;
+        public const double DEFAULT_MIN_MOTION_PIXEL_FACTOR = 0.5;//0.5
 
         /// <summary>
         /// The duration of motion history you wants to keep (Seconds)
@@ -55,7 +62,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// <summary>
         /// Default gray Threshold for image Pre-Processing before motion detection
         /// </summary>
-        public const int DEFAULT_GRAY_THRESHOLD = 230;
+        public const int DEFAULT_GRAY_THRESHOLD = 240;
 
         #endregion constants
 
@@ -74,7 +81,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// <summary>
         /// Gray Threshold for image Pre-Processing before motion detection
         /// </summary>
-        public int ImagePreProcessingGrayThreshold { get; set; }
+        public int GrayThreshold { get; set; }
 
         /// <summary>
         /// Detected Motion Location on provided to Detect method image
@@ -126,14 +133,14 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// Motion Detector Constructor
         /// </summary>
         /// <param name="imagingData">Common Image Processing Imaging Data</param>
-        public MotionDetector(IImageData imagingData)
+        public MotionDetector(IImageData imagingData )
         {
             ImagingData = imagingData;
 
             //Set values for properties
             MinMotionAreaThreshold = DEFAULT_MIN_MOTION_AREA_THRESHOLD;
             MinMotionPixelFactor = DEFAULT_MIN_MOTION_PIXEL_FACTOR;
-            ImagePreProcessingGrayThreshold = DEFAULT_GRAY_THRESHOLD;
+            GrayThreshold = DEFAULT_GRAY_THRESHOLD;
 
             //Instantiate private members
             _motionHistory = new MotionHistory(MOTION_HISTORY_DURATION, MOTION_HISTORY_MAX_DELTA, MOTION_HISTORY_MIN_DELTA);
@@ -146,61 +153,57 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// Update Motion History is used to update history without motion detection
         /// This will call another background thread to update.
         /// </summary>
-        /// <param name="image">Image to update motion history with</param>
-        public void UpdateMotionHisitory(Image<Gray, byte> image)
+        /// <param name="inputImage">Image to update motion history with</param>
+        public void BeginInvokeUpdateMotionHisitory(Image<Gray, byte> inputImage)
         {
-            _currentImage = image;
+            _currentImage = inputImage.Resize(SCALE_ON_PREPARE, Emgu.CV.CvEnum.Inter.Linear);
             AbortMotionHistoryThreadIfRunning();
             Start();
         }
 
         /// <summary>
-        /// Detect ball on image using motion detection
+        /// Detect ball on last image provided to BeginInvokeUpdateMotionHisitory method using motion detection
         /// This will update DetectedLocation property
         /// </summary>
-        /// <param name="image">Image to find ball on</param>
-        /// <returns>[True] if found, [False] otherwise</returns>
-        public bool Detect(Image<Gray, byte> image)
+        /// <returns>[True] if found, [False] otherwise (also if image is null)</returns>
+        public bool Detect()
         {
-            AbortMotionHistoryThreadIfRunning();
-            using(image = image.Clone())
+            bool isDetected = false;
+            if (_currentImage == null) return isDetected;
+
+            WaitMotionHistoryThreadIfRunning();
+
+            MotionMonitor.ShowFrame(_foreground.ToImage<Gray, byte>());
+
+            //iterate through each of the motion component
+            foreach (Rectangle rectangle in GetMotionAreas())
             {
-                image = Prepare(image);
-                Mat motion = new Mat();
-                motion = image.Clone().Mat;
-                _forgroundDetector.Apply(motion, _foreground);
+                int area = rectangle.Width * rectangle.Height;
 
-                //update the motion history
-                _motionHistory.Update(_foreground);
-                Rectangle[] rects;
-                using (VectorOfRect boundingRect = new VectorOfRect())
+                //reject the components that have small area;
+                if (area < MinMotionAreaThreshold)
                 {
-                    _motionHistory.GetMotionComponents(_segMask, boundingRect);
-                    rects = boundingRect.ToArray();
+                    //Area is to small to process and is rejected, go to next area
+                    continue;
                 }
 
-                MotionMonitor.ShowFrame(_foreground.ToImage<Gray, byte>());
-
-                //iterate through each of the motion component
-                foreach (Rectangle comp in rects)
+                //reject the area that contains too few motion
+                if (GetMotionPixelsCount(rectangle) < area * MinMotionPixelFactor)
                 {
-                    int area = comp.Width * comp.Height; 
-                    //reject the components that have small area;
-                    if (area < MinMotionAreaThreshold) continue;
-
-                    // find the angle and motion pixel count of the specific area
-                    double angle, motionPixelCount;
-                    _motionHistory.MotionInfo(_foreground, comp, out angle, out motionPixelCount);
-
-                    //reject the area that contains too few motion
-                    if (motionPixelCount < area * MinMotionPixelFactor) 
-                        continue;
-
-                    DetectedLocation = new Point(comp.X + (comp.Width >> 1), comp.Y + (comp.Height >> 1));
-                    return true;
+                    //Area contains to few motion is rejected, go to next region
+                    continue;
                 }
-                return false;
+
+                //Calculate motion center location, must resize back to original size
+                int x = Convert.ToInt32((rectangle.X - (rectangle.Width >> 1)) / SCALE_ON_PREPARE);
+                int y = Convert.ToInt32((rectangle.Y + (rectangle.Height >> 1)) / SCALE_ON_PREPARE);
+
+                DetectedLocation = new Point(x, y);
+                isDetected = true;
+                break;
             }
+            
+            return isDetected;
         }
 
         /// <summary>
@@ -209,23 +212,51 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// </summary>
         public override void Flow()
         {
+            UpdateMotionHistory();
+        }
+
+        /// <summary>
+        /// Updates motion history with current image
+        /// </summary>
+        private void UpdateMotionHistory()
+        {
             if (_currentImage != null)
             {
                 Image<Gray, byte> image;
                 using (image = _currentImage.Clone())
                 {
                     image = Prepare(image);
-
                     Mat motion = new Mat();
-
                     motion = image.Mat;
-
                     _forgroundDetector.Apply(motion, _foreground);
-
-                    //update the motion history
                     _motionHistory.Update(_foreground);
                 }
             }
+        }
+
+        /// <summary>
+        /// Get Motion Areas from history
+        /// </summary>
+        /// <returns>Array of motion areas</returns>
+        private Rectangle[] GetMotionAreas()
+        {
+            Rectangle[] rects;
+            using (VectorOfRect boundingRect = new VectorOfRect())
+            {
+                _motionHistory.GetMotionComponents(_segMask, boundingRect);
+                rects = boundingRect.ToArray();
+            }
+            return rects;
+        }
+
+        /// <summary>
+        /// Find motion pixel count of the specific area
+        /// </summary>
+        private double GetMotionPixelsCount(Rectangle rectangle)
+        {
+            double angle, motionPixelCount;
+            _motionHistory.MotionInfo(_foreground, rectangle, out angle, out motionPixelCount);
+            return motionPixelCount;
         }
 
         /// <summary>
@@ -235,7 +266,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// <returns>Prepared Image</returns>
         public Image<Gray, byte> Prepare(Image<Gray, byte> image)
         {
-            image = image.ThresholdToZero(new Gray(ImagePreProcessingGrayThreshold));
+            image = image.ThresholdToZero(new Gray(GrayThreshold));
             image._Dilate(1);
             return image;
         }
@@ -248,7 +279,17 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
             if (_thread != null && _thread.IsAlive)
             {
                 _thread.Abort();
-                Log.Image.Debug("Motion History Thread Aborted as motion detection received new data");
+            }
+        }
+
+        /// <summary>
+        /// Wait for thread to finish update if still running
+        /// </summary>
+        private void WaitMotionHistoryThreadIfRunning()
+        {
+            if (_thread != null && _thread.IsAlive)
+            {
+                _thread.Join();
             }
         }
     }

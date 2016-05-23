@@ -77,10 +77,10 @@ namespace Foosbot.VectorCalculation
                 {
                     double x, y;
                     TransformAgent.Data.InvertTransform(ballCoordinates.X, ballCoordinates.Y, out x, out y);
-                    Marks.DrawBall(new System.Windows.Point(x, y), _stabilizer.BallRadius);
                 }
                 else
                 {
+                    //Delete old locations
                     Marks.DrawBall(new System.Windows.Point(0, 0), 0);
                 }
                 

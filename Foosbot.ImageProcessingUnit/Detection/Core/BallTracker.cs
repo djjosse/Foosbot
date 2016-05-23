@@ -92,8 +92,11 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
             //Has new frame in Streamer Flag
             bool hasNewFrame = false;
 
-            //Prepare Image
             Image<Gray, byte> image = frame.Image;
+            //Update Motion History
+            MotionInspector.BeginInvokeUpdateMotionHisitory(image);
+
+            //Prepare Image
             image = PreProcessor.Prepare(frame.Image);
             ComputerVisionMonitors[eComputerVisionMonitor.MonitorA].ShowFrame(image);
 
@@ -137,21 +140,16 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                 isDetected = FindBallLocationInFrame(image, frame.Timestamp);
             }
 
-            if (!isDetected && !hasNewFrame)
+            if (!isDetected) /*&& !hasNewFrame)*/
             {
                 //Use Motion detection
-                isDetected = MotionInspector.Detect(image);
+                isDetected = MotionInspector.Detect();//image);
                 if (isDetected)
                 {
                     double xLocation = MotionInspector.DetectedLocation.X;
                     double yLocation = MotionInspector.DetectedLocation.Y;
                     UpdateCoordinates(xLocation, yLocation, frame.Timestamp, Brushes.Green);
                 }
-            }
-            else
-            {
-                //Update Motion history
-                MotionInspector.UpdateMotionHisitory(image);
             }
 
             return isDetected;

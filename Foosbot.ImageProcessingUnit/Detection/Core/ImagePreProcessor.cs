@@ -28,13 +28,13 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// </summary>
         public ImagePreProcessor()
         {
-            ImagePreProcessingGrayThreshold = DEFAULT_GRAY_THRESHOLD;
+            GrayThreshold = DEFAULT_GRAY_THRESHOLD;
         }
 
         /// <summary>
         /// Image Preparation Gray Threshold Property
         /// </summary>
-        public int ImagePreProcessingGrayThreshold { get; set; }
+        public int GrayThreshold { get; set; }
 
         /// <summary>
         /// Prepare Image Method
@@ -43,7 +43,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// <returns>Prepared Image</returns>
         public Image<Gray, byte> Prepare(Image<Gray, byte> image)
         {
-            image = image.ThresholdToZero(new Gray(ImagePreProcessingGrayThreshold));
+            image = image.ThresholdToZero(new Gray(GrayThreshold));
             image._EqualizeHist();
             return image;
         }

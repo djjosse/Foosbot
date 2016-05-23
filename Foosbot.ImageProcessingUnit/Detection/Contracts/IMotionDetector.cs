@@ -47,18 +47,17 @@ namespace Foosbot.ImageProcessingUnit.Detection.Contracts
         IComputerVisionMonitor MotionMonitor { get; set; }
 
         /// <summary>
-        /// Detect ball on image using motion detection
+        /// Detect ball on last image provided to BeginInvokeUpdateMotionHisitory method using motion detection
         /// This will update DetectedLocation property
         /// </summary>
-        /// <param name="image">Image to find ball on</param>
-        /// <returns>[True] if found, [False] otherwise</returns>
-        bool Detect(Image<Gray, byte> image);
+        /// <returns>[True] if found, [False] otherwise (also if image is null)</returns>
+        bool Detect();
 
         /// <summary>
         /// Update Motion History is used to update history without motion detection
         /// This will call another background thread to update.
         /// </summary>
         /// <param name="image">Image to update motion history with</param>
-        void UpdateMotionHisitory(Image<Gray, byte> image);
+        void BeginInvokeUpdateMotionHisitory(Image<Gray, byte> image);
     }
 }
