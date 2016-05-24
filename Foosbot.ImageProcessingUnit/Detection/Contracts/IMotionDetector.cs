@@ -51,7 +51,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Contracts
         /// This will update DetectedLocation property
         /// </summary>
         /// <returns>[True] if found, [False] otherwise (also if image is null)</returns>
-        bool Detect();
+        bool WaitForDetectionResult();
 
         /// <summary>
         /// Update Motion History is used to update history without motion detection

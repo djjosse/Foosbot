@@ -17,7 +17,10 @@ using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Tools.Contracts;
 using Foosbot.ImageProcessingUnit.Tools.Core;
 using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
+using System.Threading;
 
 namespace Foosbot.ImageProcessingUnit.Detection.Core
 {
@@ -32,17 +35,17 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// <summary>
         /// Factor to reduce image size on image preparation
         /// </summary>
-        public const double SCALE_ON_PREPARE = 0.2;
+        public const double SCALE_ON_PREPARE = 0.25;
 
         /// <summary>
         /// Default threshold to define a motion area, reduce the value to detect smaller motion
         /// </summary>
-        public const double DEFAULT_MIN_MOTION_AREA_THRESHOLD = 10;//1000;
+        public const double DEFAULT_MIN_MOTION_AREA_THRESHOLD = 10;
 
         /// <summary>
         /// Default factor to reject the area that contains too few motion
         /// </summary>
-        public const double DEFAULT_MIN_MOTION_PIXEL_FACTOR = 0.5;//0.5
+        public const double DEFAULT_MIN_MOTION_PIXEL_FACTOR = 0.5;
 
         /// <summary>
         /// The duration of motion history you wants to keep (Seconds)
@@ -127,6 +130,11 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// </summary>
         private Image<Gray, byte> _currentImage;
 
+        /// <summary>
+        /// Defines if motion was detected on last try
+        /// </summary>
+        private bool _isDetected;
+
         #endregion Private Members
 
         /// <summary>
@@ -156,9 +164,9 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// <param name="inputImage">Image to update motion history with</param>
         public void BeginInvokeUpdateMotionHisitory(Image<Gray, byte> inputImage)
         {
+            _isDetected = false;
             _currentImage = inputImage.Resize(SCALE_ON_PREPARE, Emgu.CV.CvEnum.Inter.Linear);
-            AbortMotionHistoryThreadIfRunning();
-            Start();
+            Restart();
         }
 
         /// <summary>
@@ -166,12 +174,30 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// This will update DetectedLocation property
         /// </summary>
         /// <returns>[True] if found, [False] otherwise (also if image is null)</returns>
-        public bool Detect()
+        public bool WaitForDetectionResult()
         {
-            bool isDetected = false;
-            if (_currentImage == null) return isDetected;
+            if (_thread != null && _thread.IsAlive)
+            {
+                Log.Image.Debug(String.Format("[{0}] Waiting motion detection thread to finish.",
+                    MethodBase.GetCurrentMethod().Name));
+                try
+                {
+                    _thread.Join();
+                }
+                catch(ThreadStateException)
+                {
+                    //Thread already finished.
+                }
+            }
+            return _isDetected;
+        }
 
-            WaitMotionHistoryThreadIfRunning();
+        /// <summary>
+        /// Detect the ball sets new location if found and value of "is detected" member
+        /// </summary>
+        private void Detect()
+        {
+            if (_currentImage == null) return;
 
             MotionMonitor.ShowFrame(_foreground.ToImage<Gray, byte>());
 
@@ -195,15 +221,14 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                 }
 
                 //Calculate motion center location, must resize back to original size
-                int x = Convert.ToInt32((rectangle.X - (rectangle.Width >> 1)) / SCALE_ON_PREPARE);
+                //NOTE: Image was flipped on Horizontally this is the reason calculation differs
+                int x = Convert.ToInt32((rectangle.X - (1.5 * rectangle.Width)) / SCALE_ON_PREPARE);
                 int y = Convert.ToInt32((rectangle.Y + (rectangle.Height >> 1)) / SCALE_ON_PREPARE);
 
                 DetectedLocation = new Point(x, y);
-                isDetected = true;
+                _isDetected = true;
                 break;
             }
-            
-            return isDetected;
         }
 
         /// <summary>
@@ -212,7 +237,12 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// </summary>
         public override void Flow()
         {
+            Stopwatch watch = Stopwatch.StartNew();
             UpdateMotionHistory();
+            Detect();
+            watch.Stop();
+            Log.Image.Debug(String.Format("[{0}] Motion detection took: {1} milliseconds",
+                    MethodBase.GetCurrentMethod().Name, watch.Elapsed.ToString("fff")));
         }
 
         /// <summary>
@@ -272,24 +302,26 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         }
 
         /// <summary>
-        /// Abort motion history thread if it is running used in case we received new data.
+        /// Abort motion history thread if it is running used in case we received new data
+        /// and start it again
         /// </summary>
-        private void AbortMotionHistoryThreadIfRunning()
+        private void Restart()
         {
-            if (_thread != null && _thread.IsAlive)
+            try
             {
-                _thread.Abort();
+                if (_thread != null && _thread.IsAlive)
+                {
+                    _thread.Abort();
+                }
             }
-        }
-
-        /// <summary>
-        /// Wait for thread to finish update if still running
-        /// </summary>
-        private void WaitMotionHistoryThreadIfRunning()
-        {
-            if (_thread != null && _thread.IsAlive)
+            catch (Exception e)
             {
-                _thread.Join();
+                Log.Image.Error(String.Format("[{0}] Error Aborting thread! Reason: {1}",
+                    MethodBase.GetCurrentMethod().Name, e.Message));
+            }
+            finally
+            {
+                Start();
             }
         }
     }

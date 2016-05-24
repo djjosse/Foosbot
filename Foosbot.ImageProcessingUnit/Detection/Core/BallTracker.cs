@@ -140,10 +140,10 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                 isDetected = FindBallLocationInFrame(image, frame.Timestamp);
             }
 
-            if (!isDetected) /*&& !hasNewFrame)*/
+            if (!isDetected)
             {
                 //Use Motion detection
-                isDetected = MotionInspector.Detect();//image);
+                isDetected = MotionInspector.WaitForDetectionResult();
                 if (isDetected)
                 {
                     double xLocation = MotionInspector.DetectedLocation.X;
