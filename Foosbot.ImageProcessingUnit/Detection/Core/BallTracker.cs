@@ -98,11 +98,10 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
 
             //Prepare Image
             image = PreProcessor.Prepare(frame.Image);
-            ComputerVisionMonitors[eComputerVisionMonitor.MonitorA].ShowFrame(image);
 
             //Crop Image and Store Offsets
             image = CropAndUpdate(image, ImagingData.CalibrationMarks.Values.ToList());
-            ComputerVisionMonitors[eComputerVisionMonitor.MonitorB].ShowFrame(image);
+            ComputerVisionMonitors[eComputerVisionMonitor.MonitorA].ShowFrame(image);
 
             //If there are stored coordinates and they defined
             if (ImagingData.LastKnownBallLocation != null && ImagingData.LastKnownBallLocation.IsDefined)
@@ -195,7 +194,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                     };
                     
                     image = Crop(image, croppingPoints);
-                    ComputerVisionMonitors[eComputerVisionMonitor.MonitorC].ShowFrame(image);
+                    ComputerVisionMonitors[eComputerVisionMonitor.MonitorB].ShowFrame(image);
                 }
 
                 CircleF[] pos = DetectCircles(image, ImagingData.BallRadius, ImagingData.BallRadiusError * 2, ImagingData.BallRadius * 5);

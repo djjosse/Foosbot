@@ -11,6 +11,7 @@
 using Foosbot.UI.ImageExtensions;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Foosbot.UI.ImageTool
 {
@@ -66,10 +67,12 @@ namespace Foosbot.UI.ImageTool
                 _monitorB.Start();
                 _monitorC.Start();
                 _monitorD.Start();
-                _labelA.Content = "Pre-Processed frame";
-                _labelB.Content = "Cropped frame based on Calibration Marks";
-                _labelC.Content = "Cropped frame based on Last Known Coordinate";
-                _labelD.Content = "Motion Detection frame";
+                _labelA.Content = "Pre-Processed cropped frame based on Calibration Marks";
+                _labelB.Content = "Ball Circle Tracker - Cropped based on Last Known Coordinate";
+                _labelC.Content = "Frame Pre-Processed for Motion Detection";
+                _labelD.Content = "Motion Detection Foreground Frame";
+
+                LoadSliderValues();
             }
             else
             {
@@ -87,6 +90,65 @@ namespace Foosbot.UI.ImageTool
         {
             if (_monitorA != null)
                 _imagePack.Streamer.Detach(_monitorA);
+        }
+
+        private void LoadSliderValues()
+        {
+            //Set limits for each
+            _slA.Maximum = 0.9;
+            _slA.Minimum = 0.1;
+            _slA.TickFrequency = 0.1;
+            _slB.Maximum = 0.9;
+            _slB.Minimum = 0.1;
+            _slB.TickFrequency = 0.1;
+            _slC.Maximum = 0.9;
+            _slC.Minimum = 0.1;
+            _slC.TickFrequency = 0.1;
+            _slD.Maximum = 0.9;
+            _slD.Minimum = 0.1;
+            _slD.TickFrequency = 0.1;
+            _slE.Maximum = 0.9;
+            _slE.Minimum = 0.1;
+            _slE.TickFrequency = 0.1;
+            _slF.Maximum = 0.9;
+            _slF.Minimum = 0.1;
+            _slF.TickFrequency = 0.1;
+
+            //Set current value for each
+            _tbA.Text = "0.5";
+            _tbB.Text = "0.5";
+            _tbC.Text = "0.5";
+            _tbD.Text = "0.5";
+            _tbE.Text = "0.5";
+            _tbF.Text = "0.5";
+        }
+
+        private void ColorSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Slider current = sender as Slider;
+
+            //change value to new one after change
+            switch(current.Name)
+            {
+                case "_slA":
+                   // MessageBox.Show("Changed");
+                    break;
+                case "_slB":
+                    // MessageBox.Show("Changed");
+                    break;
+                case "_slC":
+                    // MessageBox.Show("Changed");
+                    break;
+                case "_slD":
+                    // MessageBox.Show("Changed");
+                    break;
+                case "_slE":
+                    // MessageBox.Show("Changed");
+                    break;
+                case "_slF":
+                    // MessageBox.Show("Changed");
+                    break;
+            }
         }
     }
 }

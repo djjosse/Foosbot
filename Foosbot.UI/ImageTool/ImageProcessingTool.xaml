@@ -11,5 +11,36 @@
         <Label Name="_labelB" Content="Label" HorizontalAlignment="Left" Margin="550,310,0,0" VerticalAlignment="Top" Width="530"/>
         <Label Name="_labelC" Content="Label" HorizontalAlignment="Left" Margin="10,640,0,0" VerticalAlignment="Top" Width="530"/>
         <Label Name="_labelD" Content="Label" HorizontalAlignment="Left" Margin="550,640,0,0" VerticalAlignment="Top" Width="530"/>
+
+        <DockPanel Margin="1090,10,10,0" VerticalAlignment="Top">
+            <Label DockPanel.Dock="Top" FontWeight="Bold">A</Label>
+            <TextBox Name ="_tbA" Text="{Binding ElementName=_slA, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+            <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slA" ValueChanged="ColorSlider_ValueChanged" />
+        </DockPanel>
+        <DockPanel Margin="1090,60,10,0" VerticalAlignment="Top">
+            <Label DockPanel.Dock="Top" FontWeight="Bold">B</Label>
+            <TextBox Name ="_tbB" Text="{Binding ElementName=_slB, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+            <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slB" ValueChanged="ColorSlider_ValueChanged" />
+        </DockPanel>
+        <DockPanel Margin="1090,110,10,0" VerticalAlignment="Top">
+            <Label DockPanel.Dock="Top" FontWeight="Bold">C</Label>
+            <TextBox Name ="_tbC" Text="{Binding ElementName=_slC, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+            <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slC" ValueChanged="ColorSlider_ValueChanged" />
+        </DockPanel>
+        <DockPanel Margin="1090,160,10,0" VerticalAlignment="Top">
+            <Label DockPanel.Dock="Top" FontWeight="Bold">D</Label>
+            <TextBox Name ="_tbD" Text="{Binding ElementName=_slD, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+            <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slD" ValueChanged="ColorSlider_ValueChanged" />
+        </DockPanel>
+        <DockPanel Margin="1090,210,10,0" VerticalAlignment="Top">
+            <Label DockPanel.Dock="Top" FontWeight="Bold">E</Label>
+            <TextBox Name ="_tbE" Text="{Binding ElementName=_slE, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+            <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slE" ValueChanged="ColorSlider_ValueChanged" />
+        </DockPanel>
+        <DockPanel Margin="1090,260,10,0" VerticalAlignment="Top">
+            <Label DockPanel.Dock="Top" FontWeight="Bold">F</Label>
+            <TextBox Name ="_tbF" Text="{Binding ElementName=_slF, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+            <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slF" ValueChanged="ColorSlider_ValueChanged" />
+        </DockPanel>
     </Grid>
 </Window>

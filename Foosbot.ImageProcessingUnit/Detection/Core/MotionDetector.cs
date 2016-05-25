@@ -16,7 +16,9 @@ using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Tools.Contracts;
 using Foosbot.ImageProcessingUnit.Tools.Core;
+using Foosbot.ImageProcessingUnit.Tools.Enums;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
@@ -97,9 +99,9 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         public IImageData ImagingData { get; set; }
 
         /// <summary>
-        /// Computer Vision Monitor to show Pre-Processed Image
+        /// Computer Vision Monitor Dictionary used to show processed frames on the screen
         /// </summary>
-        public IComputerVisionMonitor MotionMonitor { get; set; }
+        public Dictionary<eComputerVisionMonitor, IComputerVisionMonitor> ComputerVisionMonitors { get; private set; }
 
         #endregion Properties
 
@@ -155,6 +157,8 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
             _forgroundDetector = new BackgroundSubtractorMOG2();
             _segMask = new Mat();
             _foreground = new Mat();
+
+            ComputerVisionMonitors = new Dictionary<eComputerVisionMonitor, IComputerVisionMonitor>();
         }
 
         /// <summary>
@@ -199,7 +203,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         {
             if (_currentImage == null) return;
 
-            MotionMonitor.ShowFrame(_foreground.ToImage<Gray, byte>());
+            ComputerVisionMonitors[eComputerVisionMonitor.MonitorD].ShowFrame(_foreground.ToImage<Gray, byte>());
 
             //iterate through each of the motion component
             foreach (Rectangle rectangle in GetMotionAreas())
@@ -256,6 +260,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                 using (image = _currentImage.Clone())
                 {
                     image = Prepare(image);
+                    ComputerVisionMonitors[eComputerVisionMonitor.MonitorC].ShowFrame(image);
                     Mat motion = new Mat();
                     motion = image.Mat;
                     _forgroundDetector.Apply(motion, _foreground);

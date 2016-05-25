@@ -140,13 +140,10 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
         {
             _calibration.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorA, ImageProcessingMonitorA);
             _calibration.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorB, ImageProcessingMonitorB);
-            _calibration.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorC, ImageProcessingMonitorC);
-            _calibration.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorD, ImageProcessingMonitorD);
             _ballTracker.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorA, ImageProcessingMonitorA);
             _ballTracker.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorB, ImageProcessingMonitorB);
-            _ballTracker.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorC, ImageProcessingMonitorC);
-            _ballTracker.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorD, ImageProcessingMonitorD);
-            _ballTracker.MotionInspector.MotionMonitor = ImageProcessingMonitorD;
+            _ballTracker.MotionInspector.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorC, ImageProcessingMonitorC);
+            _ballTracker.MotionInspector.ComputerVisionMonitors.Add(eComputerVisionMonitor.MonitorD, ImageProcessingMonitorD);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Contracts
     /// <summary>
     /// Interface to be implemented by Motion Detector
     /// </summary>
-    public interface IMotionDetector : IImagePreparation
+    public interface IMotionDetector : IImagePreparation, IComputerVisionMonitorCollection
     {
         /// <summary>
         /// Threshold to define a motion area, reduce the value to detect smaller motion
@@ -40,11 +40,6 @@ namespace Foosbot.ImageProcessingUnit.Detection.Contracts
         /// Common Imaging Data used in Image Processing Unit
         /// </summary>
         IImageData ImagingData { get; }
-
-        /// <summary>
-        /// Computer Vision Monitor to show Pre-Processed Image
-        /// </summary>
-        IComputerVisionMonitor MotionMonitor { get; set; }
 
         /// <summary>
         /// Detect ball on last image provided to BeginInvokeUpdateMotionHisitory method using motion detection
