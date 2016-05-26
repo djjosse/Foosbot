@@ -243,7 +243,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
 
             ImagingData.BallCoords = new BallCoordinates(Convert.ToInt32(coordinates.X), Convert.ToInt32(coordinates.Y), timeStamp);
 
-            Statistics.UpdateBallCoordinates(
+            Statistics.TryUpdateBallCoordinates(
                 String.Format("[IP Unit] Ball coordinates: {0}x{1}", ImagingData.BallCoords.X, ImagingData.BallCoords.Y));
         }
     }

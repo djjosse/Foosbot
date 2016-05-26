@@ -8,6 +8,8 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Contracts;
+using Foosbot.Common.Wrappers;
 using Foosbot.ImageProcessingUnit.Tools.Contracts;
 using System;
 using System.Diagnostics;
@@ -42,9 +44,9 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         private TimeSpan _spentOnDetectionInSecond;
 
         /// <summary>
-        /// Detection Stopwatch
+        /// Instance of timing object
         /// </summary>
-        private Stopwatch _detectionWatch;
+        private ITime _dateTime;
 
         #endregion Private Members
 
@@ -71,8 +73,10 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         /// <summary>
         /// Constructor
         /// </summary>
-        public DetectionStatisticAnalyzer()
-        { 
+        /// <param name="_dateTime">Instance of DateTimeWrapper</param>
+        public DetectionStatisticAnalyzer(ITime dateTime = null)
+        {
+            _dateTime = dateTime ?? new DateTimeWrapper();
             _currenWorkingSecond = DateTime.Now;
         }
 
@@ -80,11 +84,11 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         /// Steps to perform each detection started
         /// 1. Count frame
         /// 2. Start detection stopwatch
-        /// If not same second as in prevoius frame then update statistics and start from the beginning
+        /// If not same second as in previous frame then update statistics and start from the beginning
         /// </summary>
         public void Begin()
         {
-            DateTime now = DateTime.Now;
+            DateTime now = _dateTime.Now;
             if (_currenWorkingSecond.Second != now.Second)
             {
                 DetectionRate = (_totalFramesPerSecond < 1) ? 100 : 100 * _successDetectionFrame / _totalFramesPerSecond;
@@ -92,7 +96,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
                 DetectedFPS = _successDetectionFrame;
                 TotalFPS = _totalFramesPerSecond;
 
-                Statistics.UpdateBasicImageProcessingInfo(String.Format("Detection: Rate {0}% ({1}/{2}) Average T {3}(ms)",
+                Statistics.TryUpdateBasicImageProcessingInfo(String.Format("Detection: Rate {0}% ({1}/{2}) Average T {3}(ms)",
                         DetectionRate, DetectedFPS, TotalFPS, AverageDetectionTime));
 
                 _totalFramesPerSecond = 0;
@@ -101,19 +105,20 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
                 _currenWorkingSecond = now;
             }
             _totalFramesPerSecond++;
-            _detectionWatch = Stopwatch.StartNew();
+            _dateTime.Start();
         }
 
         /// <summary>
         /// Steps to perform after each detection finished
-        /// 1. Count detection if succesfull
+        /// 1. Count detection if successful
         /// 2. Stop the detection stopwatch
         /// </summary>
         /// <param name="isBallLocationFound">Detection result</param>
         public void Finalize(bool isBallLocationFound)
         {
-            _detectionWatch.Stop();
-            _spentOnDetectionInSecond += _detectionWatch.Elapsed;
+            _dateTime.Stop();
+            //Stopwatch 
+            _spentOnDetectionInSecond += _dateTime.Elapsed;
             if (isBallLocationFound)
                 _successDetectionFrame++;
         }

@@ -28,7 +28,7 @@ namespace Foosbot.Common.Contracts
         void Attach(IWorkingObserver<T> observer);
 
         /// <summary>
-        /// Dettach existing observer
+        /// Detach existing observer
         /// </summary>
         /// <param name="observer"></param>
         void Detach(IWorkingObserver<T> observer);

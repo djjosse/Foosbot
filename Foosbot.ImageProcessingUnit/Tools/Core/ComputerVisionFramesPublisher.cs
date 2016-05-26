@@ -31,7 +31,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         {
             IFrame frame = new Frame();
             frame.Timestamp = DateTime.Now;
-            frame.Image = image.Clone();// Resize(300, 150, Emgu.CV.CvEnum.Inter.Linear);
+            frame.Image = image.Clone();
             ShowFrame(frame);
         }
 

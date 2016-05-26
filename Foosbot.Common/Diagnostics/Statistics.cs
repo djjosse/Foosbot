@@ -9,7 +9,9 @@
 // **************************************************************************************
 
 using Foosbot.Common.Enums;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -46,48 +48,80 @@ namespace Foosbot
         /// Update Frame info
         /// </summary>
         /// <param name="info">New content</param>
-        public static void UpdateFrameInfo(string info)
+        public static void TryUpdateFrameInfo(string info)
         {
-            _dispatcher.Invoke(new ThreadStart(delegate
+            try
             {
-                _elements[eStatisticsKey.FrameInfo].Content = info;
-            }));
+                _dispatcher.Invoke(new ThreadStart(delegate
+                {
+                    _elements[eStatisticsKey.FrameInfo].Content = info;
+                }));
+            }
+            catch
+            {
+                Log.Common.Debug(String.Format("Unable to update: [{0}]",
+                    MethodBase.GetCurrentMethod().Name));
+            }
         }
 
         /// <summary>
         /// Update Proccess info
         /// </summary>
         /// <param name="info">New content</param>
-        public static void UpdateProccessInfo(string info)
+        public static void TryUpdateProccessInfo(string info)
         {
-            _dispatcher.Invoke(new ThreadStart(delegate
+            try
             {
-                _elements[eStatisticsKey.ProccessInfo].Content = info;
-            }));
+                _dispatcher.Invoke(new ThreadStart(delegate
+                {
+                    _elements[eStatisticsKey.ProccessInfo].Content = info;
+                }));
+            }
+            catch
+            {
+                Log.Common.Debug(String.Format("Unable to update: [{0}]",
+                    MethodBase.GetCurrentMethod().Name));
+            }
         }
 
         /// <summary>
         /// Update Basic Image Processing info
         /// </summary>
         /// <param name="info">New content</param>
-        public static void UpdateBasicImageProcessingInfo(string info)
+        public static void TryUpdateBasicImageProcessingInfo(string info)
         {
-            _dispatcher.Invoke(new ThreadStart(delegate
+            try
             {
-                _elements[eStatisticsKey.BasicImageProcessingInfo].Content = info;
-            }));
+                _dispatcher.Invoke(new ThreadStart(delegate
+                {
+                    _elements[eStatisticsKey.BasicImageProcessingInfo].Content = info;
+                }));
+            }
+            catch
+            {
+                Log.Common.Debug(String.Format("Unable to update: [{0}]",
+                    MethodBase.GetCurrentMethod().Name));
+            }
         }
 
         /// <summary>
         /// Update Ball Coordinates info
         /// </summary>
         /// <param name="info">New content</param>
-        public static void UpdateBallCoordinates(string info)
+        public static void TryUpdateBallCoordinates(string info)
         {
-            _dispatcher.Invoke(new ThreadStart(delegate
+            try
             {
-                _elements[eStatisticsKey.BallCoordinates].Content = info;
-            }));
+                _dispatcher.Invoke(new ThreadStart(delegate
+                {
+                    _elements[eStatisticsKey.BallCoordinates].Content = info;
+                }));
+            }
+            catch
+            {
+                Log.Common.Debug(String.Format("Unable to update: [{0}]",
+                    MethodBase.GetCurrentMethod().Name));
+            }
         }
     }
 }

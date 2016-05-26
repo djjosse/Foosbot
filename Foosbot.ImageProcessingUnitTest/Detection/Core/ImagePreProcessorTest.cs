@@ -8,21 +8,17 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Contracts
-{
-    /// <summary>
-    /// Interface for initialization object
-    /// </summary>
-    public interface IInitializable
-    {
-        /// <summary>
-        /// Is Initialized property
-        /// </summary>
-        bool IsInitialized { get; }
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-        /// <summary>
-        /// Initialization method
-        /// </summary>
-        void Initialize();
+namespace Foosbot.ImageProcessingUnitTest.Detection.Core
+{
+    [TestClass]
+    public class ImagePreProcessorTest
+    {
     }
 }

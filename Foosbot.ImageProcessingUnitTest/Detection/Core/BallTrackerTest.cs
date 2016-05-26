@@ -8,21 +8,14 @@
 // **																				   **
 // **************************************************************************************
 
-namespace Foosbot.Common.Contracts
-{
-    /// <summary>
-    /// Interface for initialization object
-    /// </summary>
-    public interface IInitializable
-    {
-        /// <summary>
-        /// Is Initialized property
-        /// </summary>
-        bool IsInitialized { get; }
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-        /// <summary>
-        /// Initialization method
-        /// </summary>
-        void Initialize();
+namespace Foosbot.ImageProcessingUnitTest.Detection.Core
+{
+    [TestClass]
+    public class BallTrackerTest
+    {
+
     }
 }

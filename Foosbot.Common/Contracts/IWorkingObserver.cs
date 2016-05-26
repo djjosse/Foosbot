@@ -23,9 +23,9 @@ namespace Foosbot.Common.Contracts
         void Update();
 
         /// <summary>
-        /// Tasks to perfrom before go to sleep
+        /// Tasks to perform before go to sleep
         /// Update will be received while sleeping and sleep will be 
-        /// enterrupted - Job() will be triggered again
+        /// interrupted - Job() will be triggered again
         /// If _currentData is null Job will not be performed and thread will go to sleep
         /// </summary>
         void Job();

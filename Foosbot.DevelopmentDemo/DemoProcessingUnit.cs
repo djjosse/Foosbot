@@ -113,7 +113,7 @@ namespace Foosbot.DevelopmentDemo
             System.Drawing.PointF p = TransformAgent.Data.InvertTransform(new System.Drawing.PointF(_x, _y));
             Marks.DrawBall(new Point(p.X, p.Y), _ballRadius);
 
-            Statistics.UpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
+            Statistics.TryUpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
 
             //set current coordinates to update
             ImagingData.BallCoords = coordinates;

@@ -78,7 +78,7 @@ namespace Foosbot.Common.Contracts
         /// Initialize Transformations calculates transformation and invert matrices based
         /// on provided transformed and original points
         /// </summary>
-        /// <param name="transformedPoints">Transformaed points</param>
+        /// <param name="transformedPoints">Transformed points</param>
         /// <param name="originalPoints">Original points</param>
         void Initialize(PointF[] transformedPoints, PointF[] originalPoints);
     }

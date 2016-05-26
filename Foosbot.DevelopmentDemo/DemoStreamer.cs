@@ -82,7 +82,7 @@ namespace Foosbot.DevelopmentDemo
         /// </summary>
         protected override void UpdateDiagnosticInfo()
         {
-            Statistics.UpdateFrameInfo("Streamer is in Demo Mode.");
+            Statistics.TryUpdateFrameInfo("Streamer is in Demo Mode.");
         }
     }
 }

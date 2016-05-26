@@ -251,7 +251,7 @@ namespace Foosbot.UI
                 {
                     float ramMB = _RAMCounter.NextValue() / 1048576; //Convert bytes to MB
                     string info = String.Format("CPU: {0} % RAM: {1} MB", _CPUCounter.NextValue().ToString(), ramMB.ToString());
-                    Statistics.UpdateProccessInfo(info);
+                    Statistics.TryUpdateProccessInfo(info);
                     Thread.Sleep(1000);
                 }
             };

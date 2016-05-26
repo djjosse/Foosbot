@@ -136,7 +136,7 @@ namespace Foosbot.ImageProcessingUnit.Streamer.Core
                 _capture.GetCaptureProperty(CapProp.FrameWidth).ToString(),
                 _capture.GetCaptureProperty(CapProp.FrameHeight).ToString(),
                 _capture.GetCaptureProperty(CapProp.Fps).ToString());
-            Statistics.UpdateFrameInfo(frameInfo);
+            Statistics.TryUpdateFrameInfo(frameInfo);
         }
 
         #endregion protected member functions
