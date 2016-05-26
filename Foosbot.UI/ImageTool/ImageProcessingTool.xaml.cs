@@ -8,7 +8,9 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Contracts;
 using Foosbot.UI.ImageExtensions;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +20,7 @@ namespace Foosbot.UI.ImageTool
     /// <summary>
     /// Interaction logic for ImageProcessingTool.xaml
     /// </summary>
-    public partial class ImageProcessingTool : Window
+    public partial class ImageProcessingTool : Window, IInitializable
     {
         /// <summary>
         /// Image Processing Pack Instance
@@ -42,8 +44,10 @@ namespace Foosbot.UI.ImageTool
         {
             InitializeComponent();
             _imagePack = imagePack;
+            
             Loaded += OnWindowLoaded;
             Closing += OnWindowClosing;
+
         }
 
         /// <summary>
@@ -67,12 +71,7 @@ namespace Foosbot.UI.ImageTool
                 _monitorB.Start();
                 _monitorC.Start();
                 _monitorD.Start();
-                _labelA.Content = "Pre-Processed cropped frame based on Calibration Marks";
-                _labelB.Content = "Ball Circle Tracker - Cropped based on Last Known Coordinate";
-                _labelC.Content = "Frame Pre-Processed for Motion Detection";
-                _labelD.Content = "Motion Detection Foreground Frame";
-
-                LoadSliderValues();
+                Initialize();
             }
             else
             {
@@ -92,63 +91,85 @@ namespace Foosbot.UI.ImageTool
                 _imagePack.Streamer.Detach(_monitorA);
         }
 
-        private void LoadSliderValues()
-        {
-            //Set limits for each
-            _slA.Maximum = 0.9;
-            _slA.Minimum = 0.1;
-            _slA.TickFrequency = 0.1;
-            _slB.Maximum = 0.9;
-            _slB.Minimum = 0.1;
-            _slB.TickFrequency = 0.1;
-            _slC.Maximum = 0.9;
-            _slC.Minimum = 0.1;
-            _slC.TickFrequency = 0.1;
-            _slD.Maximum = 0.9;
-            _slD.Minimum = 0.1;
-            _slD.TickFrequency = 0.1;
-            _slE.Maximum = 0.9;
-            _slE.Minimum = 0.1;
-            _slE.TickFrequency = 0.1;
-            _slF.Maximum = 0.9;
-            _slF.Minimum = 0.1;
-            _slF.TickFrequency = 0.1;
+        /// <summary>
+        /// Is Initialized property
+        /// </summary>
+        public bool IsInitialized { get; private set; }
 
-            //Set current value for each
-            _tbA.Text = "0.5";
-            _tbB.Text = "0.5";
-            _tbC.Text = "0.5";
-            _tbD.Text = "0.5";
-            _tbE.Text = "0.5";
-            _tbF.Text = "0.5";
+        public void Initialize()
+        {
+            if (!IsInitialized)
+            {
+                //Set limits for each
+                _slA.Maximum = 255;
+                _slA.Minimum = 0;
+                _slA.TickFrequency = 10;
+                _slB.Maximum = 500;
+                _slB.Minimum = 0;
+                _slB.TickFrequency = 10;
+                _slC.Maximum = 100;
+                _slC.Minimum = 0;
+                _slC.TickFrequency = 5;
+                _slD.Maximum = 3.0;
+                _slD.Minimum = 0.5;
+                _slD.TickFrequency = 0.1;
+                _slE.Maximum = 255;
+                _slE.Minimum = 0;
+                _slE.TickFrequency = 10;
+                _slF.Maximum = 100;
+                _slF.Minimum = 0;
+                _slF.TickFrequency = 1;
+                _slG.Maximum = 1.5;
+                _slG.Minimum = 0.0;
+                _slG.TickFrequency = 0.05;
+
+
+                //Set current value for each
+                _tbA.Text = _imagePack.CircleDetectionGrayThreshold.ToString();
+                _tbB.Text = _imagePack.CircleDetectionCannyThreshold.ToString();
+                _tbC.Text = _imagePack.CircleDetectionAccumulatorThreshold.ToString();
+                _tbD.Text = _imagePack.CircleDetectionInverseRatio.ToString();
+                _tbE.Text = _imagePack.MotionDetectionGrayThreshold.ToString();
+                _tbF.Text = _imagePack.MinimalMotionAreaThreshold.ToString();
+                _tbG.Text = _imagePack.MinimalMotionPixelsFactor.ToString();
+
+                IsInitialized = true;
+            }
         }
 
         private void ColorSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Slider current = sender as Slider;
-
-            //change value to new one after change
-            switch(current.Name)
+            if (IsInitialized)
             {
-                case "_slA":
-                   // MessageBox.Show("Changed");
-                    break;
-                case "_slB":
-                    // MessageBox.Show("Changed");
-                    break;
-                case "_slC":
-                    // MessageBox.Show("Changed");
-                    break;
-                case "_slD":
-                    // MessageBox.Show("Changed");
-                    break;
-                case "_slE":
-                    // MessageBox.Show("Changed");
-                    break;
-                case "_slF":
-                    // MessageBox.Show("Changed");
-                    break;
+                Slider current = sender as Slider;
+
+                //change value to new one after change
+                switch (current.Name)
+                {
+                    case "_slA":
+                        _imagePack.CircleDetectionGrayThreshold = Convert.ToInt32(current.Value);
+                        break;
+                    case "_slB":
+                        _imagePack.CircleDetectionCannyThreshold = current.Value;
+                        break;
+                    case "_slC":
+                        _imagePack.CircleDetectionAccumulatorThreshold = current.Value;
+                        break;
+                    case "_slD":
+                        _imagePack.CircleDetectionInverseRatio = current.Value;
+                        break;
+                    case "_slE":
+                        _imagePack.MotionDetectionGrayThreshold = Convert.ToInt32(current.Value); ;
+                        break;
+                    case "_slF":
+                        _imagePack.MinimalMotionAreaThreshold = current.Value;
+                        break;
+                    case "_slG":
+                        _imagePack.MinimalMotionPixelsFactor = current.Value;
+                        break;
+                }
             }
         }
+
     }
 }

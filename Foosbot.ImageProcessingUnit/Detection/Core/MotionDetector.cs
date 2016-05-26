@@ -42,12 +42,12 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         /// <summary>
         /// Default threshold to define a motion area, reduce the value to detect smaller motion
         /// </summary>
-        public const double DEFAULT_MIN_MOTION_AREA_THRESHOLD = 10;
+        public const double DEFAULT_MIN_MOTION_AREA_THRESHOLD = 20;
 
         /// <summary>
         /// Default factor to reject the area that contains too few motion
         /// </summary>
-        public const double DEFAULT_MIN_MOTION_PIXEL_FACTOR = 0.5;
+        public const double DEFAULT_MIN_MOTION_PIXEL_FACTOR = 0.1;
 
         /// <summary>
         /// The duration of motion history you wants to keep (Seconds)

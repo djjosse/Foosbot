@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Detection\Contracts\ICroppable.cs" />
+    <Compile Include="Detection\Contracts\IImageConfiguration.cs" />
     <Compile Include="Detection\Contracts\IImagePreparation.cs" />
     <Compile Include="Detection\Contracts\IMotionDetector.cs" />
     <Compile Include="Detection\Contracts\ITracker.cs" />

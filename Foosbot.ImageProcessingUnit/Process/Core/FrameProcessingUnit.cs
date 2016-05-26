@@ -27,6 +27,91 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
     /// </summary>
     public class FrameProcessingUnit : ImagingProcess
     {
+        public override int CircleDetectionGrayThreshold
+        {
+            get
+            {
+                return _ballTracker.PreProcessor.GrayThreshold;
+            }
+            set
+            {
+                _ballTracker.PreProcessor.GrayThreshold = value;
+            }
+        }
+
+        public override double CircleDetectionCannyThreshold
+        {
+            get
+            {
+                return _ballTracker.CannyThreshold;
+            }
+            set
+            {
+                _ballTracker.CannyThreshold = value;
+            }
+        }
+
+        public override double CircleDetectionAccumulatorThreshold
+        {
+            get
+            {
+                return _ballTracker.CircleAccumulator;
+            }
+            set
+            {
+                _ballTracker.CircleAccumulator = value;
+            }
+        }
+
+
+        public override double CircleDetectionInverseRatio
+        {
+            get
+            {
+                return _ballTracker.InverseRatio;
+            }
+            set
+            {
+                _ballTracker.InverseRatio = value;
+            }
+        }
+
+        public override int MotionDetectionGrayThreshold
+        {
+            get
+            {
+                return _ballTracker.MotionInspector.GrayThreshold;
+            }
+            set
+            {
+                _ballTracker.MotionInspector.GrayThreshold = value;
+            }
+        }
+
+        public override double MinimalMotionAreaThreshold
+        {
+            get
+            {
+                return _ballTracker.MotionInspector.MinMotionAreaThreshold;
+            }
+            set
+            {
+                _ballTracker.MotionInspector.MinMotionAreaThreshold = value;
+            }
+        }
+
+        public override double MinimalMotionPixelsFactor
+        {
+            get
+            {
+                return _ballTracker.MotionInspector.MinMotionPixelFactor;
+            }
+            set
+            {
+                _ballTracker.MotionInspector.MinMotionPixelFactor = value;
+            }
+        }
+
         /// <summary>
         /// Last frame received from streamer
         /// </summary>

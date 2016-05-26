@@ -7,40 +7,45 @@
         <Canvas Name="_guiImageB" HorizontalAlignment="Left" Height="300" Width="530" Margin="550,10,0,0" VerticalAlignment="Top" />
         <Canvas Name="_guiImageC" HorizontalAlignment="Left" Height="300" Width="530" Margin="10,340,0,0" VerticalAlignment="Top" />
         <Canvas Name="_guiImageD" HorizontalAlignment="Left" Height="300" Width="530" Margin="550,340,0,0" VerticalAlignment="Top" />
-        <Label Name="_labelA" Content="Label" HorizontalAlignment="Left" Margin="10,310,0,0" VerticalAlignment="Top" Width="530"/>
-        <Label Name="_labelB" Content="Label" HorizontalAlignment="Left" Margin="550,310,0,0" VerticalAlignment="Top" Width="530"/>
-        <Label Name="_labelC" Content="Label" HorizontalAlignment="Left" Margin="10,640,0,0" VerticalAlignment="Top" Width="530"/>
-        <Label Name="_labelD" Content="Label" HorizontalAlignment="Left" Margin="550,640,0,0" VerticalAlignment="Top" Width="530"/>
+        <Label Name="_labelA" HorizontalAlignment="Left" Margin="10,310,0,0" VerticalAlignment="Top" Width="530">Pre-Processed cropped frame based on Calibration Marks</Label>
+        <Label Name="_labelB" HorizontalAlignment="Left" Margin="550,310,0,0" VerticalAlignment="Top" Width="530">Ball Circle Tracker - Cropped based on Last Known Coordinate</Label>
+        <Label Name="_labelC" HorizontalAlignment="Left" Margin="10,640,0,0" VerticalAlignment="Top" Width="530">Frame Pre-Processed for Motion Detection</Label>
+        <Label Name="_labelD" HorizontalAlignment="Left" Margin="550,640,0,0" VerticalAlignment="Top" Width="530">Motion Detection Foreground Frame</Label>
 
         <DockPanel Margin="1090,10,10,0" VerticalAlignment="Top">
-            <Label DockPanel.Dock="Top" FontWeight="Bold">A</Label>
+            <Label DockPanel.Dock="Top">Image Processing Gray Threshold</Label>
             <TextBox Name ="_tbA" Text="{Binding ElementName=_slA, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
             <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slA" ValueChanged="ColorSlider_ValueChanged" />
         </DockPanel>
         <DockPanel Margin="1090,60,10,0" VerticalAlignment="Top">
-            <Label DockPanel.Dock="Top" FontWeight="Bold">B</Label>
+            <Label DockPanel.Dock="Top">Circle Detection Canny Threshold</Label>
             <TextBox Name ="_tbB" Text="{Binding ElementName=_slB, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
             <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slB" ValueChanged="ColorSlider_ValueChanged" />
         </DockPanel>
         <DockPanel Margin="1090,110,10,0" VerticalAlignment="Top">
-            <Label DockPanel.Dock="Top" FontWeight="Bold">C</Label>
+            <Label DockPanel.Dock="Top">Circle Detection Accumulator Threshold</Label>
             <TextBox Name ="_tbC" Text="{Binding ElementName=_slC, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
             <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slC" ValueChanged="ColorSlider_ValueChanged" />
         </DockPanel>
         <DockPanel Margin="1090,160,10,0" VerticalAlignment="Top">
-            <Label DockPanel.Dock="Top" FontWeight="Bold">D</Label>
+            <Label DockPanel.Dock="Top">Circle Detection Inverse Ratio</Label>
             <TextBox Name ="_tbD" Text="{Binding ElementName=_slD, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
             <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slD" ValueChanged="ColorSlider_ValueChanged" />
         </DockPanel>
         <DockPanel Margin="1090,210,10,0" VerticalAlignment="Top">
-            <Label DockPanel.Dock="Top" FontWeight="Bold">E</Label>
+            <Label DockPanel.Dock="Top">Motion Detection Gray Threshold</Label>
             <TextBox Name ="_tbE" Text="{Binding ElementName=_slE, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
             <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slE" ValueChanged="ColorSlider_ValueChanged" />
         </DockPanel>
         <DockPanel Margin="1090,260,10,0" VerticalAlignment="Top">
-            <Label DockPanel.Dock="Top" FontWeight="Bold">F</Label>
+            <Label DockPanel.Dock="Top">Minimal Motion Area Threshold</Label>
             <TextBox Name ="_tbF" Text="{Binding ElementName=_slF, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
             <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slF" ValueChanged="ColorSlider_ValueChanged" />
+        </DockPanel>
+        <DockPanel Margin="1090,310,10,0" VerticalAlignment="Top">
+            <Label DockPanel.Dock="Top">Min Motion Pixel Factor</Label>
+            <TextBox Name ="_tbG" Text="{Binding ElementName=_slG, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+            <Slider Maximum="255" TickPlacement="BottomRight" TickFrequency="5" IsSnapToTickEnabled="True" Name="_slG" ValueChanged="ColorSlider_ValueChanged" />
         </DockPanel>
     </Grid>
 </Window>

@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Core;
 using Foosbot.ImageProcessingUnit.Streamer.Core;
 
@@ -17,7 +18,7 @@ namespace Foosbot.ImageProcessingUnit.Process.Contracts
     /// Interface for Image Processing Pack
     /// Container for all Image Processing Elements
     /// </summary>
-    public interface IImageProcessingPack
+    public interface IImageProcessingPack : IImageConfiguration
     {
         /// <summary>
         /// Streamer to get frames from

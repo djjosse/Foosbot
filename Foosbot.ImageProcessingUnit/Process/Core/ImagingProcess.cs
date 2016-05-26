@@ -9,6 +9,7 @@
 // **************************************************************************************
 
 using Foosbot.Common.Contracts;
+using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Streamer.Core;
 using Foosbot.ImageProcessingUnit.Tools.Core;
@@ -19,8 +20,16 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
     /// Abstract image processing unit model 
     /// to be implemented by Demo or Real Image Processing Unit
     /// </summary>
-    public abstract class ImagingProcess : FrameObserver, IInitializable
+    public abstract class ImagingProcess : FrameObserver, IInitializable, IImageConfiguration
     {
+        public virtual int CircleDetectionGrayThreshold { get; set; }
+        public virtual double CircleDetectionCannyThreshold { get; set; }
+        public virtual double CircleDetectionAccumulatorThreshold { get; set; }
+        public virtual double CircleDetectionInverseRatio { get; set; }
+        public virtual int MotionDetectionGrayThreshold { get; set; }
+        public virtual double MinimalMotionAreaThreshold { get; set; }
+        public virtual double MinimalMotionPixelsFactor { get; set; }
+
         /// <summary>
         /// Constructor for abstract image processing unit
         /// </summary>

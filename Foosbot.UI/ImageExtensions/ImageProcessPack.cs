@@ -22,7 +22,7 @@ namespace Foosbot.UI.ImageExtensions
     public class ImageProcessPack : IImageProcessingPack
     {
         /// <summary>
-        /// Is Image Procesing Pack Instance Already exists flag
+        /// Is Image Processing Pack Instance Already exists flag
         /// </summary>
         private static bool _isCreated = false;
 
@@ -45,6 +45,91 @@ namespace Foosbot.UI.ImageExtensions
         /// Actual Image processing unit
         /// </summary>
         public ImagingProcess ImageProcessUnit { get; private set; }
+
+        public int CircleDetectionGrayThreshold
+        {
+            get
+            {
+                return ImageProcessUnit.CircleDetectionGrayThreshold;
+            }
+            set
+            {
+                ImageProcessUnit.CircleDetectionGrayThreshold = value;
+            }
+        }
+
+        public double CircleDetectionCannyThreshold
+        {
+            get
+            {
+                return ImageProcessUnit.CircleDetectionCannyThreshold;
+            }
+            set
+            {
+                ImageProcessUnit.CircleDetectionCannyThreshold = value;
+            }
+        }
+
+        public double CircleDetectionAccumulatorThreshold
+        {
+            get
+            {
+                return ImageProcessUnit.CircleDetectionAccumulatorThreshold;
+            }
+            set
+            {
+                ImageProcessUnit.CircleDetectionAccumulatorThreshold = value;
+            }
+        }
+
+        public double CircleDetectionInverseRatio
+        {
+            get
+            {
+                return ImageProcessUnit.CircleDetectionInverseRatio;
+            }
+            set
+            {
+                ImageProcessUnit.CircleDetectionInverseRatio = value;
+            }
+        }
+
+        public int MotionDetectionGrayThreshold
+        {
+            get
+            {
+                return ImageProcessUnit.MotionDetectionGrayThreshold;
+            }
+            set
+            {
+                ImageProcessUnit.MotionDetectionGrayThreshold = value;
+            }
+        }
+
+        public double MinimalMotionAreaThreshold
+        {
+            get
+            {
+                return ImageProcessUnit.MinimalMotionAreaThreshold;
+            }
+            set
+            {
+                ImageProcessUnit.MinimalMotionAreaThreshold = value;
+            }
+        }
+
+        public double MinimalMotionPixelsFactor
+        {
+            get
+            {
+                return ImageProcessUnit.MinimalMotionPixelsFactor;
+            }
+            set
+            {
+                ImageProcessUnit.MinimalMotionPixelsFactor = value;
+            }
+        }
+
 
         /// <summary>
         /// Private Constructor for Image Processing Pack to be called in factory method
