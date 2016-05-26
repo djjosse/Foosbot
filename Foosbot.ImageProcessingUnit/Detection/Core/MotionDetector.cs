@@ -15,7 +15,6 @@ using Emgu.CV.VideoSurveillance;
 using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Tools.Contracts;
-using Foosbot.ImageProcessingUnit.Tools.Core;
 using Foosbot.ImageProcessingUnit.Tools.Enums;
 using System;
 using System.Collections.Generic;

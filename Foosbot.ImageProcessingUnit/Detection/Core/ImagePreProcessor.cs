@@ -1,7 +1,4 @@
-﻿using Emgu.CV;
-using Emgu.CV.Structure;
-using Foosbot.ImageProcessingUnit.Detection.Contracts;
-// **************************************************************************************
+﻿// **************************************************************************************
 // **																				   **
 // **		(C) FOOSBOT - Final Software Engineering Project, 2015 - 2016			   **
 // **		(C) Authors: M.Toubian, M.Shimon, E.Kleinman, O.Sasson, J.Gleyzer          **
@@ -10,6 +7,10 @@ using Foosbot.ImageProcessingUnit.Detection.Contracts;
 // **		and may not be reproduced or used without authors explicit permission.	   **
 // **																				   **
 // **************************************************************************************
+
+using Emgu.CV;
+using Emgu.CV.Structure;
+using Foosbot.ImageProcessingUnit.Detection.Contracts;
 
 namespace Foosbot.ImageProcessingUnit.Detection.Core
 {

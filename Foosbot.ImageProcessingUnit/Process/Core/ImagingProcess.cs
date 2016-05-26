@@ -22,12 +22,39 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
     /// </summary>
     public abstract class ImagingProcess : FrameObserver, IInitializable, IImageConfiguration
     {
+        /// <summary>
+        /// Circle Detection Pre-Processing Gray Threshold
+        /// </summary>
         public virtual int CircleDetectionGrayThreshold { get; set; }
+
+        /// <summary>
+        /// Circle Detection Canny Threshold for Circle Edge Detection
+        /// </summary>
         public virtual double CircleDetectionCannyThreshold { get; set; }
+
+        /// <summary>
+        /// Circle Accumulator Threshold for Circle Detection
+        /// </summary>
         public virtual double CircleDetectionAccumulatorThreshold { get; set; }
+
+        /// <summary>
+        /// Circle Detection Method Inverse Ration
+        /// </summary>
         public virtual double CircleDetectionInverseRatio { get; set; }
+
+        /// <summary>
+        /// Motion Detection Pre-Processing Gray Threshold
+        /// </summary>
         public virtual int MotionDetectionGrayThreshold { get; set; }
+
+        /// <summary>
+        /// Minimal Motion Area Threshold
+        /// </summary>
         public virtual double MinimalMotionAreaThreshold { get; set; }
+
+        /// <summary>
+        /// Factor for Minimal Motion Pixels in Motion Area
+        /// </summary>
         public virtual double MinimalMotionPixelsFactor { get; set; }
 
         /// <summary>

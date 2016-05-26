@@ -46,6 +46,9 @@ namespace Foosbot.UI.ImageExtensions
         /// </summary>
         public ImagingProcess ImageProcessUnit { get; private set; }
 
+        /// <summary>
+        /// Circle Detection Pre-Processing Gray Threshold
+        /// </summary>
         public int CircleDetectionGrayThreshold
         {
             get
@@ -58,6 +61,9 @@ namespace Foosbot.UI.ImageExtensions
             }
         }
 
+        /// <summary>
+        /// Circle Detection Canny Threshold for Circle Edge Detection
+        /// </summary>
         public double CircleDetectionCannyThreshold
         {
             get
@@ -70,6 +76,9 @@ namespace Foosbot.UI.ImageExtensions
             }
         }
 
+        /// <summary>
+        /// Circle Accumulator Threshold for Circle Detection
+        /// </summary>
         public double CircleDetectionAccumulatorThreshold
         {
             get
@@ -82,6 +91,9 @@ namespace Foosbot.UI.ImageExtensions
             }
         }
 
+        /// <summary>
+        /// Circle Detection Method Inverse Ration
+        /// </summary>
         public double CircleDetectionInverseRatio
         {
             get
@@ -94,6 +106,9 @@ namespace Foosbot.UI.ImageExtensions
             }
         }
 
+        /// <summary>
+        /// Motion Detection Pre-Processing Gray Threshold
+        /// </summary>
         public int MotionDetectionGrayThreshold
         {
             get
@@ -106,6 +121,9 @@ namespace Foosbot.UI.ImageExtensions
             }
         }
 
+        /// <summary>
+        /// Minimal Motion Area Threshold
+        /// </summary>
         public double MinimalMotionAreaThreshold
         {
             get
@@ -118,6 +136,9 @@ namespace Foosbot.UI.ImageExtensions
             }
         }
 
+        /// <summary>
+        /// Factor for Minimal Motion Pixels in Motion Area
+        /// </summary>
         public double MinimalMotionPixelsFactor
         {
             get
@@ -129,7 +150,6 @@ namespace Foosbot.UI.ImageExtensions
                 ImageProcessUnit.MinimalMotionPixelsFactor = value;
             }
         }
-
 
         /// <summary>
         /// Private Constructor for Image Processing Pack to be called in factory method
@@ -146,7 +166,7 @@ namespace Foosbot.UI.ImageExtensions
         }
 
         /// <summary>
-        /// Destrucor for Image Processing Pack
+        /// Destructor for Image Processing Pack
         /// </summary>
         ~ImageProcessPack()
         {
@@ -177,7 +197,7 @@ namespace Foosbot.UI.ImageExtensions
         /// </summary>
         /// <param name="dispatcher">Dispatcher used to present frames in GUI relevant thread</param>
         /// <param name="screen">Canvas to draw frames on</param>
-        /// <returns>ImageProcessPack with all componenets</returns>
+        /// <returns>ImageProcessPack with all components</returns>
         public static ImageProcessPack Create(Dispatcher dispatcher, System.Windows.Controls.Canvas screen)
         {
             if (!_isCreated)

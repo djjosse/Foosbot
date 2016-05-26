@@ -27,6 +27,9 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
     /// </summary>
     public class FrameProcessingUnit : ImagingProcess
     {
+        /// <summary>
+        /// Circle Detection Pre-Processing Gray Threshold
+        /// </summary>
         public override int CircleDetectionGrayThreshold
         {
             get
@@ -39,6 +42,9 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
             }
         }
 
+        /// <summary>
+        /// Circle Detection Canny Threshold for Circle Edge Detection
+        /// </summary>
         public override double CircleDetectionCannyThreshold
         {
             get
@@ -51,6 +57,9 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
             }
         }
 
+        /// <summary>
+        /// Circle Accumulator Threshold for Circle Detection
+        /// </summary>
         public override double CircleDetectionAccumulatorThreshold
         {
             get
@@ -63,7 +72,9 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
             }
         }
 
-
+        /// <summary>
+        /// Circle Detection Method Inverse Ration
+        /// </summary>
         public override double CircleDetectionInverseRatio
         {
             get
@@ -76,6 +87,9 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
             }
         }
 
+        /// <summary>
+        /// Motion Detection Pre-Processing Gray Threshold
+        /// </summary>
         public override int MotionDetectionGrayThreshold
         {
             get
@@ -88,6 +102,9 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
             }
         }
 
+        /// <summary>
+        /// Minimal Motion Area Threshold
+        /// </summary>
         public override double MinimalMotionAreaThreshold
         {
             get
@@ -100,6 +117,9 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
             }
         }
 
+        /// <summary>
+        /// Factor for Minimal Motion Pixels in Motion Area
+        /// </summary>
         public override double MinimalMotionPixelsFactor
         {
             get
