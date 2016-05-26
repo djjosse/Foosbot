@@ -266,5 +266,9 @@ namespace Foosbot.UI
             iTool.Show();
         }
 
+        private void Close(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }
