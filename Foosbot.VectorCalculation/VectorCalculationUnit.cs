@@ -23,20 +23,49 @@ namespace Foosbot.VectorCalculation
 {
     public class VectorCalculationUnit : Observer<BallCoordinates>
     {
+        #region Constants
+
+        private readonly double D_ERR;
+        private readonly double ALPHA_ERR;
+
+        #endregion Constants
+
         /// <summary>
         /// Ball Location Publisher
         /// This inner object is a publisher for vector calculation unit 
         /// </summary>
         public BallLocationPublisher LastBallLocationPublisher { get; protected set; }
 
+        /// <summary>
+        /// Coordinates Publisher for Next Foosbot Pipeline element (Decision Unit)
+        /// </summary>
         public ILastBallCoordinatesUpdater _coordinatesUpdater;
 
+        /// <summary>
+        /// Coordinates Stabilizer (Shake removing) Utility
+        /// </summary>
         public CoordinatesStabilizer _stabilizer;
 
+        /// <summary>
+        /// Ricochet Calculation Utility
+        /// </summary>
         private RicochetCalc vectorUtils;
 
+        /// <summary>
+        /// Image Data from Image Processing Unit
+        /// </summary>
         private IImageData _imagingData;
 
+        /// <summary>
+        /// Last known ball coordinates from previous iteration
+        /// </summary>
+        private BallCoordinates _storedBallCoordinates;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="coordinatesPublisher">Coordinates Publisher (Image processing Unit)</param>
+        /// <param name="imagingData">Image Data from Image Processing Unit</param>
         public VectorCalculationUnit(Publisher<BallCoordinates> coordinatesPublisher, IImageData imagingData) :
             base(coordinatesPublisher)
         {
@@ -55,7 +84,9 @@ namespace Foosbot.VectorCalculation
             ALPHA_ERR = Configuration.Attributes.GetValue<double>(Configuration.Names.VECTOR_CALC_ANGLE_ERROR);
         }
 
-
+        /// <summary>
+        /// Main Method of Vector Calculation Unit
+        /// </summary>
         public override void Job()
         {
             try
@@ -104,7 +135,7 @@ namespace Foosbot.VectorCalculation
                 }
                 else
                 {
-                   // Marks.DrawBallVector(new Point(0,0), new Point(0, 0), false);
+                   Marks.DrawBallVector(new Point(0,0), new Point(0, 0), false);
                 }
             }
             catch (ThreadInterruptedException)
@@ -121,14 +152,11 @@ namespace Foosbot.VectorCalculation
             }
         }
 
-        private readonly double D_ERR;
-        private readonly double ALPHA_ERR;
-
         /// <summary>
-        /// Last known ball coordinates from previous iteration
+        /// Vector Calculation Algorithm
         /// </summary>
-        private BallCoordinates _storedBallCoordinates;
-
+        /// <param name="ballCoordinates"></param>
+        /// <returns></returns>
         private Vector2D VectorCalculationAlgorithm(BallCoordinates ballCoordinates)
         {
             //verify ball coordinates
@@ -155,6 +183,12 @@ namespace Foosbot.VectorCalculation
             return vector;
         }
 
+        /// <summary>
+        /// Calculate Vector Method
+        /// </summary>
+        /// <param name="ballCoordinates"></param>
+        /// <param name="maxAngleError"></param>
+        /// <returns></returns>
         private Vector2D CalculateVector(BallCoordinates ballCoordinates, double maxAngleError = 1.0)
         {
             if (ballCoordinates.Timestamp == _storedBallCoordinates.Timestamp)
