@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using Foosbot.Common.Data;
+using Foosbot.Common.Contracts;
 
 namespace Foosbot.ImageProcessingUnit.Tools.Core
 {
@@ -49,10 +50,25 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         #endregion Prepare Image Constants
 
         /// <summary>
+        /// Initializes and set transfromation data
+        /// </summary>
+        ITransformation _transformationAgent;
+
+        /// <summary>
         /// Calibration mark locations on table by names in dictionary in Foosbot World
         /// Metrics here is in points (PTS) not in Pixels
         /// </summary>
         private Dictionary<eCallibrationMark, System.Drawing.PointF> _markCoordinates;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="transformationAgent">Transformation agent instance, 
+        /// [null] by default - singleton will be used</param>
+        public CalibrationHelper(ITransformation transformationAgent = null)
+        {
+            _transformationAgent = transformationAgent ?? TransformAgent.Data;
+        }
 
         /// <summary>
         /// Prepare Image:
@@ -76,7 +92,9 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         /// <param name="ballError">Calculated Ball Error as Out Parameter (pixels)</param>
         public void CalculateBallRadiusAndError(float origRadius, out int ballRadius, out double ballError)
         {
-            double minRadius = origRadius * 100;
+            VerifyMarksInitialized();
+
+            double minRadius = Double.MaxValue;
             double maxRadius = 0;
             foreach (System.Drawing.PointF start in _markCoordinates.Values)
             {
@@ -84,8 +102,8 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
 
                 double check = start.Distance(end);
 
-                System.Drawing.PointF transformedStart = TransformAgent.Data.InvertTransform(start);
-                System.Drawing.PointF transformedEnd = TransformAgent.Data.InvertTransform(end);
+                System.Drawing.PointF transformedStart = _transformationAgent.InvertTransform(start);
+                System.Drawing.PointF transformedEnd = _transformationAgent.InvertTransform(end);
 
                 double radius = transformedStart.Distance(transformedEnd);
 
@@ -108,6 +126,8 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         /// <returns>Dictionary of 2 diagonal pairs of marks</returns>
         public Dictionary<CircleF, CircleF> FindDiagonalMarkPairs(List<CircleF> unsortedMarks)
         {
+            VerifyUnsortedMarksArgument(unsortedMarks);
+
             //Find All Pairs based on distance
             Dictionary<CircleF, CircleF> pairs = new Dictionary<CircleF, CircleF>();
 
@@ -161,6 +181,38 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
             {
                 throw new CalibrationException(String.Format(
                     "Number of marks found in calibration is [{0}], while expected [4] marks.", circles.Count));
+            }
+        }
+
+        /// <summary>
+        /// Verify Image Calibration Marks were set
+        /// </summary>
+        /// <exception cref="InitializationExcetion">Thrown if marks were not set</exception>
+        private void VerifyMarksInitialized()
+        {
+            if (_markCoordinates == null || _markCoordinates.Count != 4)
+                throw new InitializationException("Image calibration marks were not set!");
+        }
+
+        /// <summary>
+        /// Verify Unsorted Marks Argument
+        /// </summary>
+        /// <exception cref="CalibrationException">Thrown if marks are not different or not 4 marks passed</exception>
+        private void VerifyUnsortedMarksArgument(List<CircleF> unsortedMarks)
+        {
+
+            if (unsortedMarks == null || unsortedMarks.Count != 4)
+                throw new CalibrationException(String.Format(
+                    "Argument exception: {0} must have 4 unsorted marks!", unsortedMarks));
+
+            foreach (CircleF mark in unsortedMarks)
+            {
+                CircleF[] otherMarks = unsortedMarks.Where(m => !m.Equals(mark)).ToArray();
+                if (otherMarks.Length != 3)
+                {
+                    throw new CalibrationException(String.Format(
+                        "Argument exception: {0} must have 4 different marks!", unsortedMarks));
+                }
             }
         }
 
@@ -221,13 +273,11 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
             System.Drawing.PointF[] orriginalPointArray = _markCoordinates.Values.ToArray();
             System.Drawing.PointF[] arrangedPoints = new System.Drawing.PointF[4];
 
-            arrangedPoints[0] = calibrationMarks[eCallibrationMark.BL].Center;
-            arrangedPoints[1] = calibrationMarks[eCallibrationMark.TL].Center;
-            arrangedPoints[2] = calibrationMarks[eCallibrationMark.TR].Center;
-            arrangedPoints[3] = calibrationMarks[eCallibrationMark.BR].Center;
+            for (int i = 0; i < 4; i++)
+                arrangedPoints[i] = calibrationMarks[(eCallibrationMark)i].Center;
 
             //Used to perform transformations and store transformation matrices for further calculations
-            TransformAgent.Data.Initialize(arrangedPoints, orriginalPointArray);
+            _transformationAgent.Initialize(arrangedPoints, orriginalPointArray);
         }
 
         /// <summary>
