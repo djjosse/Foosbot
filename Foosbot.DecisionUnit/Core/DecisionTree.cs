@@ -209,7 +209,8 @@ namespace Foosbot.DecisionUnit.Core
                 case eLinearMove.VECTOR_BASED:
                     if (rod.Intersection.IsDefined)
                     {
-                        return _helper.LocateRespondingPlayer(rod, rod.Intersection.Y, respondingPlayer);
+                        int stopperPosition = _helper.LocateRespondingPlayer(rod, rod.Intersection.Y, respondingPlayer);
+                        return (IsBallNearTheRod(bfc, rod, stopperPosition)) ? stopperPosition : rod.State.DcPosition;
                     }
                     //return rod.IntersectionY - _helper.CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
                     return rod.State.DcPosition;
@@ -218,6 +219,37 @@ namespace Foosbot.DecisionUnit.Core
                 default:
                     return rod.State.DcPosition;
             }
+        }
+
+        /// <summary>
+        /// Only if ball is near the rod new location will be sent to communication layer.
+        /// Method is based on distance, ball speed and BALL_DISTANCE_FACTOR, BALL_MAX_SPEED
+        /// This method added to support Amit's requirement, to be able to set new position of rod based on distance to it.
+        /// </summary>
+        /// <param name="ballCoords">Ball Future Coordinates to respond to</param>
+        /// <param name="currentRod">Current responding rod</param>
+        /// <returns>[True] if we are near the rod or high speed, [False] otherwise</returns>
+        protected bool IsBallNearTheRod(BallCoordinates ballCoords, IRod currentRod, int stopperPosition)
+        {
+            //By changing this parameter we set system sensitivity
+            const double BALL_DISTANCE_FACTOR = 3000;
+            const double BALL_MAX_SPEED = 100;
+
+            if (!ballCoords.IsDefined)
+                return false;
+
+            double distanceFactor = Convert.ToDouble(TABLE_WIDTH) / Math.Abs(ballCoords.X - currentRod.RodXCoordinate);
+
+            double speedFactor = 1;
+            if (ballCoords.Vector != null && ballCoords.Vector.IsDefined)
+            {
+                speedFactor += Math.Abs(ballCoords.Vector.X / BALL_MAX_SPEED);
+            }
+
+            double diff = (double)Math.Abs(currentRod.State.DcPosition - stopperPosition) / (double)(currentRod.PlayerCount);
+
+            bool result = (distanceFactor * diff * speedFactor > BALL_DISTANCE_FACTOR);
+            return result;
         }
 
         /// <summary>

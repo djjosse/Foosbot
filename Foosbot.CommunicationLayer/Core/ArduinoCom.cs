@@ -173,12 +173,14 @@ namespace Foosbot.CommunicationLayer.Core
                    "[{0}] Unable to move arduino because received DC movement: [{1}] is not in range of rod: [{2} to {3}]",
                         MethodBase.GetCurrentMethod().Name, dc, 0, MaxTicks));
 
-            Log.Common.Info(String.Format("[{0}] {1} DC: {2} SERVO: {3}",
-                        MethodBase.GetCurrentMethod().Name, _comPortName, dc, servo.ToString()));
+            
             if (_lastServo != servo || _lastDc != dc)
             {
                 if (watch == null || watch.ElapsedMilliseconds > Communication.SLEEP)
                 {
+                    Log.Common.Info(String.Format("[{0}] {1} DC: {2} SERVO: {3}",
+                        MethodBase.GetCurrentMethod().Name, _comPortName, dc, servo.ToString()));
+
                     watch = Stopwatch.StartNew();
                     byte command = _encoder.Encode(dc, servo);
                     _comPort.Write(command);

@@ -13,6 +13,7 @@ using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.CommunicationLayer;
+using Foosbot.CommunicationLayer.Core;
 using Foosbot.DecisionUnit;
 using Foosbot.DecisionUnit.Core;
 using Foosbot.UI.ImageExtensions;
@@ -93,8 +94,8 @@ namespace Foosbot.UI
                 
                 MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
                 decisionUnit.Start();
-                 
-                /*
+
+                
                 if (_isArduinoConnected)
                 {
                     Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(decisionUnit.RodActionPublishers);
@@ -104,7 +105,7 @@ namespace Foosbot.UI
                             communication[key].Start();
                     }
                 }
-                 */
+                 
             }
             catch(Exception ex)
             {
