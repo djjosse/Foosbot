@@ -182,8 +182,6 @@ namespace Foosbot.DevelopmentDemo
                         _velocityY *= 4;
                     }
 
-
-
                     playerTempX = _x +_velocityX;
                     playerTempY = _y +_velocityY;
                     foreach (eRod rodType in Enum.GetValues(typeof(eRod)))

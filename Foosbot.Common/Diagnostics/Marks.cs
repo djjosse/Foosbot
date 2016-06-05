@@ -390,19 +390,24 @@ namespace Foosbot
 
                     for (int eMarksCounter = 0; eMarksCounter < 4; eMarksCounter++)
                     {
-                        int x = XTableToDeviceCoordinates(_rods[(eMarksCounter + eMarks.GoalKeeper)]);
-                        int y = ((int)DEVICE_MAX_Y);
+                        
+                        int buttomX = XTableToDeviceCoordinates(_rods[(eMarksCounter + eMarks.GoalKeeper)]);
+                        int buttomY = ((int)DEVICE_MAX_Y);
+                        int topX = buttomX;
+                        int topY = 0;
 
-                        // int yTable = ((int)TABLE_MAX_Y_MM);
-
-                        if (isLocation) ConvertToLocation(ref x, ref y);
+                        if (isLocation)
+                        {
+                            ConvertToLocation(ref buttomX, ref buttomY);
+                            ConvertToLocation(ref topX, ref topY);
+                        }
 
                         (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
                         (_markups[key + eMarksCounter] as Shape).Stroke = Brushes.White;
-                        (_markups[key + eMarksCounter] as Line).X1 = x * _actualWidthRate;
-                        (_markups[key + eMarksCounter] as Line).Y1 = 0;
-                        (_markups[key + eMarksCounter] as Line).X2 = x * _actualWidthRate;
-                        (_markups[key + eMarksCounter] as Line).Y2 = y * _actualHeightRate;
+                        (_markups[key + eMarksCounter] as Line).X1 = topX * _actualWidthRate;
+                        (_markups[key + eMarksCounter] as Line).Y1 = topY * _actualHeightRate;
+                        (_markups[key + eMarksCounter] as Line).X2 = buttomX * _actualWidthRate;
+                        (_markups[key + eMarksCounter] as Line).Y2 = buttomY * _actualHeightRate;
 
                         Canvas.SetLeft(_markups[key + eMarksCounter], 0);
                         Canvas.SetTop(_markups[key + eMarksCounter], 0);
@@ -504,6 +509,7 @@ namespace Foosbot
                 int yDistance = _rodsPlayersDistance[mark];
                 int firstPlayerOffsetY = _rodsOffsetY[mark];
                 int x = XTableToDeviceCoordinates(_rods[mark]);
+                
                 int movmentOffset = 0;
 
                 if (isLocation)
@@ -522,12 +528,9 @@ namespace Foosbot
 
                 for (int rodPlayer = 0; rodPlayer < rodPlayersCount; rodPlayer++)
                 {
-                    if (rodPlayer == 0) 
-                        DrawPlayer(playersBase + rodPlayer,
-                            new Point(x * _actualWidthRate, (linearMoveDestination += firstPlayerOffsetY) * _actualHeightRate), 12, rotationalMove);
-                    else 
-                        DrawPlayer(playersBase + rodPlayer,
-                            new Point(x * _actualWidthRate, (linearMoveDestination += yDistance) * _actualHeightRate), 12, rotationalMove);
+                    int y = linearMoveDestination + firstPlayerOffsetY + yDistance * rodPlayer;
+                    DrawPlayer(playersBase + rodPlayer,
+                        new Point(x * _actualWidthRate, y * _actualHeightRate), 12, rotationalMove);
                 }
             }
             catch (Exception e)
@@ -537,6 +540,50 @@ namespace Foosbot
             }
         }
 
+        //public static void DrawRodPlayers(eRod rod, int linearMoveDestination, eRotationalMove rotationalMove, bool isLocation = true)
+        //{
+        //    try
+        //    {
+        //        eMarks playersBase = 0;
+        //        eMarks mark;
+        //        Enum.TryParse<eMarks>(rod.ToString(), out mark);
+
+        //        int eMarkType = ((int)mark);
+        //        int rodPlayersCount = _rodPlayerCount[mark];
+        //        int yDistance = _rodsPlayersDistance[mark];
+        //        int firstPlayerOffsetY = _rodsOffsetY[mark];
+        //        int rodStartX = XTableToDeviceCoordinates(_rods[mark]);
+        //        switch (eMarkType)
+        //        {
+        //            case (int)eMarks.GoalKeeper: playersBase = eMarks.GoalKeeperPlayer; break;
+        //            case (int)eMarks.Defence: playersBase = eMarks.DefencePlayer1; break;
+        //            case (int)eMarks.Midfield: playersBase = eMarks.MidfieldPlayer1; break;
+        //            case (int)eMarks.Attack: playersBase = eMarks.AttackPlayer1; break;
+        //            default: break;
+        //        }
+
+        //        for (int rodPlayer = 0; rodPlayer < rodPlayersCount; rodPlayer++)
+        //        {
+        //            int movmentOffset = 0;
+        //            int x = rodStartX;
+        //            int y = 0;
+        //            int y1 = 0;
+        //            if (isLocation)
+        //            {
+        //                ConvertToLocation(ref x, ref y1);
+        //            }
+
+        //            y = y1 + linearMoveDestination + firstPlayerOffsetY + yDistance * rodPlayer;
+        //            DrawPlayer(playersBase + rodPlayer,
+        //                new Point(x * _actualWidthRate, y * _actualHeightRate), 12, rotationalMove);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Log.Common.Error(String.Format("[{0}] Failed to draw rods players mark. Reason: {1}",
+        //                                                        MethodBase.GetCurrentMethod().Name, e.Message));
+        //    }
+        //}
 
         /// <summary>
         /// Drawing a single player at a time , used by the DrawRodPlayers method to draw all rods players
