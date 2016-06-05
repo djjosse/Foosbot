@@ -9,6 +9,7 @@
 // **************************************************************************************
 
 using Foosbot.Common.Data;
+using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Core;
@@ -153,6 +154,14 @@ namespace Foosbot.DevelopmentDemo
             TransformAgent.Data.Initialize(originalPoints, transformedPoints);
         }
 
+
+        double playerTempX;
+        double playerTempY;
+        double deltaX = 5;
+        double deltaY = 20000;
+        object token = new object();
+        Random random = new Random();
+
         /// <summary>
         /// Running in separate thread and generate ball locations
         /// </summary>
@@ -165,28 +174,50 @@ namespace Foosbot.DevelopmentDemo
                     //generate vector if previous are 0
                     if (Convert.ToInt32(_velocityX) == 0 && Convert.ToInt32(_velocityY) == 0)
                     {
-                        Thread.Sleep(1000);
+                        Log.Common.Info("Demo generating ball kick!");
+                        Thread.Sleep(100);
                         _velocityX = _random.Next(-10, 10);
                         _velocityX *= 4;
                         _velocityY = _random.Next(-10, 10);
                         _velocityY *= 4;
                     }
 
+
+
+                    playerTempX = _x +_velocityX;
+                    playerTempY = _y +_velocityY;
+                    foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
+                    {
+                        Point point = Marks.PlayerPosition(rodType);
+                            point = TransformAgent.Data.InvertTransform(point);
+                            if (playerTempX < point.X + deltaX && playerTempX > point.X - deltaX &&
+                                playerTempY < point.Y + deltaY && playerTempY > point.Y - deltaY &&
+                                _velocityX < 0)
+                            {
+                                if (random.Next(0, 100) > 30)
+                                {
+                                    _x = Ricochet(_x, point.X, ref _velocityX, ref _velocityY);
+                                    Log.Common.Info(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()));
+                                }
+                            }
+                        
+                    }
+
                     //check if we passed the border and set new X coordinate
                     double tempX = _x + _velocityX;
                     if (tempX <= _leftBorder)
-                        _x = Ricochet(_x, ref _leftBorder, ref _velocityX, ref _velocityY);
+                        _x = Ricochet(_x, _leftBorder, ref _velocityX, ref _velocityY);
                     else if (tempX >= _rightBorder)
-                        _x = Ricochet(_x, ref _rightBorder, ref _velocityX, ref _velocityY);
+                        _x = Ricochet(_x, _rightBorder, ref _velocityX, ref _velocityY);
                     else
                         _x = Convert.ToInt32(tempX);
 
                     //check if we passed the border and set new Y coordinate
                     double tempY = _y + _velocityY;
                     if (tempY <= _upeerBorder)
-                        _y = Ricochet(_y, ref _upeerBorder, ref _velocityY, ref _velocityX);
+                        _y = Ricochet(_y, _upeerBorder, ref _velocityY, ref _velocityX);
                     else if (tempY >= _buttomBorder)
-                        _y = Ricochet(_y, ref _buttomBorder, ref _velocityY, ref _velocityX);
+                        _y = Ricochet(_y, _buttomBorder, ref _velocityY, ref _velocityX);
                     else
                         _y = Convert.ToInt32(tempY);
 
@@ -215,7 +246,7 @@ namespace Foosbot.DevelopmentDemo
         /// <param name="directVelocity">Vector coordinate to change direction</param>
         /// <param name="secondVelocity">Other vector coordinate</param>
         /// <returns>New coordinate after applying the changes</returns>
-        private int Ricochet(int coordinate, ref double currentBorder,
+        private int Ricochet(int coordinate, double currentBorder,
             ref double directVelocity, ref double secondVelocity)
         {
             coordinate = Convert.ToInt32((2 * currentBorder - coordinate - directVelocity)

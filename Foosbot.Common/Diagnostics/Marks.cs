@@ -27,6 +27,62 @@ namespace Foosbot
     /// </summary>
     public static class Marks
     {
+        public static Point PlayerPosition(eRod type)
+        {
+            eMarks mark = eMarks.NA;
+            switch (type)
+            {
+                case eRod.GoalKeeper:
+                    mark = eMarks.GoalKeeper;
+                    break;
+                case eRod.Defence:
+                    mark = eMarks.DefencePlayer1;
+                    break;
+                case eRod.Midfield:
+                    mark = eMarks.MidfieldPlayer1;
+                    break;
+                case eRod.Attack:
+                    mark = eMarks.AttackPlayer1;
+                    break;
+                default:
+                    break;
+            }
+
+            if (_playerPositions.ContainsKey(mark))
+            {
+                object token = _positionToken[mark];
+                Point? point = null;
+                lock(token)
+                {
+                    point = new Point(_playerPositions[mark].X, _playerPositions[mark].Y);
+                }
+
+                if (point != null)
+                    return (Point)point;
+            }
+            throw new NotSupportedException("Not supported player type");
+        }
+        
+
+        private static Dictionary<eMarks, Point> _playerPositions = new Dictionary<eMarks, Point>()
+        {
+            { eMarks.GoalKeeper, new Point(0,0) },
+            { eMarks.DefencePlayer1, new Point(0,0) },
+            { eMarks.MidfieldPlayer1, new Point(0,0) },
+            { eMarks.AttackPlayer1, new Point(0,0) }
+        };
+
+        private static Dictionary<eMarks, object> _positionToken = new Dictionary<eMarks, object>()
+        {
+             { eMarks.GoalKeeper, new object() },
+            { eMarks.DefencePlayer1, new object() },
+            { eMarks.MidfieldPlayer1, new object() },
+            { eMarks.AttackPlayer1, new object() }
+        };
+
+
+
+
         /// <summary>
         /// Holds the width rate of the table draw on the canvas
         /// </summary>
@@ -494,6 +550,18 @@ namespace Foosbot
         {
             try
             {
+                object token = null;
+                if (_positionToken.ContainsKey(eNumKey))
+                    token = _positionToken[eNumKey];
+
+                if (token != null)
+                {
+                    lock(token)
+                    {
+                        _playerPositions[eNumKey] = center;
+                    }
+                }
+
                 int key = (int)eNumKey;
                 int rotationalMoveFactor = 0;
                 SolidColorBrush rotationalColor = Brushes.DarkBlue;
