@@ -8,7 +8,9 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Contracts;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
 using Foosbot.ImageProcessingUnit.Process.Core;
 using Foosbot.ImageProcessingUnit.Streamer.Contracts;
@@ -94,7 +96,7 @@ namespace Foosbot.UI.ImageExtensions
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Unable to show frame in GUI. Reason: {1}", MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Unable to show frame in GUI. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
             finally
             {

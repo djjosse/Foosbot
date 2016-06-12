@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Enums;
 using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
@@ -42,6 +43,8 @@ namespace Foosbot.UI
     {
         #region private members
 
+        LogWindow logWin = new LogWindow("Foosbot Event Log", LogTag.ALL_TAGS);
+
         /// <summary>
         /// Current Foosbot mode
         /// </summary>
@@ -62,6 +65,9 @@ namespace Foosbot.UI
             InitializeComponent();
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
             this.Loaded += OnWindowLoaded;
+            Closed += Window_Closing;
+
+            EasyLog.Log.Print("Main");
         }
 
         /// <summary>
@@ -77,8 +83,6 @@ namespace Foosbot.UI
 
                 //get operation mode from configuration file
                 _isArduinoConnected = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_ARDUINOS_CONNECTED);
-
-                InitializeGuiLog();
 
                 //Start Diagnostics - Processor and Memory Usage
                 StartDiagnostics();
@@ -113,100 +117,6 @@ namespace Foosbot.UI
                 Close();
             }
         }
-
-        #region LOGGER
-
-        /// <summary>
-        /// Initialize GUI Log
-        /// </summary>
-        public void InitializeGuiLog()
-        {
-            AutoscrollCheckbox = true;
-            Log.InitializeGuiLog(UpdateLog);
-            string startMessage = Configuration.Attributes.GetValue<string>("startMessage");
-            Log.Common.Debug(startMessage);
-        }
-
-        /// <summary>
-        /// Update Log function to be passed as delegate
-        /// </summary>
-        /// <param name="type">Log type</param>
-        /// <param name="category">Log category</param>
-        /// <param name="timestamp">Log timestamp</param>
-        /// <param name="message">Log message</param>
-        public void UpdateLog(eLogType type, eLogCategory category, DateTime timestamp, string message)
-        {
-            UILogMessage logmessage = new UILogMessage();
-            logmessage.FontColor = DefineColor(category);
-            logmessage.Message = DefineMessage(type, category, timestamp, message);
-            logmessage.Type = type;
-            Dispatcher.BeginInvoke(new ThreadStart(delegate
-            {
-                _logMessageList.Add(logmessage);
-                if (AutoscrollCheckbox)
-                    _guiLog.ScrollIntoView(_logMessageList.Last());
-            }));
-        }
-
-        /// <summary>
-        /// Message to printable format
-        /// </summary>
-        /// <param name="message">Message to format</param>
-        /// <param name="type">Type of log</param>
-        /// <returns>Message as string</returns>
-        private string DefineMessage(eLogType type, eLogCategory category, DateTime timestamp, string message)
-        {
-            return String.Format("{0}\t{1}\t{3}", timestamp.ToString("HH:mm:ss:fff"), category, type, message);
-        }
-
-        /// <summary>
-        /// Defines color for specific message category
-        /// </summary>
-        /// <param name="category">Message Category as string</param>
-        /// <returns></returns>
-        private Color DefineColor(eLogCategory category)
-        {
-            switch (category)
-            {
-                case eLogCategory.Error:
-                    return Colors.Red;
-                case eLogCategory.Info:
-                    return Colors.DarkGreen;
-                case eLogCategory.Warn:
-                    return Colors.DarkOrange;
-                default:
-                    return Colors.Black;
-            }
-        }
-
-        /// <summary>
-        /// Log Autoscrolling checkbox value
-        /// </summary>
-        public bool AutoscrollCheckbox
-        {
-            get { return (bool)GetValue(AutoscrollCheckboxProperty); }
-            set { SetValue(AutoscrollCheckboxProperty, value); }
-        }
-
-        /// <summary>
-        /// Log Autoscrolling checkbox properties
-        /// </summary>
-        public static readonly DependencyProperty AutoscrollCheckboxProperty =
-           DependencyProperty.Register("AutoscrollCheckbox", typeof(bool),
-             typeof(MainWindow), new UIPropertyMetadata(false));
-
-        /// <summary>
-        /// LogStream - list of messages to display
-        /// This property is Binded to GUI
-        /// </summary>
-        public ObservableCollection<UILogMessage> LogStream { get { return _logMessageList; } }
-
-        /// <summary>
-        /// Log messages list to display
-        /// </summary>
-        public ObservableCollection<UILogMessage> _logMessageList = new ObservableCollection<UILogMessage>();
-        
-        #endregion LOGGER
 
         #region Statistics
 
@@ -261,6 +171,11 @@ namespace Foosbot.UI
 
         #endregion CPU and Memory Diagnostic Info
 
+        private void OpenLog(object sender, RoutedEventArgs e)
+        {
+            logWin.Visibility = System.Windows.Visibility.Visible;
+        }
+
         private void OpenImageProcessingTool(object sender, RoutedEventArgs e)
         {
             ImageProcessingTool iTool = new ImageProcessingTool(_imageProcessingPack);
@@ -270,6 +185,11 @@ namespace Foosbot.UI
         private void Close(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void Window_Closing(object sender, EventArgs e)
+        {
+            logWin.Dispose();
         }
     }
 }

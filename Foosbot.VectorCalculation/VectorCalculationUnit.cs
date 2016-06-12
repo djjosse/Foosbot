@@ -18,6 +18,8 @@ using System.Threading;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.VectorCalculation.Contracts;
 using Foosbot.Common.Data;
+using EasyLog;
+using Foosbot.Common.Logs;
 
 namespace Foosbot.VectorCalculation
 {
@@ -130,7 +132,7 @@ namespace Foosbot.VectorCalculation
                     }
                     catch (Exception e)
                     {
-                        Log.Common.Error(String.Format("[{0}] {1} [{2}]", MethodBase.GetCurrentMethod().Name, e.Message, ballCoordinates.ToString()));
+                        Log.Print(String.Format("{0} [{1}]", e.Message, ballCoordinates.ToString()), eCategory.Error, LogTag.VECTOR);
                     }
                 }
                 else
@@ -144,7 +146,7 @@ namespace Foosbot.VectorCalculation
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Error in vector calculation. Reason: {1}", MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Error in vector calculation. Reason: {0}", e.Message), eCategory.Error, LogTag.VECTOR);
             }
             finally
             {
@@ -193,7 +195,7 @@ namespace Foosbot.VectorCalculation
         {
             if (ballCoordinates.Timestamp == _storedBallCoordinates.Timestamp)
             {
-                Log.Common.Error(String.Format("[{0}] Current ball coordinates and stored are with same time stamp!", MethodBase.GetCurrentMethod().Name));
+                Log.Print("Current ball coordinates and stored are with same time stamp!", eCategory.Error, LogTag.VECTOR);
                 return new Vector2D();
             }
             else

@@ -8,35 +8,24 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Exit" Click="Close"/>
             </MenuItem>
-            <MenuItem Header="_Tools" Click="OpenImageProcessingTool">
-                <MenuItem Header="_Image Processing" />
+            <MenuItem Header="_Tools" >
+                <MenuItem Header="_Easy Log" Click="OpenLog"/>
+                <MenuItem Header="_Image Processing" Click="OpenImageProcessingTool"/>
             </MenuItem>
+            
         </Menu>
         
     
     <Grid>
-        <Canvas Name="_guiImage" HorizontalAlignment="Left" Height="450" Width="800" Margin="10,10,0,0" VerticalAlignment="Top" />
-
-        <ListView Name="_guiLog" ItemsSource="{Binding LogStream}" Height="480" Margin="820,10,10,10" VerticalAlignment="Top">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Message}">
-                        <TextBlock.Foreground>
-                            <SolidColorBrush Color="{Binding FontColor}"/>
-                        </TextBlock.Foreground>
-                    </TextBlock>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <Label Name="_guiFrameInfo" HorizontalAlignment="Right" Margin="0,495,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
-        <Label Name="_guiProcessInfo" HorizontalAlignment="Right" Margin="0,605,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
-        <Label Name="_guiIpBasicInfo" HorizontalAlignment="Right" Margin="0,525,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
-        <Label Name="_guiIpBallCoordinates" HorizontalAlignment="Right" Margin="0,555,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
-        <CheckBox Content="Autoscroll" HorizontalAlignment="Right" Margin="0,495,390,0" VerticalAlignment="Top" IsChecked="{Binding Path=AutoscrollCheckbox, Mode=TwoWay}"/>
+        <Canvas Name="_guiImage" HorizontalAlignment="Left" Height="630" Width="1120" Margin="100,10,0,0" VerticalAlignment="Top" />
+        <Label Name="_guiFrameInfo" HorizontalAlignment="Left" Margin="50,640,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
+        <Label Name="_guiProcessInfo" HorizontalAlignment="Left" Margin="420,640,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
+        <Label Name="_guiIpBasicInfo" HorizontalAlignment="Left" Margin="790,640,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
+        <Label Name="_guiIpBallCoordinates" HorizontalAlignment="Left" Margin="1160,640,10,0" VerticalAlignment="Top" Width="362" Height="26"/>
 
 
-        
 
-    </Grid>
+
+        </Grid>
     </DockPanel>
 </Window>

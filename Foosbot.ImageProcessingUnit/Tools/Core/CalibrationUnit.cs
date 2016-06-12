@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using System.Text;
 using Foosbot.Common.Contracts;
 using Foosbot.Common.Enums;
+using EasyLog;
+using Foosbot.Common.Logs;
 
 namespace Foosbot.ImageProcessingUnit.Tools.Core
 {
@@ -197,7 +199,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
                 {
                     _skippedFrames = 0;
 
-                    Log.Image.Info("***** Starting calibration Phase I... *****");
+                    Log.Print("***** Starting calibration Phase I... *****", eCategory.Info, LogTag.IMAGE);
                     Image<Gray, byte> image = frame.Image.Clone();
 
                     //Remove Noise from picture
@@ -215,10 +217,10 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
                     StringBuilder str = new StringBuilder("4 calibration Marks found and sorted: \n\t\t\t\t");
                     foreach (var mark in ImagingData.CalibrationMarks)
                         str.Append(String.Format("{0}:[{1}x{2}] ", mark.Key, mark.Value.Center.X, mark.Value.Center.Y));
-                    Log.Image.Info(str.ToString());
+                    Log.Print(str.ToString(), eCategory.Info, LogTag.IMAGE);
 
                     CalibrationUtils.SetTransformationMatrix(AXE_X_LENGTH, AXE_Y_LENGTH, ImagingData.CalibrationMarks);
-                    Log.Image.Info("Homography matrix calculated.");
+                    Log.Print("Homography matrix calculated.", eCategory.Info, LogTag.IMAGE);
 
                     //Calculate Ball Radius and Error
                     int ballRadius; 
@@ -228,16 +230,16 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
                     ImagingData.BallRadius = ballRadius;
                     ImagingData.BallRadiusError = ballError;
 
-                    Log.Image.Info(String.Format("Expected ball radius is {0} +/- {1}",
-                        ImagingData.BallRadius, ImagingData.BallRadiusError));
+                    Log.Print(String.Format("Expected ball radius is {0} +/- {1}",
+                        ImagingData.BallRadius, ImagingData.BallRadiusError), eCategory.Info, LogTag.IMAGE);
 
                     CurrentState = eCalibrationState.Performing;
-                    Log.Image.Info("***** Finished calibration Phase I *****");
+                    Log.Print("***** Finished calibration Phase I *****", eCategory.Info, LogTag.IMAGE);
                 }
                 catch (CalibrationException ex)
                 {
-                    Log.Image.Warning(String.Format("Calibration failed in first phase. Will retry after [{0}] frames. Reason: {1}",
-                           FRAMES_TO_SKIP, ex.Message));
+                    Log.Print(String.Format("Calibration failed in first phase. Will retry after [{0}] frames. Reason: {1}",
+                           FRAMES_TO_SKIP, ex.Message), eCategory.Warn, LogTag.IMAGE);
                 }
             }
         }
@@ -263,7 +265,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
                 {
                     _skippedFrames = 0;
 
-                    Log.Image.Info("***** Starting calibration Phase II... *****");
+                    Log.Print("***** Starting calibration Phase II... *****", eCategory.Info, LogTag.IMAGE);
                     Image<Gray, byte> image = frame.Image.Clone();
 
                     //Remove Noise from picture
@@ -276,22 +278,22 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
 
                     //Update coverage
                     ImagingData.CalibrationMarks = CalibrationUtils.UpdateCoverage(ImagingData.CalibrationMarks);
-                    Log.Image.Info("Coverage and marks updated.");
+                    Log.Print("Coverage and marks updated.", eCategory.Info, LogTag.IMAGE);
 
                     //Show table border marks
                     Marks.DrawTableBorders(ImagingData.CalibrationMarks);
 
                     //Recalculate Homography Matrix
                     CalibrationUtils.SetTransformationMatrix(AXE_X_LENGTH, AXE_Y_LENGTH, ImagingData.CalibrationMarks);
-                    Log.Image.Info("Homography matrix re-calculated.");
+                    Log.Print("Homography matrix re-calculated.", eCategory.Info, LogTag.IMAGE);
 
                     CurrentState = eCalibrationState.Finished;
-                    Log.Image.Info("***** Finished calibration Phase II *****");
+                    Log.Print("***** Finished calibration Phase II *****", eCategory.Info, LogTag.IMAGE);
                 }
                 catch (CalibrationException ex)
                 {
-                    Log.Image.Warning(String.Format("Calibration failed in second phase. Will retry after [{0}] frames. Reason: {1}",
-                           FRAMES_TO_SKIP, ex.Message));
+                    Log.Print(String.Format("Calibration failed in second phase. Will retry after [{0}] frames. Reason: {1}",
+                           FRAMES_TO_SKIP, ex.Message), eCategory.Warn, LogTag.IMAGE);
                 }
             }
         }

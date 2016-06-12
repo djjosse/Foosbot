@@ -9,9 +9,11 @@
 // **************************************************************************************
 
 using DirectShowLib;
+using EasyLog;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Foosbot.Common.Logs;
 using System;
 using System.Reflection;
 
@@ -50,7 +52,7 @@ namespace Foosbot.ImageProcessingUnit.Streamer.Core
             //Subscribe on new frame event
             _capture.ImageGrabbed += ProcessFrame;
             _capture.Start();
-            Log.Image.Info("Video capture started!");
+            Log.Print("Video capture started!", eCategory.Info, LogTag.IMAGE);
             UpdateDiagnosticInfo();
         }
 
@@ -78,8 +80,7 @@ namespace Foosbot.ImageProcessingUnit.Streamer.Core
             }
             catch (Exception ex)
             {
-                Log.Image.Error(String.Format(
-                    "[{0}] Failed to deal with frame. Reason: {1}", MethodBase.GetCurrentMethod().Name, ex.Message));
+                Log.Print(String.Format("Failed to deal with frame. Reason: {0}", ex.Message), eCategory.Error, LogTag.IMAGE);
             }
             finally
             {
@@ -102,13 +103,13 @@ namespace Foosbot.ImageProcessingUnit.Streamer.Core
             {
                 if (cameras[i].DevicePath.Contains(hardwareId))
                 {
-                    Log.Image.Debug(String.Format("Capture device set: [{0}]", cameras[i].Name));
+                    Log.Print(String.Format("Capture device set: [{0}]", cameras[i].Name), eCategory.Debug, LogTag.IMAGE);
                     return new Capture(i);
                 }
             }
 
             string error = String.Format("Camera device with id: [{0}] not found. Please verify camera is connected.", hardwareId);
-            Log.Image.Error(error);
+            Log.Print(error, eCategory.Error, LogTag.IMAGE);
             throw new ConfigurationException(error);
         }
 

@@ -8,8 +8,10 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Data;
 using Foosbot.Common.Enums;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Core;
@@ -174,7 +176,7 @@ namespace Foosbot.DevelopmentDemo
                     //generate vector if previous are 0
                     if (Convert.ToInt32(_velocityX) == 0 && Convert.ToInt32(_velocityY) == 0)
                     {
-                        Log.Common.Info("Demo generating ball kick!");
+                        Log.Print("Demo generating ball kick!", eCategory.Info, LogTag.IMAGE);
                         Thread.Sleep(100);
                         _velocityX = _random.Next(-10, 10);
                         _velocityX *= 4;
@@ -195,7 +197,7 @@ namespace Foosbot.DevelopmentDemo
                                 if (random.Next(0, 100) > 30)
                                 {
                                     _x = Ricochet(_x, point.X, ref _velocityX, ref _velocityY);
-                                    Log.Common.Info(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()));
+                                    Log.Print(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()), eCategory.Info, LogTag.COMMON);
                                 }
                             }
                         

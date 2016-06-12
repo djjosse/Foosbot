@@ -8,7 +8,9 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Enums;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
@@ -79,8 +81,7 @@ namespace Foosbot.DecisionUnit.Core
             }
             catch (Exception ex)
             {
-                Log.Common.Error(String.Format("[{0}] [{1}]",
-                    MethodBase.GetCurrentMethod().DeclaringType.Name, ex.Message));
+                Log.Print("No vectors found!", eCategory.Error, LogTag.DECISION);
             }
             finally
             {

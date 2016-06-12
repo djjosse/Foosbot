@@ -53,6 +53,10 @@
     <Compile Include="Core\SerialPortWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\External\EasyLog\EasyLog\EasyLog.csproj">
+      <Project>{1c39dd88-9b43-4b0f-8cbc-226470b761a6}</Project>
+      <Name>EasyLog</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Foosbot.Common\Foosbot.Common.csproj">
       <Project>{2de4f554-4b27-4583-98bc-6772d0652b81}</Project>
       <Name>Foosbot.Common</Name>

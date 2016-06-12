@@ -8,6 +8,8 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
+using Foosbot.Common.Logs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -111,8 +113,8 @@ namespace Foosbot
             }
             catch(Exception e)
             {
-                Log.Common.Error(String.Format("Failed to load configuration file: [{0}] Reason: {1}",
-                    CONFIG_FILE_PATH, e.Message));
+                Log.Print(String.Format("Failed to load configuration file: [{0}] Reason: {1}",
+                    CONFIG_FILE_PATH, e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 

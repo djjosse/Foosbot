@@ -8,9 +8,11 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Foosbot.Common.Data;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Protocols;
 using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Detection.Enums;
@@ -117,20 +119,19 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                     if (hasNewFrame)
                     {
                         //Skip current Frame
-                        Log.Image.Warning(String.Format("[{0}] Skipping current frame - already have new image",
-                                MethodBase.GetCurrentMethod().Name));
+                        Log.Print("Skipping current frame - already have new image", eCategory.Warn, LogTag.IMAGE);
                     }
                     else
                     {
-                        Log.Image.Info(String.Format("[{0}] Unable to find in small area, searching full area: {1}x{2}",
-                                MethodBase.GetCurrentMethod().Name, image.Width, image.Height));
+                        Log.Print(String.Format("Unable to find in small area, searching full area: {0}x{1}",
+                            image.Width, image.Height), eCategory.Info, LogTag.IMAGE);
                         isDetected = FindBallLocationInFrame(image, frame.Timestamp);
                     }
                 }
                 else
                 {
-                    Log.Image.Info(String.Format("[{0}] Found based on stored location. Updated to: [{1}x{2}]",
-                        MethodBase.GetCurrentMethod().Name, ImagingData.LastKnownBallLocation.X, ImagingData.LastKnownBallLocation.Y));
+                    Log.Print(String.Format("Found based on stored location. Updated to: [{0}x{1}]",
+                            ImagingData.LastKnownBallLocation.X, ImagingData.LastKnownBallLocation.Y), eCategory.Info, LogTag.IMAGE);
                 }
             }
             //No stored location
@@ -205,7 +206,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                     UpdateCoordinates(xLocation, yLocation, timeStamp, Brushes.Red);
                     return true;
                 }
-                Log.Image.Debug(String.Format("[{0}] Ball not found in {1} area", MethodBase.GetCurrentMethod().Name, detectionArea.ToString()));
+                Log.Print(String.Format("Ball not found in {0} area", detectionArea.ToString()), eCategory.Debug, LogTag.IMAGE);
                 ImagingData.BallCoords = new BallCoordinates(timeStamp);
                 return false;
             }

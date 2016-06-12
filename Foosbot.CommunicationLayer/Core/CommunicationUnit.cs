@@ -8,8 +8,10 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Enums;
 using Foosbot.Common.Exceptions;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.CommunicationLayer.Contracts;
@@ -122,8 +124,7 @@ namespace Foosbot.CommunicationLayer.Core
                 }
                 else
                 {
-                    Log.Common.Error(String.Format("[{0}] Error occurred! Reason: [{1}]",
-                        MethodBase.GetCurrentMethod().Name, ex.Message));
+                    Log.Print(String.Format("Error occurred! Reason: [{0}]", ex.Message), eCategory.Error, LogTag.COMMUNICATION);
                 }
             }
             finally

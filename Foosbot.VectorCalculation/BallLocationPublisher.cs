@@ -8,6 +8,8 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.VectorCalculation.Contracts;
@@ -48,7 +50,7 @@ namespace Foosbot.VectorCalculation
             }
             else
             {
-                Log.Common.Error(String.Format("[{0}] Coordinates were not set by IP-Unit", MethodBase.GetCurrentMethod().Name));
+                Log.Print("Coordinates were not set by IP-Unit", eCategory.Error, LogTag.IMAGE);
             }
         }
     }

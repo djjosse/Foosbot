@@ -8,6 +8,8 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
+using Foosbot.Common.Logs;
 using Foosbot.ImageProcessingUnit.Detection.Core;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Streamer.Contracts;
@@ -219,7 +221,7 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
             }
             catch(Exception ex)
             {
-                Log.Image.Debug("Exception in image processing flow: " + ex.Message);
+                Log.Print("Exception in image processing flow: " + ex.Message, eCategory.Debug, LogTag.IMAGE);
             }
             finally
             {

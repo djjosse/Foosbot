@@ -8,8 +8,10 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Enums;
 using Foosbot.Common.Exceptions;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Protocols;
 using Foosbot.VectorCalculation.Contracts;
 using System;
@@ -281,7 +283,7 @@ namespace Foosbot.VectorCalculation
 
             //if no points found => Error, consider adding error rate threshold
             if (borderIntersection.Count < 1)
-                Log.Common.Error(String.Format("[{0}] No vectors found!", MethodBase.GetCurrentMethod().Name));
+                Log.Print("No vectors found!", eCategory.Error, LogTag.VECTOR);
 
             //get nearest point
             Coordinates2D intersectionPoint = null;

@@ -8,8 +8,10 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Emgu.CV;
 using Emgu.CV.Structure;
+using Foosbot.Common.Logs;
 using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Detection.Enums;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
@@ -157,8 +159,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
             }
             catch (Exception e)
             {
-                Log.Image.Error(String.Format("[{0}] Error occurred during image crop. Reason: {1}",
-                    MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Error occurred during image crop. Reason: {0}", e.Message), eCategory.Error, LogTag.IMAGE);
             }
             Image<Gray, byte> croppedImage = cropped.ToImage<Gray, byte>();
             return croppedImage;

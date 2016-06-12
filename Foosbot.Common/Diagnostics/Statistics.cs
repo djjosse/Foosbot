@@ -8,7 +8,9 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Enums;
+using Foosbot.Common.Logs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -59,8 +61,7 @@ namespace Foosbot
             }
             catch
             {
-                Log.Common.Debug(String.Format("Unable to update: [{0}]",
-                    MethodBase.GetCurrentMethod().Name));
+                Log.Print("Unable to update", eCategory.Debug, LogTag.COMMON);
             }
         }
 
@@ -79,8 +80,7 @@ namespace Foosbot
             }
             catch
             {
-                Log.Common.Debug(String.Format("Unable to update: [{0}]",
-                    MethodBase.GetCurrentMethod().Name));
+                Log.Print("Unable to update", eCategory.Debug, LogTag.COMMON);
             }
         }
 
@@ -99,8 +99,7 @@ namespace Foosbot
             }
             catch
             {
-                Log.Common.Debug(String.Format("Unable to update: [{0}]",
-                    MethodBase.GetCurrentMethod().Name));
+                Log.Print("Unable to update", eCategory.Debug, LogTag.COMMON);
             }
         }
 
@@ -119,8 +118,7 @@ namespace Foosbot
             }
             catch
             {
-                Log.Common.Debug(String.Format("Unable to update: [{0}]",
-                    MethodBase.GetCurrentMethod().Name));
+                Log.Print("Unable to update", eCategory.Debug, LogTag.COMMON);
             }
         }
     }

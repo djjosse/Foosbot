@@ -8,8 +8,10 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Data;
 using Foosbot.Common.Enums;
+using Foosbot.Common.Logs;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -275,8 +277,33 @@ namespace Foosbot
             TransformAgent.Data.InvertTransform(x, y, out outX, out outY);
             x = Convert.ToInt32(outX);
             y = Convert.ToInt32(outY);
+
         }
 
+        /// <summary>
+        /// Convert coord points to location points
+        /// </summary>
+        /// <param name="x">X coord</param>
+        /// <param name="y">Y coord</param>
+        private static void ConvertToLocation(int x, ref int y)
+        {
+            double outX, outY;
+            TransformAgent.Data.InvertTransform(x, y, out outX, out outY);
+            y = Convert.ToInt32(outY);
+        }
+
+
+        /// <summary>
+        /// Convert coord points to location points
+        /// </summary>
+        /// <param name="x">X coord</param>
+        /// <param name="y">Y coord</param>
+        private static void ConvertToLocation(ref int x,int y)
+        {
+            double outX, outY;
+            TransformAgent.Data.InvertTransform(x, y, out outX, out outY);
+            x = Convert.ToInt32(outY);
+        }
         /// <summary>
         /// Convert the a given x from MM to Device coord
         /// </summary>
@@ -327,8 +354,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw ricochet mark. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw ricochet mark. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -370,8 +396,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw table borders. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw table borders. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -384,7 +409,7 @@ namespace Foosbot
         {
             try
             {
-                _dispatcher.Invoke(new ThreadStart(delegate
+                _dispatcher.Invoke(new ThreadStart(()=>
                 {
                     const int key = (int)eMarks.GoalKeeper;
 
@@ -416,8 +441,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw rods marks. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw rods marks. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -433,20 +457,27 @@ namespace Foosbot
         {
             try
             {
-                eMarks mark;
+                Brush color = null;
+                eMarks mark;              
                 Enum.TryParse<eMarks>(rod.ToString(), out mark);
 
+                int key = (int)mark * 10;
                 int x = XTableToDeviceCoordinates(_rods[mark]);
+
                 int sectorStart = Convert.ToInt32(x - dynamicSectorWidth / 2.0);
+                int sectorStartTop = sectorStart;
+                int sectorStartButtom = sectorStart;
+
                 int sectorEnd = Convert.ToInt32(x + dynamicSectorWidth / 2.0);
-                int demyNumber = 0;
+                int sectorEndTop = sectorEnd;
+                int sectorEndButtom = sectorEnd; 
+
+                int yTop = 0;
+                int yButtom = ((int)DEVICE_MAX_Y);
 
                 _dispatcher.Invoke(new ThreadStart(delegate
                 {
-                    int key = (int)mark;
-                    int y = ((int)DEVICE_MAX_Y);
 
-                    Brush color = null;
                     switch (mark)
                     {
                         case eMarks.GoalKeeper: color = Brushes.Yellow; break;
@@ -458,35 +489,38 @@ namespace Foosbot
 
                     if (isLocation)
                     {
-                        ConvertToLocation(ref sectorStart, ref y);
-                        ConvertToLocation(ref sectorEnd, ref demyNumber);
+                        int yButtomTemp = yButtom;
+                        int yTopTemp = yTop;
+                        ConvertToLocation(ref sectorStartTop, ref yTop);
+                        ConvertToLocation(ref sectorStartButtom, ref yButtom);
+                        ConvertToLocation(ref sectorEndTop, ref yTopTemp);
+                        ConvertToLocation(ref sectorEndButtom, ref yButtomTemp);
                     }
 
-                    (_markups[key * 10] as Shape).StrokeThickness = thickness;
-                    (_markups[key * 10] as Shape).Stroke = color;
-                    (_markups[key * 10] as Line).X1 = sectorStart * _actualWidthRate;
-                    (_markups[key * 10] as Line).Y1 = 0;
-                    (_markups[key * 10] as Line).X2 = sectorStart * _actualWidthRate;
-                    (_markups[key * 10] as Line).Y2 = y * _actualHeightRate;
+                    (_markups[key] as Shape).StrokeThickness = thickness;
+                    (_markups[key] as Shape).Stroke = color;
+                    (_markups[key] as Line).X1 = sectorStartTop * _actualWidthRate;
+                    (_markups[key] as Line).Y1 = yTop * _actualHeightRate;
+                    (_markups[key] as Line).X2 = sectorStartButtom * _actualWidthRate;
+                    (_markups[key] as Line).Y2 = yButtom * _actualHeightRate;
 
-                    (_markups[key * 10 + 1] as Shape).StrokeThickness = thickness;
-                    (_markups[key * 10 + 1] as Shape).Stroke = color;
-                    (_markups[key * 10 + 1] as Line).X1 = sectorEnd * _actualWidthRate;
-                    (_markups[key * 10 + 1] as Line).Y1 = 0;
-                    (_markups[key * 10 + 1] as Line).X2 = sectorEnd * _actualWidthRate;
-                    (_markups[key * 10 + 1] as Line).Y2 = y * _actualHeightRate;
+                    (_markups[key + 1] as Shape).StrokeThickness = thickness;
+                    (_markups[key + 1] as Shape).Stroke = color;
+                    (_markups[key + 1] as Line).X1 = sectorEndTop * _actualWidthRate;
+                    (_markups[key + 1] as Line).Y1 = yTop * _actualHeightRate;
+                    (_markups[key + 1] as Line).X2 = sectorEndButtom * _actualWidthRate;
+                    (_markups[key + 1] as Line).Y2 = yButtom * _actualHeightRate;
 
-                    Canvas.SetLeft(_markups[key * 10], 0);
-                    Canvas.SetTop(_markups[key * 10], 0); 
-                    Canvas.SetLeft(_markups[key * 10 + 1], 0);
-                    Canvas.SetTop(_markups[key * 10 + 1], 0);
+                    Canvas.SetLeft(_markups[key], 0);
+                    Canvas.SetTop(_markups[key], 0); 
+                    Canvas.SetLeft(_markups[key + 1], 0);
+                    Canvas.SetTop(_markups[key + 1], 0);
 
                 }));
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw rod dynamic sector marks. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw rod dynamic sector marks. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -510,12 +544,8 @@ namespace Foosbot
                 int firstPlayerOffsetY = _rodsOffsetY[mark];
                 int x = XTableToDeviceCoordinates(_rods[mark]);
                 
-                int movmentOffset = 0;
 
-                if (isLocation)
-                {
-                    ConvertToLocation(ref x, ref movmentOffset);
-                }
+
 
                 switch (eMarkType)
                 {
@@ -529,14 +559,18 @@ namespace Foosbot
                 for (int rodPlayer = 0; rodPlayer < rodPlayersCount; rodPlayer++)
                 {
                     int y = linearMoveDestination + firstPlayerOffsetY + yDistance * rodPlayer;
-                    DrawPlayer(playersBase + rodPlayer,
-                        new Point(x * _actualWidthRate, y * _actualHeightRate), 12, rotationalMove);
+                    int y1 = y;
+                    int x1 = x;
+                    if (isLocation)
+                    {
+                        ConvertToLocation(ref x1, ref y);
+                    }
+                    DrawPlayer(playersBase + rodPlayer, new Point(x1 * _actualWidthRate, y1 * _actualHeightRate), 12, rotationalMove);
                 }
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw rods players mark. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw rods players mark. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -547,7 +581,6 @@ namespace Foosbot
         //        eMarks playersBase = 0;
         //        eMarks mark;
         //        Enum.TryParse<eMarks>(rod.ToString(), out mark);
-
         //        int eMarkType = ((int)mark);
         //        int rodPlayersCount = _rodPlayerCount[mark];
         //        int yDistance = _rodsPlayersDistance[mark];
@@ -613,11 +646,13 @@ namespace Foosbot
                 int rotationalMoveFactor = 0;
                 SolidColorBrush rotationalColor = Brushes.DarkBlue;
 
-                if (rotationalMove == eRotationalMove.DEFENCE) {
+                if (rotationalMove == eRotationalMove.DEFENCE)
+                {
                     rotationalMoveFactor = radius;
                     rotationalColor = Brushes.Blue;
                 }
-                else if (rotationalMove == eRotationalMove.RISE) {
+                else if (rotationalMove == eRotationalMove.RISE) 
+                {
                     rotationalMoveFactor = (int)(radius * 2.5);
                     rotationalColor = Brushes.Cyan;
                 }
@@ -644,8 +679,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw player mark. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw player mark. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -679,8 +713,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw ball mark. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw ball mark. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -743,8 +776,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw calibration mark. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw calibration mark. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
 
@@ -810,8 +842,7 @@ namespace Foosbot
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Failed to draw ball vector mark. Reason: {1}",
-                                                                MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Failed to draw ball vector mark. Reason: {0}", e.Message), eCategory.Error, LogTag.COMMON);
             }
         }
     }

@@ -8,8 +8,10 @@
 //// **																				   **
 //// **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Enums;
 using Foosbot.Common.Exceptions;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.VectorCalculation;
@@ -459,8 +461,8 @@ namespace Foosbot.DecisionUnit.Core
             catch(Exception e)
             {
                 Intersection = new TimedPoint();
-                Log.Common.Error(String.Format("[{0}] Unable to calculate rod intersection. Reason: {1}",
-                    MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Unable to calculate rod intersection. Reason: {0}",
+                    e.Message), eCategory.Error, LogTag.DECISION);
             }
         }
 

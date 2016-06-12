@@ -8,6 +8,8 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
+using Foosbot.Common.Logs;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.VectorCalculation;
@@ -92,7 +94,7 @@ namespace Foosbot.DecisionUnit.Core
             }
             catch (Exception e)
             {
-                Log.Common.Error(String.Format("[{0}] Error: {1}", MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print("Error: " + e.Message, eCategory.Error, LogTag.DECISION);
             }
             return bfc;
         }

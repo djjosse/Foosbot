@@ -15,6 +15,8 @@ using Foosbot.Common.Exceptions;
 using System.Diagnostics;
 using Foosbot.Common.Enums;
 using Foosbot.CommunicationLayer.Contracts;
+using EasyLog;
+using Foosbot.Common.Logs;
 
 namespace Foosbot.CommunicationLayer.Core
 {
@@ -111,8 +113,7 @@ namespace Foosbot.CommunicationLayer.Core
                     "[{0}] Unable to initialize arduino because the port {1} is closed!",
                         MethodBase.GetCurrentMethod().Name, _comPortName));
 
-            Log.Common.Info(String.Format("[{0}] Initializing Arduino with initialization byte on port {1} ...",
-                MethodBase.GetCurrentMethod().Name, _comPortName));
+            Log.Print(String.Format("Initializing Arduino with initialization byte on port {0}...", _comPortName), eCategory.Error, LogTag.COMMUNICATION);
 
             try
             {
@@ -139,8 +140,7 @@ namespace Foosbot.CommunicationLayer.Core
                 _comPort = new SerialPortWrapper(_comPortName, Communication.BAUDRATE);
             try
             {
-                Log.Common.Info(String.Format("[{0}] Opening Arduino port {1}...",
-                        MethodBase.GetCurrentMethod().Name, _comPortName));
+                Log.Print(String.Format("Opening Arduino port {0}...", _comPortName), eCategory.Info, LogTag.COMMUNICATION);
                 _comPort.Open();
             }
             catch (Exception ex)
@@ -148,8 +148,7 @@ namespace Foosbot.CommunicationLayer.Core
                 throw new InvalidOperationException(String.Format("[{0}] Error opening Arduino port {1}. Reason: {2}",
                         MethodBase.GetCurrentMethod().Name, _comPortName, ex.Message), ex);
             }
-            Log.Common.Info(String.Format("[{0}] Arduino port {1} is open!",
-                        MethodBase.GetCurrentMethod().Name, _comPortName));
+            Log.Print(String.Format("Arduino port {0} is open!", _comPortName), eCategory.Info, LogTag.COMMUNICATION);
         }
 
         Stopwatch watch = null;
@@ -178,8 +177,7 @@ namespace Foosbot.CommunicationLayer.Core
             {
                 if (watch == null || watch.ElapsedMilliseconds > Communication.SLEEP)
                 {
-                    Log.Common.Info(String.Format("[{0}] {1} DC: {2} SERVO: {3}",
-                        MethodBase.GetCurrentMethod().Name, _comPortName, dc, servo.ToString()));
+                    Log.Print(String.Format("{0} DC: {1} SERVO: {2}", _comPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
 
                     watch = Stopwatch.StartNew();
                     byte command = _encoder.Encode(dc, servo);

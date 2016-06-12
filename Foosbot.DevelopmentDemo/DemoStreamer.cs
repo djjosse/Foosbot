@@ -8,6 +8,8 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
+using Foosbot.Common.Logs;
 using Foosbot.ImageProcessingUnit.Streamer.Core;
 using System;
 using System.ComponentModel;
@@ -70,9 +72,8 @@ namespace Foosbot.DevelopmentDemo
                 }
                 catch (Exception ex)
                 {
-                    Log.Image.Error(String.Format(
-                        "[{0}] Error generating frame in demo streamer. Reason: {1}",
-                        MethodBase.GetCurrentMethod().Name, ex.Message));
+                    Log.Print(String.Format(
+                        "Error generating frame in demo streamer. Reason: {0}", ex.Message), eCategory.Error, LogTag.IMAGE);
                 }
             }
         }

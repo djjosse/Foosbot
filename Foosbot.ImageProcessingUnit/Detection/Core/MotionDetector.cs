@@ -8,10 +8,12 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Emgu.CV.VideoSurveillance;
+using Foosbot.Common.Logs;
 using Foosbot.ImageProcessingUnit.Detection.Contracts;
 using Foosbot.ImageProcessingUnit.Process.Contracts;
 using Foosbot.ImageProcessingUnit.Tools.Contracts;
@@ -181,8 +183,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
         {
             if (_thread != null && _thread.IsAlive)
             {
-                Log.Image.Debug(String.Format("[{0}] Waiting motion detection thread to finish.",
-                    MethodBase.GetCurrentMethod().Name));
+                Log.Print("Waiting motion detection thread to finish.", eCategory.Debug, LogTag.IMAGE);
                 try
                 {
                     _thread.Join();
@@ -244,8 +245,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
             UpdateMotionHistory();
             Detect();
             watch.Stop();
-            Log.Image.Debug(String.Format("[{0}] Motion detection took: {1} milliseconds",
-                    MethodBase.GetCurrentMethod().Name, watch.Elapsed.ToString("fff")));
+            Log.Print(String.Format("Motion detection took: {0} milliseconds", watch.Elapsed.ToString("fff")), eCategory.Debug, LogTag.IMAGE);
         }
 
         /// <summary>
@@ -320,8 +320,7 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
             }
             catch (Exception e)
             {
-                Log.Image.Error(String.Format("[{0}] Error Aborting thread! Reason: {1}",
-                    MethodBase.GetCurrentMethod().Name, e.Message));
+                Log.Print(String.Format("Error Aborting thread! Reason: {0}", e.Message), eCategory.Error, LogTag.IMAGE);
             }
             finally
             {

@@ -72,12 +72,9 @@
     <Compile Include="Exceptions\CalibrationException.cs" />
     <Compile Include="Exceptions\ConfigurationException.cs" />
     <Compile Include="Exceptions\InitializationException.cs" />
+    <Compile Include="Logs\LogTag.cs" />
     <Compile Include="Multithreading\BackgroundFlow.cs" />
     <Compile Include="Contracts\IFlow.cs" />
-    <Compile Include="Logs\Enums\eLogCategory.cs" />
-    <Compile Include="Logs\Enums\eLogType.cs" />
-    <Compile Include="Logs\Log.cs" />
-    <Compile Include="Logs\LogMessage.cs" />
     <Compile Include="Multithreading\Observer.cs" />
     <Compile Include="Multithreading\Publisher.cs" />
     <Compile Include="Data\Configuration.Names.cs" />
@@ -97,6 +94,12 @@
     <Compile Include="Diagnostics\Statistics.cs" />
     <Compile Include="Extensions\PointFExtensions.cs" />
     <Compile Include="Wrappers\DateTimeWrapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\External\EasyLog\EasyLog\EasyLog.csproj">
+      <Project>{1c39dd88-9b43-4b0f-8cbc-226470b761a6}</Project>
+      <Name>EasyLog</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
