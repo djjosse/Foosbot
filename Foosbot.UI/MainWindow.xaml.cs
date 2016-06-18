@@ -55,6 +55,11 @@ namespace Foosbot.UI
         /// </summary>
         private ImageProcessPack _imageProcessingPack;
 
+        /// <summary>
+        /// Image Processing GUI
+        /// </summary>
+        private ImageProcessingTool _iTool;
+
         #endregion private members
 
         /// <summary>
@@ -171,25 +176,73 @@ namespace Foosbot.UI
 
         #endregion CPU and Memory Diagnostic Info
 
+        #region GUI Buttons and Events
+
+        /// <summary>
+        /// Open Log Window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenLog(object sender, RoutedEventArgs e)
         {
             logWin.Visibility = System.Windows.Visibility.Visible;
         }
 
+        /// <summary>
+        /// Open Image Processing Tool Window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenImageProcessingTool(object sender, RoutedEventArgs e)
         {
-            ImageProcessingTool iTool = new ImageProcessingTool(_imageProcessingPack);
-            iTool.Show();
+            if (_iTool == null || _iTool.Visibility != Visibility.Visible)
+            {
+                _iTool = new ImageProcessingTool(_imageProcessingPack);
+                _iTool.Show();
+            }
         }
 
+        /// <summary>
+        /// Close The Program
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Close(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
+        /// <summary>
+        /// Perform actions on closing program
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Closing(object sender, EventArgs e)
         {
             logWin.Dispose();
+            if (_iTool != null) _iTool.Close();
         }
+
+        /// <summary>
+        /// Pause The Game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PauseGame(object sender, RoutedEventArgs e)
+        {
+            _imageProcessingPack.Pause();
+        }
+
+        /// <summary>
+        /// Resume Game From Pause
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ResumeGame(object sender, RoutedEventArgs e)
+        {
+            _imageProcessingPack.Resume();
+        }
+
+        #endregion GUI Buttons and Events
     }
 }

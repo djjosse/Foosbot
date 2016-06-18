@@ -89,6 +89,7 @@ namespace Foosbot.UI.ImageTool
         {
             if (_monitorA != null)
                 _imagePack.Streamer.Detach(_monitorA);
+            this.Visibility = Visibility.Hidden;
         }
 
         /// <summary>

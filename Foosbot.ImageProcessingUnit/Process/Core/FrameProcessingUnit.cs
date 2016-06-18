@@ -200,32 +200,35 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
         /// </summary>
         public override void Job()
         {
-            try
+            if (!IsPaused) //only if flow not paused 
             {
-                _publisher.Detach(this);
-                using (_currentFrame = _publisher.Data.Clone())
+                try
                 {
-
-                    VerifyDifferentFrameByTimeStamp(_currentFrame.Timestamp);
-
-                    //Performs calibration if required
-                    Initialize();
-                    if (IsInitialized)
+                    _publisher.Detach(this);
+                    using (_currentFrame = _publisher.Data.Clone())
                     {
-                        AnalyzerTool.Begin();
-                        bool detectionResult = _ballTracker.Detect(_currentFrame);
-                        AnalyzerTool.Finalize(detectionResult);
-                        BallLocationUpdater.UpdateAndNotify();
+
+                        VerifyDifferentFrameByTimeStamp(_currentFrame.Timestamp);
+
+                        //Performs calibration if required
+                        Initialize();
+                        if (IsInitialized)
+                        {
+                            AnalyzerTool.Begin();
+                            bool detectionResult = _ballTracker.Detect(_currentFrame);
+                            AnalyzerTool.Finalize(detectionResult);
+                            BallLocationUpdater.UpdateAndNotify();
+                        }
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-                Log.Print("Exception in image processing flow: " + ex.Message, eCategory.Debug, LogTag.IMAGE);
-            }
-            finally
-            {
-                _publisher.Attach(this);
+                catch (Exception ex)
+                {
+                    Log.Print("Exception in image processing flow: " + ex.Message, eCategory.Debug, LogTag.IMAGE);
+                }
+                finally
+                {
+                    _publisher.Attach(this);
+                }
             }
         }
 

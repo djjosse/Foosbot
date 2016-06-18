@@ -188,6 +188,39 @@ namespace Foosbot.UI.ImageExtensions
         }
 
         /// <summary>
+        /// Is currently flow paused
+        /// </summary>
+        public bool IsPaused
+        {
+            get
+            {
+               return ImageProcessUnit.IsPaused;
+            }
+        }
+
+        /// <summary>
+        /// Pause image processing
+        /// </summary>
+        public void Pause()
+        {
+            if (_isWorking)
+            {
+                ImageProcessUnit.Pause();
+            }
+        }
+
+        /// <summary>
+        /// Resume Image Processing
+        /// </summary>
+        public void Resume()
+        {
+            if (_isWorking)
+            {
+                ImageProcessUnit.Resume();
+            }
+        }
+
+        /// <summary>
         /// Selected mode in configuration file property
         /// </summary>
         public static bool IsDemoMode { get; private set; }

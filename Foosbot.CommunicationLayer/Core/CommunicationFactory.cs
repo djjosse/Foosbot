@@ -18,6 +18,9 @@ namespace Foosbot.CommunicationLayer.Core
 {
     public class CommunicationFactory
     {
+        private const string ARDUINO_GOAL_KEEPER_PORT = "COM3";
+        private const string ARDUINO_DEFENCE_PORT = "COM5";
+
         /// <summary>
         /// Create Communication Layer for each connected Arduino
         /// </summary>
@@ -34,11 +37,14 @@ namespace Foosbot.CommunicationLayer.Core
 
             //TODO: Decide how to get all
             string[] portsList = SerialPort.GetPortNames();
-            if (portsList.Length < 1) //change to 4
+            if (portsList.Length < 2) //change to 4
                 throw new NotSupportedException("Verify arduino is connected!");
 
-            allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, portsList[0]);
+            allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, ARDUINO_GOAL_KEEPER_PORT);
             allArduinos[eRod.GoalKeeper].InitializeRod();
+
+            allArduinos[eRod.Defence] = new CommunicationUnit(publishers[eRod.Defence], eRod.Defence, ARDUINO_DEFENCE_PORT);
+            allArduinos[eRod.Defence].InitializeRod();
 
             return allArduinos;
         }

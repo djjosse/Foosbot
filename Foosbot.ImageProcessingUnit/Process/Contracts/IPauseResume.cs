@@ -8,36 +8,26 @@
 // **																				   **
 // **************************************************************************************
 
-using Foosbot.ImageProcessingUnit.Detection.Contracts;
-using Foosbot.ImageProcessingUnit.Process.Core;
-using Foosbot.ImageProcessingUnit.Streamer.Core;
-
 namespace Foosbot.ImageProcessingUnit.Process.Contracts
 {
     /// <summary>
-    /// Interface for Image Processing Pack
-    /// Container for all Image Processing Elements
+    /// Pausable and Resumable Flow
     /// </summary>
-    public interface IImageProcessingPack : IImageConfiguration, IPauseResume
+    public interface IPauseResume
     {
         /// <summary>
-        /// Streamer to get frames from
+        /// Is Currently flow paused
         /// </summary>
-        FramePublisher Streamer { get; }
+        bool IsPaused { get; }
+        
+        /// <summary>
+        /// Pause the flow
+        /// </summary>
+        void Pause();
 
         /// <summary>
-        /// User Interface Frame Monitor
+        /// Resume the Flow
         /// </summary>
-        FrameObserver UiMonitor { get; }
-
-        /// <summary>
-        /// Image Processing Unit to processing frames from the streamer
-        /// </summary>
-        ImagingProcess ImageProcessUnit { get; }
-
-        /// <summary>
-        /// Start the Image Processing Pack work
-        /// </summary>
-        void Start();
+        void Resume();
     }
 }
