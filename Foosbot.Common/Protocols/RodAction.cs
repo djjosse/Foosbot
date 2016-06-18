@@ -43,14 +43,7 @@ namespace Foosbot.Common.Protocols
         {
             get
             {
-                if (Linear == eLinearMove.NA)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return _dcPosition;
-                }
+                return _dcPosition;
             }
             set
             {

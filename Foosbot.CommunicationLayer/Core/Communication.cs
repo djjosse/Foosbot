@@ -33,7 +33,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// <summary>
         /// Safety Buffer for rod maximal move in Ticks
         /// </summary>
-        public const int SAFETY_TICKS_BUFFER = 100;
+        public const int SAFETY_TICKS_BUFFER = 30;
 
         /// <summary>
         /// Minimal value to be encoded for DC coordinate (0x00000001)

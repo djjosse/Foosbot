@@ -177,7 +177,7 @@ namespace Foosbot.CommunicationLayer.Core
             {
                 if (watch == null || watch.ElapsedMilliseconds > Communication.SLEEP)
                 {
-                    Log.Print(String.Format("{0} DC: {1} SERVO: {2}", _comPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
+                    Log.Print(String.Format("New Command to arduino: {0} DC: {1} SERVO: {2}", _comPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
 
                     watch = Stopwatch.StartNew();
                     byte command = _encoder.Encode(dc, servo);

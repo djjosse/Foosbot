@@ -37,11 +37,13 @@ namespace Foosbot.CommunicationLayer.Core
 
             //TODO: Decide how to get all
             string[] portsList = SerialPort.GetPortNames();
-            if (portsList.Length < 2) //change to 4
+            if (portsList.Length < 1) //change to 4
                 throw new NotSupportedException("Verify arduino is connected!");
 
-            allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, ARDUINO_GOAL_KEEPER_PORT);
-            allArduinos[eRod.GoalKeeper].InitializeRod();
+            //Ignore the Goal Keeper Rod till it will work
+
+           // allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, ARDUINO_GOAL_KEEPER_PORT);
+          //  allArduinos[eRod.GoalKeeper].InitializeRod();
 
             allArduinos[eRod.Defence] = new CommunicationUnit(publishers[eRod.Defence], eRod.Defence, ARDUINO_DEFENCE_PORT);
             allArduinos[eRod.Defence].InitializeRod();

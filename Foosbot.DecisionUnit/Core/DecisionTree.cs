@@ -202,10 +202,10 @@ namespace Foosbot.DecisionUnit.Core
                     return _helper.LocateRespondingPlayer(rod, bfc.Y, respondingPlayer);
                 //    return bfc.Y - _helper.CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
 
-                //case eLinearMove.LEFT_BALL_DIAMETER:
-                //    return (-1) * 2 * BALL_RADIUS;
-                //case eLinearMove.RIGHT_BALL_DIAMETER:
-                //    return 2 * BALL_RADIUS;
+                case eLinearMove.LEFT_BALL_DIAMETER:
+                    return _helper.LocateRespondingPlayer(rod, bfc.Y, respondingPlayer) + (-1) * 2 * BALL_RADIUS;
+                case eLinearMove.RIGHT_BALL_DIAMETER:
+                    return _helper.LocateRespondingPlayer(rod, bfc.Y, respondingPlayer) + 2 * BALL_RADIUS;
                 case eLinearMove.VECTOR_BASED:
                     if (rod.Intersection.IsDefined)
                     {

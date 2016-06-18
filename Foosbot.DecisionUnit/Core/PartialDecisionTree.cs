@@ -52,15 +52,88 @@ namespace Foosbot.DecisionUnit.Core
             RodAction action = new RodAction(rod.RodType);
 
             /*
-             * For Alpha this is good enough to make a kick.
-             * For Beta need to define the actual sub tree.
+             * Beta Version of inner DECISION TREE
              */
-            if (relativeX.Equals(eXPositionRodRelative.FRONT))
-                action = new RodAction(rod.RodType, eRotationalMove.KICK, eLinearMove.VECTOR_BASED);
-            if (relativeX.Equals(eXPositionRodRelative.BACK))
-                action = new RodAction(rod.RodType, eRotationalMove.RISE, eLinearMove.VECTOR_BASED);
-            if (relativeX.Equals(eXPositionRodRelative.CENTER))
-                action = new RodAction(rod.RodType, eRotationalMove.KICK, eLinearMove.BALL_Y);
+            switch(relativeX)
+            {
+                case eXPositionRodRelative.FRONT:
+                    switch(relativeY)
+                    {
+                        case eYPositionPlayerRelative.RIGHT:
+                        case eYPositionPlayerRelative.LEFT:
+                            switch(rod.State.ServoPosition)
+                            {
+                                case eRotationalMove.RISE:
+                                case eRotationalMove.DEFENCE:
+                                    action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.BALL_Y);
+                                    break;
+                                case eRotationalMove.KICK:
+                                    action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.NA);
+                                    break;
+                            }
+                            break;
+                        case eYPositionPlayerRelative.CENTER:
+                            switch (rod.State.ServoPosition)
+                            {
+                                case eRotationalMove.RISE:
+                                case eRotationalMove.DEFENCE:
+                                    action = new RodAction(rod.RodType, eRotationalMove.KICK, eLinearMove.NA);
+                                    break;
+                                case eRotationalMove.KICK:
+                                    if (_helper.IsEnoughSpaceToMove(rod, rod.State.DcPosition, BALL_RADIUS))
+                                    {
+                                        action = new RodAction(rod.RodType, eRotationalMove.NA, eLinearMove.RIGHT_BALL_DIAMETER);
+                                    }
+                                    else
+                                    {
+                                        action = new RodAction(rod.RodType, eRotationalMove.NA, eLinearMove.LEFT_BALL_DIAMETER);
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+                case eXPositionRodRelative.CENTER:
+                case eXPositionRodRelative.BACK:
+                    switch (relativeY)
+                    {
+                        case eYPositionPlayerRelative.RIGHT:
+                        case eYPositionPlayerRelative.LEFT:
+                            switch (rod.State.ServoPosition)
+                            {
+                                case eRotationalMove.RISE:
+                                    action = new RodAction(rod.RodType, eRotationalMove.NA, eLinearMove.BALL_Y);
+                                    break;
+                                case eRotationalMove.DEFENCE:
+                                    action = new RodAction(rod.RodType, eRotationalMove.RISE, eLinearMove.NA);
+                                    break;
+                                case eRotationalMove.KICK:
+                                    action = new RodAction(rod.RodType, eRotationalMove.DEFENCE, eLinearMove.NA);
+                                    break;
+                            }
+                            break;
+                        case eYPositionPlayerRelative.CENTER:
+                            switch (rod.State.ServoPosition)
+                            {
+                                case eRotationalMove.RISE:
+                                    action = new RodAction(rod.RodType, eRotationalMove.KICK, eLinearMove.NA);
+                                    break;
+                                case eRotationalMove.DEFENCE:
+                                case eRotationalMove.KICK:
+                                    if (_helper.IsEnoughSpaceToMove(rod, rod.State.DcPosition, BALL_RADIUS))
+                                    {
+                                        action = new RodAction(rod.RodType, eRotationalMove.NA, eLinearMove.RIGHT_BALL_DIAMETER);
+                                    }
+                                    else
+                                    {
+                                        action = new RodAction(rod.RodType, eRotationalMove.NA, eLinearMove.LEFT_BALL_DIAMETER);
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+            }
 
             //Define actual desired rod coordinate to move to
             int startStopperDesiredY = CalculateNewRodCoordinate(rod, RespondingPlayer, bfc, action.Linear);

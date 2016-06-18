@@ -17,43 +17,63 @@ namespace Foosbot.ArduinoManualTests
     {
         static void Main(string [] args)
         {
-            Dictionary<int, eRotationalMove> vector = new Dictionary<int, eRotationalMove>();
-            vector.Add(300, eRotationalMove.KICK);
-            vector.Add(2000, eRotationalMove.DEFENCE);
-            vector.Add(800, eRotationalMove.RISE);
-            vector.Add(2200, eRotationalMove.DEFENCE);
+            Dictionary<int, eRotationalMove> commandsGoalKeeper = new Dictionary<int, eRotationalMove>();
+            commandsGoalKeeper.Add(100, eRotationalMove.KICK);
+            commandsGoalKeeper.Add(500, eRotationalMove.DEFENCE);
+            commandsGoalKeeper.Add(200, eRotationalMove.RISE);
+            commandsGoalKeeper.Add(400, eRotationalMove.DEFENCE);
+
+            Dictionary<int, eRotationalMove> commandsDefence = new Dictionary<int, eRotationalMove>();
+            commandsDefence.Add(300, eRotationalMove.KICK);
+            commandsDefence.Add(6000, eRotationalMove.DEFENCE);
+            commandsDefence.Add(3000, eRotationalMove.RISE);
+            commandsDefence.Add(2000, eRotationalMove.DEFENCE);
 
             string[] portsList = SerialPort.GetPortNames();
             if (portsList.Length < 1)
             {
-                Console.WriteLine("No Arduino connected!");
+                 Console.WriteLine("No Arduino connected!");
             }
             else
             {
-                IRodConverter converter = new ArduinoConverter(eRod.GoalKeeper);
-                ArduinoCom arduino = new ArduinoCom(portsList[0], new ActionEncoder(converter));
+                IRodConverter converterGoalKeeper = new ArduinoConverter(eRod.GoalKeeper);
+                ArduinoCom arduinoGoalKeeper = new ArduinoCom("COM3", new ActionEncoder(converterGoalKeeper));
+
+                IRodConverter converterDefence = new ArduinoConverter(eRod.Defence);
+                ArduinoCom arduinoDefence = new ArduinoCom("COM5", new ActionEncoder(converterDefence));
                 try
                 {
-                    arduino.OpenArduinoComPort();
-                    Console.WriteLine("Arduino port {0} is open!", portsList[0]);
-                    arduino.Initialize();
+                    arduinoGoalKeeper.OpenArduinoComPort();
+                    Console.WriteLine("Arduino port {0} is open!", "COM3");
+
+                    arduinoDefence.OpenArduinoComPort();
+                    Console.WriteLine("Arduino port {0} is open!", "COM5");
+
+                    arduinoGoalKeeper.Initialize();
                     Console.WriteLine("Arduino port is initialized!");
-                    arduino.MaxTicks = 2600;
+
+                    arduinoDefence.Initialize();
+                    Console.WriteLine("Arduino port is initialized!");
+                    
+                    
+                    arduinoGoalKeeper.MaxTicks = 620;
+                    arduinoDefence.MaxTicks = 6056;
 
                     Thread.Sleep(5000);
 
                     while (true)
                     {
-                        foreach (var pair in vector)
+                        for (int i = 0; i < commandsGoalKeeper.Count; i++ )
                         {
-                            Console.WriteLine("Moving: {0}, {1} ", pair.Key, pair.Value.ToString());
-                            arduino.Move(pair.Key, pair.Value);
-                            Thread.Sleep(1500);
+                            Console.WriteLine("Moving GOAL_KEEPER: {0}, {1} ", commandsGoalKeeper.ElementAt(i).Key, commandsGoalKeeper.ElementAt(i).Value.ToString());
+                            arduinoGoalKeeper.Move(commandsGoalKeeper.ElementAt(i).Key, commandsGoalKeeper.ElementAt(i).Value);
 
-                            //arduino.Initialize();
-                            //Console.WriteLine("Arduino port is initialized!");
-                            //Thread.Sleep(10000);
+                            Console.WriteLine("Moving DEFENCE: {0}, {1} ", commandsDefence.ElementAt(i).Key, commandsDefence.ElementAt(i).Value.ToString());
+                            arduinoDefence.Move(commandsDefence.ElementAt(i).Key, commandsDefence.ElementAt(i).Value);
+
+                            Thread.Sleep(2500);
                         }
+
                     }
                 }
                 catch (Exception ex)

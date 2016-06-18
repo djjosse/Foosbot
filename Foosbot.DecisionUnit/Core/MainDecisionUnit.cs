@@ -75,7 +75,9 @@ namespace Foosbot.DecisionUnit.Core
                     Marks.DrawRods();
                     Marks.DrawRodPlayers(action.RodType, action.DcCoordinate, action.Rotation);
 
-                    //Log.Common.Debug(String.Format("[{0}] mm", action.DcCoordinate));
+                    Log.Print(String.Format("Decision per rod {0}: {1}:{2}; {3}", 
+                        action.RodType, action.Linear, action.DcCoordinate, action.Rotation),
+                            eCategory.Debug, LogTag.DECISION);
 
                 }
             }
