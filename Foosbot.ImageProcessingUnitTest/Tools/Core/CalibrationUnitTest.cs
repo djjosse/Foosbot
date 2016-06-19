@@ -189,6 +189,25 @@ namespace Foosbot.ImageProcessingUnitTest.Tools.Core
             transfromationMock.Received().Initialize(Arg.Any<PointF[]>(), Arg.Any<PointF[]>());
         }
 
+        [TestCategory(CATEGORY), TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void SetTransformationMatrix_NegativeBadAxes()
+        {
+            _asset = new CalibrationHelper();
+            _asset.SetTransformationMatrix(-1, 0, _marksFromImage);
+        }
+
+        [TestCategory(CATEGORY), TestMethod]
+        [ExpectedException(typeof(CalibrationException))]
+        public void SetTransformationMatrix_NegativeBadMarks()
+        {
+            _asset = new CalibrationHelper();
+            Dictionary<eCallibrationMark, CircleF> marks 
+                = _marksFromImage.Where(x => x.Key != eCallibrationMark.TL)
+                    .ToDictionary(x => x.Key, x => x.Value);
+            _asset.SetTransformationMatrix(1000, 500, marks);
+        }
+
         #endregion SetTransformationMatrix
 
         #region VerifyMarksFound

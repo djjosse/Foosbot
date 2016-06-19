@@ -18,7 +18,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// <summary>
         /// Sleep in millisecond - minimum time between two commands sent to arduino
         /// </summary>
-        public const int SLEEP = 200;
+        public const int SLEEP = 5;
 
         /// <summary>
         /// Com port rate

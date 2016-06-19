@@ -17,6 +17,7 @@ using Foosbot.Common.Enums;
 using Foosbot.CommunicationLayer.Contracts;
 using EasyLog;
 using Foosbot.Common.Logs;
+using System.Threading;
 
 namespace Foosbot.CommunicationLayer.Core
 {
@@ -53,6 +54,14 @@ namespace Foosbot.CommunicationLayer.Core
         /// Last known DC position (in ticks, -1 is for undefined)
         /// </summary>
         private int _lastDc = -1;
+
+        /// <summary>
+        /// Stopwatch to set limits for arduino input
+        /// We don't want to burn it
+        /// </summary>
+        private Stopwatch arduinoWatch = null;
+
+        private Thread _readThread;
 
         #endregion private members
 
@@ -113,21 +122,35 @@ namespace Foosbot.CommunicationLayer.Core
                     "[{0}] Unable to initialize arduino because the port {1} is closed!",
                         MethodBase.GetCurrentMethod().Name, _comPortName));
 
-            Log.Print(String.Format("Initializing Arduino with initialization byte on port {0}...", _comPortName), eCategory.Error, LogTag.COMMUNICATION);
+            _readThread = new Thread(() =>
+            {
+                Read();
+            });
+            _readThread.IsBackground = true;
+            _readThread.Start();
+
+            
+            _isInitialized = true;
+        }
+
+        /// <summary>
+        /// Calibrate arduino method
+        /// </summary>
+        public void Calibrate()
+        {
+            Log.Print(String.Format("Initializing Arduino with initialization byte on port {0}...", _comPortName), eCategory.Info, LogTag.COMMUNICATION);
 
             try
             {
                 byte initByte = _encoder.EncodeInitialization();
                 _comPort.Write(initByte);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new InvalidOperationException(String.Format(
                     "[{0}] Unable to initialize arduino. Reason: {1}",
                         MethodBase.GetCurrentMethod().Name, ex.Message), ex);
             }
-
-            _isInitialized = true;
         }
 
         /// <summary>
@@ -151,8 +174,6 @@ namespace Foosbot.CommunicationLayer.Core
             Log.Print(String.Format("Arduino port {0} is open!", _comPortName), eCategory.Info, LogTag.COMMUNICATION);
         }
 
-        Stopwatch watch = null;
-
         /// <summary>
         /// Move arduino DC and Servo
         /// </summary>
@@ -175,16 +196,87 @@ namespace Foosbot.CommunicationLayer.Core
             
             if (_lastServo != servo || _lastDc != dc)
             {
-                if (watch == null || watch.ElapsedMilliseconds > Communication.SLEEP)
+                if (arduinoWatch == null || arduinoWatch.ElapsedMilliseconds > Communication.SLEEP)
                 {
                     Log.Print(String.Format("New Command to arduino: {0} DC: {1} SERVO: {2}", _comPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
 
-                    watch = Stopwatch.StartNew();
+                    arduinoWatch = Stopwatch.StartNew();
                     byte command = _encoder.Encode(dc, servo);
                     _comPort.Write(command);
                     _lastServo = servo;
                     _lastDc = dc;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Read received data from COM port
+        /// </summary>
+        public void Read()
+        {
+            bool isWaitingForDc = false;
+            while (true)
+            {
+                try
+                {
+                    int inp = _comPort.Read();
+                    if (!isWaitingForDc)
+                    {
+                        eResponseCode input = (eResponseCode)inp;
+                        switch (input)
+                        {
+                            case eResponseCode.INIT_REQUERED:
+                                PrintArduinoResponse(input, eCategory.Info);
+                                Calibrate();
+                                break;
+                            case eResponseCode.INIT_REQUESTED:
+                            case eResponseCode.INIT_STARTED:
+                            case eResponseCode.INIT_FINISHED:
+                            case eResponseCode.DC_CALIBRATED:
+                                PrintArduinoResponse(input, eCategory.Info);
+                                break;
+                            case eResponseCode.SERVO_STATE_KICK:
+                            case eResponseCode.SERVO_STATE_RISE:
+                            case eResponseCode.SERVO_STATE_DEFENCE:
+                                PrintArduinoResponse(input, eCategory.Debug);
+                                break;
+                            case eResponseCode.DC_RANGE_INVALID:
+                                PrintArduinoResponse(input, eCategory.Error);
+                                break;
+                            case eResponseCode.DC_RECEIVED_OK:
+                                isWaitingForDc = true;
+                                break;
+                            default:
+                                Log.Print(String.Format("[Remote: {0}]: Unknown code: {1}", _comPortName, inp),
+                                    eCategory.Warn, LogTag.ARDUINO);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Log.Print(String.Format("[Remote: {0}]: DC OK: {1}", _comPortName, inp),
+                            eCategory.Debug, LogTag.ARDUINO);
+                        isWaitingForDc = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Print(ex + ex.Message, eCategory.Error, LogTag.COMMUNICATION);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Print received code to log
+        /// </summary>
+        /// <param name="code">Received code</param>
+        /// <param name="category">Print category</param>
+        private void PrintArduinoResponse(eResponseCode code, eCategory category)
+        {
+            if (code != eResponseCode.NO_DATA)
+            {
+                String message = String.Format("[Remote: {0}]: {1}", _comPortName, code.ToString());
+                Log.Print(message, category, LogTag.ARDUINO);
             }
         }
     }

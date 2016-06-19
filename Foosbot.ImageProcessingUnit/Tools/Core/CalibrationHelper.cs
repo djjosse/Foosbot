@@ -126,7 +126,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         /// <returns>Dictionary of 2 diagonal pairs of marks</returns>
         public Dictionary<CircleF, CircleF> FindDiagonalMarkPairs(List<CircleF> unsortedMarks)
         {
-            VerifyUnsortedMarksArgument(unsortedMarks);
+            VerifyMarksArgument(unsortedMarks);
 
             //Find All Pairs based on distance
             Dictionary<CircleF, CircleF> pairs = new Dictionary<CircleF, CircleF>();
@@ -198,20 +198,20 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         /// Verify Unsorted Marks Argument
         /// </summary>
         /// <exception cref="CalibrationException">Thrown if marks are not different or not 4 marks passed</exception>
-        private void VerifyUnsortedMarksArgument(List<CircleF> unsortedMarks)
+        private void VerifyMarksArgument(List<CircleF> marks)
         {
 
-            if (unsortedMarks == null || unsortedMarks.Count != 4)
+            if (marks == null || marks.Count != 4)
                 throw new CalibrationException(String.Format(
-                    "Argument exception: {0} must have 4 unsorted marks!", unsortedMarks));
+                    "Argument exception: {0} must have 4 unsorted marks!", marks));
 
-            foreach (CircleF mark in unsortedMarks)
+            foreach (CircleF mark in marks)
             {
-                CircleF[] otherMarks = unsortedMarks.Where(m => !m.Equals(mark)).ToArray();
+                CircleF[] otherMarks = marks.Where(m => !m.Equals(mark)).ToArray();
                 if (otherMarks.Length != 3)
                 {
                     throw new CalibrationException(String.Format(
-                        "Argument exception: {0} must have 4 different marks!", unsortedMarks));
+                        "Argument exception: {0} must have 4 different marks!", marks));
                 }
             }
         }
@@ -264,6 +264,11 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         /// <param name="calibrationMarks">Calibration marks detected on image</param>
         public void SetTransformationMatrix(int axeXlength, int axeYlength, Dictionary<eCallibrationMark, CircleF> calibrationMarks)
         {
+            if (axeXlength <= 0 || axeYlength <= 0)
+                throw new ArgumentException("Axe X and Y must be positive parameters!");
+
+            VerifyMarksArgument(calibrationMarks.Values.ToList());
+
             _markCoordinates = new Dictionary<eCallibrationMark, System.Drawing.PointF>();
             _markCoordinates.Add(eCallibrationMark.BL, new System.Drawing.PointF(0, axeYlength));             //ButtomLeft
             _markCoordinates.Add(eCallibrationMark.TL, new System.Drawing.PointF(0, 0));                         //TopLeft

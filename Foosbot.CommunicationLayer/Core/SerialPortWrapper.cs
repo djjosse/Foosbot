@@ -8,7 +8,10 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
+using Foosbot.Common.Logs;
 using Foosbot.CommunicationLayer.Contracts;
+using System;
 using System.IO.Ports;
 
 namespace Foosbot.CommunicationLayer.Core
@@ -59,9 +62,27 @@ namespace Foosbot.CommunicationLayer.Core
         /// <param name="command">Command to be sent to port</param>
         public void Write(byte command)
         {
+            _port.DiscardOutBuffer();
             byte [] buffer = new byte[1];
             buffer[0] = command;
             _port.Write(buffer, 0, 1);
+        }
+
+        /// <summary>
+        /// Serial port read operation
+        /// </summary>
+        /// <returns>One byte red</returns>
+        public byte Read()
+        {
+            try
+            {
+                return (byte)_port.ReadByte();
+            }
+            catch (Exception ex)
+            {
+                Log.Print(ex + " " + ex.Message, eCategory.Error, LogTag.COMMUNICATION);
+                return 0;
+            }
         }
     }
 }

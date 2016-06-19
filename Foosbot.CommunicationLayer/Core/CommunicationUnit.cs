@@ -101,10 +101,6 @@ namespace Foosbot.CommunicationLayer.Core
                 //received command
                 RodAction action = _publisher.Data;
 
-                //Log.Common.Debug(String.Format("[{0}] New action received for {1} Rotational: {2} Linear: {3}: Coordinate: {4} mm",
-                //   MethodBase.GetCurrentMethod().Name, action.RodType.ToString(), action.Rotation.ToString(),
-                //    action.Linear.ToString(), action.DcCoordinate));
-
                 //Convert mm to ticks
                 int proportinalMove = _converter.MmToTicks(action.DcCoordinate);
 
@@ -132,5 +128,7 @@ namespace Foosbot.CommunicationLayer.Core
                 _publisher.Attach(this);
             }
         }
+
+        
     }
 }

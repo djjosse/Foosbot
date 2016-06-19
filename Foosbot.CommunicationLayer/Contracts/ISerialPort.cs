@@ -31,5 +31,11 @@ namespace Foosbot.CommunicationLayer.Contracts
         /// </summary>
         /// <param name="command">Command to be sent to port</param>
         void Write(byte command);
+
+        /// <summary>
+        /// Serial port read operation
+        /// </summary>
+        /// <returns>One byte red</returns>
+        byte Read();
     }
 }
