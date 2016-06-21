@@ -242,7 +242,7 @@ namespace Foosbot.CommunicationLayer.Core
                     byte command = _encoder.Encode(dc, servo);
                     _comPort.Write(command);
                     Log.Print(String.Format("[Local: {0}] DC: {1} SERVO: {2}", ComPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
-                    _lastServo = servo;
+                    
                     _lastDc = dc;
             }
         }
@@ -273,6 +273,9 @@ namespace Foosbot.CommunicationLayer.Core
                         case eResponseCode.SERVO_STATE_KICK:
                         case eResponseCode.SERVO_STATE_RISE:
                         case eResponseCode.SERVO_STATE_DEFENCE:
+                            SetLastServoState(code);
+                            PrintArduinoResponse(code, eCategory.Debug);
+                            break;
                         case eResponseCode.DC_RECEIVED_OK:
                             PrintArduinoResponse(code, eCategory.Debug);
                             break;
@@ -304,6 +307,22 @@ namespace Foosbot.CommunicationLayer.Core
             {
                 String message = String.Format("[Remote: {0}]: {1}", ComPortName, code.ToString());
                 Log.Print(message, category, LogTag.ARDUINO, method, sourceFile, lineNumber);
+            }
+        }
+
+        private void SetLastServoState(eResponseCode newState)
+        {
+            switch(newState)
+            {
+                case eResponseCode.SERVO_STATE_KICK:
+                    _lastServo = eRotationalMove.KICK;
+                    break;
+                case eResponseCode.SERVO_STATE_RISE:
+                    _lastServo = eRotationalMove.RISE;
+                    break;
+                case eResponseCode.SERVO_STATE_DEFENCE:
+                    _lastServo = eRotationalMove.DEFENCE;
+                    break;
             }
         }
     }
