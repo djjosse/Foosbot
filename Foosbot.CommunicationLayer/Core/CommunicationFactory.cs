@@ -35,7 +35,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// </summary>
         /// <param name="publishers">Dictionary of RodActionPublishers per each rod</param>
         /// <returns>Communication Layer per each Rod</returns>
-        public static Dictionary<eRod, CommunicationUnit> Create(Dictionary<eRod, RodActionPublisher> publishers)
+        public static Dictionary<eRod, CommunicationUnit> Create(Dictionary<eRod, RodActionPublisher> publishers, Action<eRod, eRotationalMove> onServoChangeState)
         {
             Dictionary<eRod, CommunicationUnit> allArduinos = new Dictionary<eRod,CommunicationUnit>();
 
@@ -54,7 +54,7 @@ namespace Foosbot.CommunicationLayer.Core
            // allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, ARDUINO_GOAL_KEEPER_PORT);
           //  allArduinos[eRod.GoalKeeper].InitializeRod();
 
-            allArduinos[eRod.Defence] = new CommunicationUnit(publishers[eRod.Defence], eRod.Defence, ARDUINO_DEFENCE_PORT);
+            allArduinos[eRod.Defence] = new CommunicationUnit(publishers[eRod.Defence], eRod.Defence, ARDUINO_DEFENCE_PORT, onServoChangeState);
             allArduinos[eRod.Defence].InitializeRod();
 
             return allArduinos;

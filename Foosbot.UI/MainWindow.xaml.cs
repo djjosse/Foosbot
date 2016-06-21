@@ -60,6 +60,8 @@ namespace Foosbot.UI
         /// </summary>
         private ImageProcessingTool _iTool;
 
+        private MainDecisionUnit _decisionUnit;
+
         #endregion private members
 
         /// <summary>
@@ -101,13 +103,13 @@ namespace Foosbot.UI
                                                 _imageProcessingPack.ImageProcessUnit.ImagingData);
                 vectorCalcullationUnit.Start();
                 
-                MainDecisionUnit decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
-                decisionUnit.Start();
+                _decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
+                _decisionUnit.Start();
 
                 
                 if (_isArduinoConnected)
                 {
-                    Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(decisionUnit.RodActionPublishers);
+                    Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(_decisionUnit.RodActionPublishers, _decisionUnit.UpdateRealTimeState);
                     foreach (eRod key in communication.Keys)
                     {
                         if (communication[key] != null)

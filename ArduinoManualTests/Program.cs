@@ -37,10 +37,17 @@ namespace Foosbot.ArduinoManualTests
             else
             {
                 IRodConverter converterGoalKeeper = new ArduinoConverter(eRod.GoalKeeper);
-                ArduinoCom arduinoGoalKeeper = new ArduinoCom("COM3", new ActionEncoder(converterGoalKeeper));
+                ArduinoCom arduinoGoalKeeper = new ArduinoCom("COM3", new ActionEncoder(converterGoalKeeper))
+                {
+                    RodType = eRod.GoalKeeper
+                };
 
                 IRodConverter converterDefence = new ArduinoConverter(eRod.Defence);
-                ArduinoCom arduinoDefence = new ArduinoCom("COM5", new ActionEncoder(converterDefence));
+                ArduinoCom arduinoDefence = new ArduinoCom("COM5", new ActionEncoder(converterDefence))
+                {
+                    RodType = eRod.Defence
+                };
+
                 try
                 {
                     arduinoGoalKeeper.OpenArduinoComPort();

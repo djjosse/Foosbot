@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
@@ -28,5 +29,7 @@ namespace Foosbot.DecisionUnit.Contracts
         /// <param name="currentCoordinates">Current ball coordinates and vector</param>
         /// <returns>List of actions per each rod</returns>
         List<RodAction> Decide(BallCoordinates currentCoordinates);
+
+        void UpdateRealTimeState(eRod rodType, eRotationalMove servoState);
     }
 }

@@ -26,7 +26,10 @@ namespace Foosbot.CommunicationLayerTest
         {
             _mockPort = Substitute.For<ISerialPort>();
             _mockEncoder = Substitute.For<IEncoder>();
-            _arduino = new ArduinoCom(_mockPort, _mockEncoder);
+            _arduino = new ArduinoCom(_mockPort, _mockEncoder)
+            {
+                RodType = eRod.GoalKeeper
+            };
             _arduino.MaxTicks = MAX_TICKS;
         }
 

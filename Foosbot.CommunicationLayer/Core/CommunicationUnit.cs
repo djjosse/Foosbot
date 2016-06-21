@@ -65,7 +65,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// <param name="publisher">Rod Action publisher to observe</param>
         /// <param name="rodType">Current rod type</param>
         /// <param name="comPort">Com port of current arduino rod</param>
-        public CommunicationUnit(Publisher<RodAction> publisher, eRod rodType, string comPort)
+        public CommunicationUnit(Publisher<RodAction> publisher, eRod rodType, string comPort, Action<eRod, eRotationalMove> onServoChangeState)
             : base(publisher)
         {
             //we don't wan't to receive anything before initialization finished
@@ -77,7 +77,11 @@ namespace Foosbot.CommunicationLayer.Core
             _converter = new ArduinoConverter(rodType);
 
             //Create arduino com object
-            _arduino = new ArduinoCom(comPort, new ActionEncoder(_converter));
+            _arduino = new ArduinoCom(comPort, new ActionEncoder(_converter))
+            {
+                OnServoChangeState = onServoChangeState,
+                RodType = rodType
+            };
         }
 
         /// <summary>

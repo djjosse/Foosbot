@@ -75,6 +75,7 @@ namespace Foosbot.DecisionUnit.Core
                     RodActionPublishers[action.RodType].UpdateAndNotify(action);
 
                     Marks.DrawRods();
+                    //Marks.DrawRodPlayers(action.RodType, action.DcCoordinate, eRotationalMove.NA);
                     Marks.DrawRodPlayers(action.RodType, action.DcCoordinate, action.Rotation);
 
                     Log.Print(String.Format("Decision per rod {0}: {1}:{2}; {3}", 
@@ -103,6 +104,11 @@ namespace Foosbot.DecisionUnit.Core
             {
                 RodActionPublishers.Add(rodType, new RodActionPublisher());
             }
+        }
+
+        public void UpdateRealTimeState(eRod rodType, eRotationalMove servoState)
+        {
+            _manager.UpdateRealTimeState(rodType, servoState);
         }
     }
 }

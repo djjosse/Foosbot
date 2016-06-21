@@ -28,6 +28,12 @@ namespace Foosbot.DecisionUnit.Core
     /// </summary>
     public class DecisionManager : IInitializableDecisionManager
     {
+        public void UpdateRealTimeState(eRod rodType, eRotationalMove servoState)
+        {
+            IInitializableRod rod = _controlledRods.First(x => x.RodType.Equals(rodType));
+            rod.State.ServoPosition = servoState;
+        }
+
         /// <summary>
         /// Mechanical, Calculation and other delays
         /// </summary>

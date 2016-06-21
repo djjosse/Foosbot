@@ -77,6 +77,11 @@ namespace Foosbot.CommunicationLayer.Core
         
         #endregion private members
 
+
+        public Action<eRod, eRotationalMove> OnServoChangeState { get; set; }
+
+        public eRod RodType { get; set; }
+
         #region Constructors
 
         /// <summary>
@@ -312,17 +317,27 @@ namespace Foosbot.CommunicationLayer.Core
 
         private void SetLastServoState(eResponseCode newState)
         {
+            eRotationalMove state = eRotationalMove.NA;
             switch(newState)
             {
                 case eResponseCode.SERVO_STATE_KICK:
-                    _lastServo = eRotationalMove.KICK;
+                    state = eRotationalMove.KICK;
                     break;
                 case eResponseCode.SERVO_STATE_RISE:
-                    _lastServo = eRotationalMove.RISE;
+                    state = eRotationalMove.RISE;
                     break;
                 case eResponseCode.SERVO_STATE_DEFENCE:
-                    _lastServo = eRotationalMove.DEFENCE;
+                    state = eRotationalMove.DEFENCE;
                     break;
+            }
+
+            if (!state.Equals(eRotationalMove.NA))
+            {
+                _lastServo = state;
+                if (OnServoChangeState != null)
+                {
+                    OnServoChangeState(RodType, _lastServo);
+                }
             }
         }
     }
