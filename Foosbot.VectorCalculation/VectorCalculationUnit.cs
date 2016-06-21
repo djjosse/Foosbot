@@ -94,7 +94,6 @@ namespace Foosbot.VectorCalculation
             try
             {
                 _publisher.Detach(this);
-
                 if (_stabilizer == null)
                 {
                     int ballRadius = (_imagingData.BallRadius < 0) ? 5 : _imagingData.BallRadius;

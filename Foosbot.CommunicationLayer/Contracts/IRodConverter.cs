@@ -13,6 +13,9 @@ using Foosbot.Common.Enums;
 
 namespace Foosbot.CommunicationLayer.Contracts
 {
+    /// <summary>
+    /// Rod Converter is responsible for converting mm, ticks and bytes sent to controller
+    /// </summary>
     public interface IRodConverter : IInitializable
     {
         /// <summary>

@@ -14,6 +14,10 @@ using System;
 
 namespace Foosbot.CommunicationLayer.Core
 {
+    /// <summary>
+    /// Arduino Conversion Unit
+    /// Responsible for converting ticks to bits sent to arduino
+    /// </summary>
     public class ArduinoConverter : IRodConverter
     {
         /// <summary>
@@ -123,8 +127,25 @@ namespace Foosbot.CommunicationLayer.Core
         public int TicksToBits(int dcInTicks)
         {
             if (!IsInitialized) Initialize();
-            float m = (float)(Communication.MAX_DC_VALUE_TO_ENCODE - Communication.MIN_DC_VALUE_TO_ENCODE) / (float)TicksPerRod;
-            return Convert.ToInt32(m * dcInTicks);
+            return Convert.ToInt32(Slope * dcInTicks);
+        }
+
+        /// <summary>
+        /// Slope of line to convert ticks to bits
+        /// </summary>
+        private float? _slope = null;
+
+        /// <summary>
+        /// Slope property to convert ticks to bits
+        /// </summary>
+        private float Slope
+        {
+            get
+            {
+                if (_slope == null)
+                    _slope = (float)(Communication.MAX_DC_VALUE_TO_ENCODE - Communication.MIN_DC_VALUE_TO_ENCODE) / (float)TicksPerRod;
+                return (float)_slope;
+            }
         }
     }
 }

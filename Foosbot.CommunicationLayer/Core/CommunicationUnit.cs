@@ -16,7 +16,6 @@ using Foosbot.Common.Multithreading;
 using Foosbot.Common.Protocols;
 using Foosbot.CommunicationLayer.Contracts;
 using System;
-using System.Reflection;
 using System.Threading;
 
 namespace Foosbot.CommunicationLayer.Core
@@ -28,11 +27,34 @@ namespace Foosbot.CommunicationLayer.Core
     {
         #region private members
 
+        /// <summary>
+        /// Converter of ticks to bits
+        /// </summary>
         private IRodConverter _converter;
+
+        /// <summary>
+        /// Arduino Communication Unit
+        /// </summary>
         private ArduinoCom _arduino;
+
+        /// <summary>
+        /// Current rod type
+        /// </summary>
         private eRod _rodType;
-        private double _rodLength; //mm
+
+        /// <summary>
+        /// Rod length in mm
+        /// </summary>
+        private double _rodLength;
+
+        /// <summary>
+        /// Rod length in ticks
+        /// </summary>
         private int _ticksPerRod;
+
+        /// <summary>
+        /// Is Initialized member
+        /// </summary>
         private bool _isInitialized = false;
 
         #endregion private members
@@ -60,7 +82,7 @@ namespace Foosbot.CommunicationLayer.Core
 
         /// <summary>
         /// Initialization method. 
-        /// Open arduino and init it. Read configuration file.
+        /// Open arduino and initialize it. Reads configuration file.
         /// </summary>
         public void InitializeRod()
         {

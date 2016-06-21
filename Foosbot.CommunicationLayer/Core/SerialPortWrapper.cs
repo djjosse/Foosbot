@@ -21,7 +21,6 @@ namespace Foosbot.CommunicationLayer.Core
     /// </summary>
     public class SerialPortWrapper : ISerialPort
     {
-
         /// <summary>
         /// Actual serial port
         /// </summary>
@@ -72,11 +71,12 @@ namespace Foosbot.CommunicationLayer.Core
         /// Serial port read operation
         /// </summary>
         /// <returns>One byte red</returns>
-        public byte Read()
+        public byte ReadByte()
         {
             try
             {
-                return (byte)_port.ReadByte();
+                byte received = (byte)_port.ReadByte();
+                return received;
             }
             catch (Exception ex)
             {

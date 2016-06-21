@@ -17,9 +17,9 @@ namespace Foosbot.CommunicationLayer.Core
     public class ActionEncoder : IEncoder
     {
         /// <summary>
-        /// Converter private member
+        /// Converter bits to ticks and back
         /// </summary>
-        IRodConverter _converter;
+        public IRodConverter Converter { get; private set; }
 
         /// <summary>
         /// Action encoder constructor
@@ -27,7 +27,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// <param name="converter">Converter to get ticks per rod</param>
         public ActionEncoder(IRodConverter converter)
         {
-            _converter = converter;
+            Converter = converter;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Foosbot.CommunicationLayer.Core
         public byte Encode(int dcInTicks, eRotationalMove servo)
         {
             //Convert ticks to bits (0x00000000 (0) to 0x00111110 (62))
-            int dcBites = _converter.TicksToBits(dcInTicks);
+            int dcBites = Converter.TicksToBits(dcInTicks);
 
             //create empty command
             byte command = 0x00000000;

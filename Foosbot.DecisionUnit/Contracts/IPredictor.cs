@@ -12,13 +12,16 @@ using Foosbot.Common.Protocols;
 using System;
 namespace Foosbot.DecisionUnit.Contracts
 {
+    /// <summary>
+    /// Prediction of ball future coordinates
+    /// </summary>
     public interface IPredictor
     {
         /// <summary>
-        /// Calculate Ball Future Coordinates in actual time system can responce
+        /// Calculate Ball Future Coordinates in actual time system can response
         /// </summary>
         /// <param name="currentCoordinates"><Current ball coordinates/param>
-        /// <param name="actionTime">Actual system responce time</param>
+        /// <param name="actionTime">Actual system response time</param>
         /// <returns>Ball Future coordinates</returns>
         BallCoordinates FindBallFutureCoordinates(BallCoordinates currentCoordinates, DateTime actionTime);
     }

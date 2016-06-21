@@ -9,15 +9,12 @@
 // **************************************************************************************
 
 using Foosbot.Common.Enums;
-using Foosbot.Common.Protocols;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foosbot.DecisionUnit.Contracts
 {
+    /// <summary>
+    /// Rod State (DC and Servo positions)
+    /// </summary>
     public interface IRodState
     {
         /// <summary>

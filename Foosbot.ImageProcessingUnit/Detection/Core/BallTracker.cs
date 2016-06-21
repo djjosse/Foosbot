@@ -24,7 +24,6 @@ using Foosbot.ImageProcessingUnit.Tools.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Media;
 
 namespace Foosbot.ImageProcessingUnit.Detection.Core
@@ -124,14 +123,14 @@ namespace Foosbot.ImageProcessingUnit.Detection.Core
                     else
                     {
                         Log.Print(String.Format("Unable to find in small area, searching full area: {0}x{1}",
-                            image.Width, image.Height), eCategory.Info, LogTag.IMAGE);
+                            image.Width, image.Height), eCategory.Debug, LogTag.IMAGE);
                         isDetected = FindBallLocationInFrame(image, frame.Timestamp);
                     }
                 }
                 else
                 {
                     Log.Print(String.Format("Found based on stored location. Updated to: [{0}x{1}]",
-                            ImagingData.LastKnownBallLocation.X, ImagingData.LastKnownBallLocation.Y), eCategory.Info, LogTag.IMAGE);
+                            ImagingData.LastKnownBallLocation.X, ImagingData.LastKnownBallLocation.Y), eCategory.Debug, LogTag.IMAGE);
                 }
             }
             //No stored location

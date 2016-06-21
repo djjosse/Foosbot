@@ -50,7 +50,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Core
         #endregion Prepare Image Constants
 
         /// <summary>
-        /// Initializes and set transfromation data
+        /// Initializes and set transformation data
         /// </summary>
         ITransformation _transformationAgent;
 

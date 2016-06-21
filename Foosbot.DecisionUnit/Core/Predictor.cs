@@ -12,17 +12,15 @@ using EasyLog;
 using Foosbot.Common.Logs;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
-using Foosbot.VectorCalculation;
 using Foosbot.VectorCalculation.Contracts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foosbot.DecisionUnit.Core
 {
+    /// <summary>
+    /// Responsible for predicts ball future coordinates on provided time
+    /// </summary>
     public class Predictor : IPredictor
     {
         /// <summary>
@@ -31,7 +29,7 @@ namespace Foosbot.DecisionUnit.Core
         private ISurveyor _surveyor;
 
         /// <summary>
-        /// Ricochet Calc Unit instance for calculating Ricochet
+        /// Ricochet Calculation Unit instance for calculating Ricochet
         /// </summary>
         private IInitializableRicochet _ricochetCalc;
 
@@ -39,7 +37,7 @@ namespace Foosbot.DecisionUnit.Core
         /// Predictor class constructor
         /// </summary>
         /// <param name="surveyor">Surveyor for calculating and verify table size vs. coordinates</param>
-        /// <param name="ricochetCalc">Ricochet Calc Unit instance for calculating ricochet</param>
+        /// <param name="ricochetCalc">Ricochet Calculation Unit instance for calculating ricochet</param>
         public Predictor(ISurveyor surveyor, IInitializableRicochet ricochetCalc)
         {
             _surveyor = surveyor;
@@ -47,10 +45,10 @@ namespace Foosbot.DecisionUnit.Core
         }
 
         /// <summary>
-        /// Calculate Ball Future Coordinates in actual time system can responce
+        /// Calculate Ball Future Coordinates in actual time system can response
         /// </summary>
         /// <param name="currentCoordinates"><Current ball coordinates/param>
-        /// <param name="actionTime">Actual system responce time</param>
+        /// <param name="actionTime">Actual system response time</param>
         /// <returns>Ball Future coordinates</returns>
         public BallCoordinates FindBallFutureCoordinates(BallCoordinates currentCoordinates, DateTime actionTime)
         {

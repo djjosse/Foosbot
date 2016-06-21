@@ -20,6 +20,9 @@ using System.Threading.Tasks;
 
 namespace Foosbot.DecisionUnit.Core
 {
+    /// <summary>
+    /// Current Rod State - Servo and DC
+    /// </summary>
     public class RodState : IRodState
     {
         /// <summary>

@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contracts\eResponseCode.cs" />
+    <Compile Include="Enums\eResponseCode.cs" />
     <Compile Include="Core\ActionEncoder.cs" />
     <Compile Include="Core\ArduinoCom.cs" />
     <Compile Include="Core\Communication.cs" />

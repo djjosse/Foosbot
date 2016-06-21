@@ -63,11 +63,13 @@ namespace Foosbot.DecisionUnit.Core
         /// </summary>
         public override void Job()
         {
+            BallCoordinates ballCoordinates = null;
+            List<RodAction> actions = null;
             try
             {
                 _publisher.Detach(this);
-                BallCoordinates ballCoordinates = _currentData;//_publisher.Data;
-                List<RodAction> actions = _manager.Decide(ballCoordinates);
+                ballCoordinates = _currentData;//_publisher.Data;
+                actions = _manager.Decide(ballCoordinates);
                 foreach (RodAction action in actions)
                 {
                     RodActionPublishers[action.RodType].UpdateAndNotify(action);
@@ -83,7 +85,7 @@ namespace Foosbot.DecisionUnit.Core
             }
             catch (Exception ex)
             {
-                Log.Print("No vectors found!", eCategory.Error, LogTag.DECISION);
+                Log.Print(ex.Message + ": No vectors found!", eCategory.Error, LogTag.DECISION);
             }
             finally
             {

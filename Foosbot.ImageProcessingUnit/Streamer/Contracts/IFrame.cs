@@ -26,7 +26,7 @@ namespace Foosbot.ImageProcessingUnit.Streamer.Contracts
         Image<Gray, byte> Image { get; set; }
 
         /// <summary>
-        /// Image Timestamp
+        /// Image Time-stamp
         /// </summary>
         DateTime Timestamp { get; set; }
 

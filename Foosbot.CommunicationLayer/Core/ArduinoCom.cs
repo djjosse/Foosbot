@@ -12,23 +12,37 @@ using System;
 using System.Reflection;
 using Foosbot.Common.Contracts;
 using Foosbot.Common.Exceptions;
-using System.Diagnostics;
 using Foosbot.Common.Enums;
 using Foosbot.CommunicationLayer.Contracts;
 using EasyLog;
 using Foosbot.Common.Logs;
 using System.Threading;
+using System.Runtime.CompilerServices;
+using Foosbot.CommunicationLayer.Enums;
 
 namespace Foosbot.CommunicationLayer.Core
 {
+    /// <summary>
+    /// Arduino Communication Unit
+    /// This unit is responsible for connection to arduino serial port
+    /// </summary>
     public class ArduinoCom : IInitializable
     {
-        #region private members
+        #region constants
 
         /// <summary>
-        /// Current COM port name
+        /// Maximum number of retries opening arduino communication port
         /// </summary>
-        private string _comPortName;
+        private const int MAX_OPEN_PORT_RETRIES = 3;
+
+        /// <summary>
+        /// Wait time before retrying to open arduino communication port on fail
+        /// </summary>
+        private readonly TimeSpan WAIT_ON_FAIL_OPENING_PORT = TimeSpan.FromMilliseconds(1000);
+
+        #endregion constants
+
+        #region private members
 
         /// <summary>
         /// Current COM port
@@ -56,13 +70,11 @@ namespace Foosbot.CommunicationLayer.Core
         private int _lastDc = -1;
 
         /// <summary>
-        /// Stopwatch to set limits for arduino input
-        /// We don't want to burn it
+        /// Arduino feedback thread
         /// </summary>
-        private Stopwatch arduinoWatch = null;
-
         private Thread _readThread;
 
+        
         #endregion private members
 
         #region Constructors
@@ -75,7 +87,7 @@ namespace Foosbot.CommunicationLayer.Core
         public ArduinoCom(string comPort, IEncoder encoder)
         {
             _comPort = null;
-            _comPortName = comPort;
+            ComPortName = comPort;
             _encoder = encoder;
             _isInitialized = false;
             MaxTicks = 0;
@@ -95,6 +107,11 @@ namespace Foosbot.CommunicationLayer.Core
         }
 
         #endregion Constructors
+
+        /// <summary>
+        /// Current COM port name
+        /// </summary>
+        public string ComPortName { get; private set; }
 
         /// <summary>
         /// Maximum ticks per current rod
@@ -120,25 +137,21 @@ namespace Foosbot.CommunicationLayer.Core
             if (!_comPort.IsOpen)
                 throw new InvalidOperationException(String.Format(
                     "[{0}] Unable to initialize arduino because the port {1} is closed!",
-                        MethodBase.GetCurrentMethod().Name, _comPortName));
-
-            _readThread = new Thread(() =>
-            {
-                Read();
-            });
-            _readThread.IsBackground = true;
-            _readThread.Start();
-
+                        MethodBase.GetCurrentMethod().Name, ComPortName));
             
+            RequestCalibration();
+
+            InvokeReadingFromArduino();
+
             _isInitialized = true;
         }
 
         /// <summary>
         /// Calibrate arduino method
         /// </summary>
-        public void Calibrate()
+        public void RequestCalibration()
         {
-            Log.Print(String.Format("Initializing Arduino with initialization byte on port {0}...", _comPortName), eCategory.Info, LogTag.COMMUNICATION);
+            Log.Print(String.Format("Calibrating Arduino with initialization byte on port {0}...", ComPortName), eCategory.Info, LogTag.COMMUNICATION);
 
             try
             {
@@ -154,24 +167,54 @@ namespace Foosbot.CommunicationLayer.Core
         }
 
         /// <summary>
+        /// Invoke reading thread from arduino communication port
+        /// </summary>
+        private void InvokeReadingFromArduino()
+        {
+            _readThread = new Thread(() =>
+            {
+                Read();
+            });
+            _readThread.IsBackground = true;
+            _readThread.Start();
+        }
+
+        /// <summary>
         /// Open Arduino Com Port
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown in case of error while opening port</exception>
         public void OpenArduinoComPort()
         {
             if (_comPort == null)
-                _comPort = new SerialPortWrapper(_comPortName, Communication.BAUDRATE);
-            try
+                _comPort = new SerialPortWrapper(ComPortName, Communication.BAUDRATE);
+
+            int currentRetry = 0;
+            while (currentRetry < MAX_OPEN_PORT_RETRIES)
             {
-                Log.Print(String.Format("Opening Arduino port {0}...", _comPortName), eCategory.Info, LogTag.COMMUNICATION);
-                _comPort.Open();
+                try
+                {
+                    Log.Print(String.Format("Opening Arduino port {0}...", ComPortName), eCategory.Info, LogTag.COMMUNICATION);
+                    _comPort.Open();
+                    Log.Print(String.Format("Arduino port {0} is open!", ComPortName), eCategory.Info, LogTag.COMMUNICATION);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    currentRetry++;
+                    if (currentRetry < MAX_OPEN_PORT_RETRIES)
+                    {
+                        Log.Print(String.Format("Unable to open arduino port {0}, will retry after {1}. [Retry {2} of {3}]",
+                            _comPort, WAIT_ON_FAIL_OPENING_PORT, currentRetry, MAX_OPEN_PORT_RETRIES), eCategory.Warn, LogTag.COMMUNICATION);
+                        Thread.Sleep(WAIT_ON_FAIL_OPENING_PORT);
+                    }
+                    else
+                    {
+                         throw new InvalidOperationException(String.Format("[{0}] Error opening Arduino port {1}. Reason: {2}",
+                            MethodBase.GetCurrentMethod().Name, ComPortName, ex.Message), ex);
+                    }
+                }
+                
             }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException(String.Format("[{0}] Error opening Arduino port {1}. Reason: {2}",
-                        MethodBase.GetCurrentMethod().Name, _comPortName, ex.Message), ex);
-            }
-            Log.Print(String.Format("Arduino port {0} is open!", _comPortName), eCategory.Info, LogTag.COMMUNICATION);
         }
 
         /// <summary>
@@ -196,16 +239,11 @@ namespace Foosbot.CommunicationLayer.Core
             
             if (_lastServo != servo || _lastDc != dc)
             {
-                if (arduinoWatch == null || arduinoWatch.ElapsedMilliseconds > Communication.SLEEP)
-                {
-                    Log.Print(String.Format("New Command to arduino: {0} DC: {1} SERVO: {2}", _comPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
-
-                    arduinoWatch = Stopwatch.StartNew();
                     byte command = _encoder.Encode(dc, servo);
                     _comPort.Write(command);
+                    Log.Print(String.Format("[Local: {0}] DC: {1} SERVO: {2}", ComPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
                     _lastServo = servo;
                     _lastDc = dc;
-                }
             }
         }
 
@@ -214,49 +252,37 @@ namespace Foosbot.CommunicationLayer.Core
         /// </summary>
         public void Read()
         {
-            bool isWaitingForDc = false;
             while (true)
             {
                 try
                 {
-                    int inp = _comPort.Read();
-                    if (!isWaitingForDc)
+                    byte inputByte = _comPort.ReadByte();
+                    eResponseCode code = (eResponseCode)inputByte;
+                    switch (code)
                     {
-                        eResponseCode input = (eResponseCode)inp;
-                        switch (input)
-                        {
-                            case eResponseCode.INIT_REQUERED:
-                                PrintArduinoResponse(input, eCategory.Info);
-                                Calibrate();
-                                break;
-                            case eResponseCode.INIT_REQUESTED:
-                            case eResponseCode.INIT_STARTED:
-                            case eResponseCode.INIT_FINISHED:
-                            case eResponseCode.DC_CALIBRATED:
-                                PrintArduinoResponse(input, eCategory.Info);
-                                break;
-                            case eResponseCode.SERVO_STATE_KICK:
-                            case eResponseCode.SERVO_STATE_RISE:
-                            case eResponseCode.SERVO_STATE_DEFENCE:
-                                PrintArduinoResponse(input, eCategory.Debug);
-                                break;
-                            case eResponseCode.DC_RANGE_INVALID:
-                                PrintArduinoResponse(input, eCategory.Error);
-                                break;
-                            case eResponseCode.DC_RECEIVED_OK:
-                                isWaitingForDc = true;
-                                break;
-                            default:
-                                Log.Print(String.Format("[Remote: {0}]: Unknown code: {1}", _comPortName, inp),
-                                    eCategory.Warn, LogTag.ARDUINO);
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        Log.Print(String.Format("[Remote: {0}]: DC OK: {1}", _comPortName, inp),
-                            eCategory.Debug, LogTag.ARDUINO);
-                        isWaitingForDc = false;
+                        case eResponseCode.INIT_REQUERED:
+                            PrintArduinoResponse(code, eCategory.Info);
+                            RequestCalibration();
+                            break;
+                        case eResponseCode.INIT_REQUESTED:
+                        case eResponseCode.INIT_STARTED:
+                        case eResponseCode.INIT_FINISHED:
+                        case eResponseCode.DC_CALIBRATED:
+                            PrintArduinoResponse(code, eCategory.Info);
+                            break;
+                        case eResponseCode.SERVO_STATE_KICK:
+                        case eResponseCode.SERVO_STATE_RISE:
+                        case eResponseCode.SERVO_STATE_DEFENCE:
+                        case eResponseCode.DC_RECEIVED_OK:
+                            PrintArduinoResponse(code, eCategory.Debug);
+                            break;
+                        case eResponseCode.DC_RANGE_INVALID:
+                            PrintArduinoResponse(code, eCategory.Error);
+                            break;
+                        default:
+                            Log.Print(String.Format("[Remote: {0}]: Unknown code: {1}", ComPortName, inputByte),
+                                eCategory.Warn, LogTag.ARDUINO);
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -271,12 +297,13 @@ namespace Foosbot.CommunicationLayer.Core
         /// </summary>
         /// <param name="code">Received code</param>
         /// <param name="category">Print category</param>
-        private void PrintArduinoResponse(eResponseCode code, eCategory category)
+        private void PrintArduinoResponse(eResponseCode code, eCategory category,
+            [CallerMemberName]string method = "", [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             if (code != eResponseCode.NO_DATA)
             {
-                String message = String.Format("[Remote: {0}]: {1}", _comPortName, code.ToString());
-                Log.Print(message, category, LogTag.ARDUINO);
+                String message = String.Format("[Remote: {0}]: {1}", ComPortName, code.ToString());
+                Log.Print(message, category, LogTag.ARDUINO, method, sourceFile, lineNumber);
             }
         }
     }

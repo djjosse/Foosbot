@@ -11,16 +11,14 @@
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foosbot.DecisionUnit.Contracts
 {
+    /// <summary>
+    /// Decision Helper Interface provides helpers and utilities for decision unit
+    /// </summary>
     public interface IDecisionHelper
     {
-
         /// <summary>
         /// Get all players Y coordinates per current rod
         /// </summary>

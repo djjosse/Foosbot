@@ -12,14 +12,13 @@ using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foosbot.DecisionUnit.Core
 {
+    /// <summary>
+    /// Class responsible for measuring in Decision Unit
+    /// </summary>
     public class Surveyor : ISurveyor
     {
         /// <summary>
@@ -62,7 +61,7 @@ namespace Foosbot.DecisionUnit.Core
         /// Convert BallCoordinates in points to BallCoordinates in mm
         /// </summary>
         /// <param name="pts">BallCoordinates in Points</param>
-        /// <returns>BallCoordinates in Milimeters</returns>
+        /// <returns>BallCoordinates in Millimeters</returns>
         public BallCoordinates PtsToMm(BallCoordinates pts)
         {
             BallCoordinates mmCoords = null;
@@ -93,7 +92,7 @@ namespace Foosbot.DecisionUnit.Core
         /// <summary>
         /// Convert BallCoordinates in mm to BallCoordinates in points
         /// </summary>
-        /// <param name="mm">BallCoordinates in Milimeters</param>
+        /// <param name="mm">BallCoordinates in Millimeters</param>
         /// <returns>BallCoordinates in Points</returns>
         public BallCoordinates MmToPts(BallCoordinates mm)
         {
@@ -125,8 +124,8 @@ namespace Foosbot.DecisionUnit.Core
         /// <summary>
         /// Defines if given coordinates in table range.
         /// </summary>
-        /// <param name="xCoordinate">X cooridanate to compare</param>
-        /// <param name="yCoordinate">Y cooridanate to compare</param>
+        /// <param name="xCoordinate">X coordinate to compare</param>
+        /// <param name="yCoordinate">Y coordinate to compare</param>
         /// <param name="units">Units to work in (mm/pts only) [default is mm]</param>
         /// <returns>[True] if in range, [False] otherwise</returns>
         public bool IsCoordinatesInRange(int xCoordinate, int yCoordinate, eUnits units = eUnits.Mm)
@@ -137,7 +136,7 @@ namespace Foosbot.DecisionUnit.Core
         /// <summary>
         /// Defines if given coordinates in table range.
         /// </summary>
-        /// <param name="xCoordinate">X cooridanate to compare</param>
+        /// <param name="xCoordinate">X coordinate to compare</param>
         /// <param name="units">Units to work in (mm/pts only) [default is mm]</param>
         /// <returns>[True] if in range, [False] otherwise</returns>
         public bool IsCoordinatesXInRange(int xCoordinate, eUnits units = eUnits.Mm)
@@ -150,7 +149,7 @@ namespace Foosbot.DecisionUnit.Core
         /// <summary>
         /// Defines if given coordinates in table range.
         /// </summary>
-        /// <param name="yCoordinate">Y cooridanate to compare</param>
+        /// <param name="yCoordinate">Y coordinate to compare</param>
         /// <param name="units">Units to work in (mm/pts only) [default is mm]</param>
         /// <returns>[True] if in range, [False] otherwise</returns>
         public bool IsCoordinatesYInRange(int yCoordinate, eUnits units = eUnits.Mm)

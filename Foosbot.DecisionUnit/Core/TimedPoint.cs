@@ -10,15 +10,11 @@
 
 using Foosbot.Common.Protocols;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foosbot.DecisionUnit.Core
 {
     /// <summary>
-    /// Represents a class for point relevant for some timestamp
+    /// Represents a class for point relevant for some time stamp
     /// </summary>
     public class TimedPoint : DefinableCartesianCoordinate<int>
     {
@@ -27,7 +23,7 @@ namespace Foosbot.DecisionUnit.Core
         /// </summary>
         /// <param name="x">X coordinate</param>
         /// <param name="y">Y coordinate</param>
-        /// <param name="timestamp">Timestamp for point</param>
+        /// <param name="timestamp">Time-stamp for point</param>
         public TimedPoint(int x, int y, DateTime timestamp)
         {
             _x = x;
@@ -45,12 +41,12 @@ namespace Foosbot.DecisionUnit.Core
         }
 
         /// <summary>
-        /// Timestamp for point
+        /// Time-stamp for point
         /// </summary>
         private DateTime _timestamp;
 
         /// <summary>
-        /// Timestamp for point
+        /// Time-stamp for point
         /// </summary>
         public DateTime Timestamp 
         {
@@ -59,7 +55,7 @@ namespace Foosbot.DecisionUnit.Core
                 if (IsDefined)
                     return _timestamp;
                 else
-                    throw new Exception("TimedPoint coordinate is undefined, no value stored in timestamp");
+                    throw new Exception("TimedPoint coordinate is undefined, no value stored in time-stamp");
             }
         }
 

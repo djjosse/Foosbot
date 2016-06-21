@@ -12,13 +12,22 @@ using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using System;
 using System.Collections.Generic;
-using System.IO.Ports;
 
 namespace Foosbot.CommunicationLayer.Core
 {
+    /// <summary>
+    /// Factory responsible for creating Arduino communication units per each connected controller
+    /// </summary>
     public class CommunicationFactory
     {
+        /// <summary>
+        /// Arduino Goal Keeper rod Serial Com Port
+        /// </summary>
         private const string ARDUINO_GOAL_KEEPER_PORT = "COM3";
+
+        /// <summary>
+        /// Arduino Defense rod Serial Com Port
+        /// </summary>
         private const string ARDUINO_DEFENCE_PORT = "COM5";
 
         /// <summary>
@@ -36,9 +45,9 @@ namespace Foosbot.CommunicationLayer.Core
             }
 
             //TODO: Decide how to get all
-            string[] portsList = SerialPort.GetPortNames();
-            if (portsList.Length < 1) //change to 4
-                throw new NotSupportedException("Verify arduino is connected!");
+            //string[] portsList = SerialPort.GetPortNames();
+            //if (portsList.Length < 1) //change to 4
+            //    throw new NotSupportedException("Verify arduino is connected!");
 
             //Ignore the Goal Keeper Rod till it will work
 

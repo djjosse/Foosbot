@@ -20,10 +20,13 @@ using System.Threading.Tasks;
 
 namespace Foosbot.DecisionUnit.Contracts
 {
+    /// <summary>
+    /// Rod Functionality and State
+    /// </summary>
     public interface IRod
     {
         /// <summary>
-        /// Rod type private readonly member
+        /// Rod type private read-only member
         /// </summary>
         eRod RodType { get; }
 
@@ -48,17 +51,17 @@ namespace Foosbot.DecisionUnit.Contracts
         int StopperDistance { get; }
 
         /// <summary>
-        /// Rod X coordinate in Foosbot world private readonly member
+        /// Rod X coordinate in Foosbot world private read-only member
         /// </summary>
         int RodXCoordinate { get; }
 
         /// <summary>
-        /// Minimal Sector Width in Foosbot world private readonly member
+        /// Minimal Sector Width in Foosbot world private read-only member
         /// </summary>
         int MinSectorWidth { get; }
 
         /// <summary>
-        /// Sector Factor used to calculate dynamic sector private readonly member
+        /// Sector Factor used to calculate dynamic sector private read-only member
         /// </summary>
         double SectorFactor { get; }
 
@@ -116,8 +119,8 @@ namespace Foosbot.DecisionUnit.Contracts
         /// <summary>
         /// Get nearest possible DC position in case desired position is out of range
         /// </summary>
-        /// <param name="desiredPosition">Originlly desired position</param>
-        /// <returns>Nearest posible position</returns>
+        /// <param name="desiredPosition">Originally desired position</param>
+        /// <returns>Nearest possible position</returns>
         int NearestPossibleDcPosition(int desiredPosition);
     }
 }

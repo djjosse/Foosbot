@@ -50,7 +50,7 @@ namespace Foosbot.VectorCalculation
             }
             else
             {
-                Log.Print("Coordinates were not set by IP-Unit", eCategory.Error, LogTag.IMAGE);
+                Log.Print("Coordinates were not set by IP-Unit", eCategory.Warn, LogTag.VECTOR);
             }
         }
     }

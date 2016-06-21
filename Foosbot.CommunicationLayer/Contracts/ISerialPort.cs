@@ -36,6 +36,6 @@ namespace Foosbot.CommunicationLayer.Contracts
         /// Serial port read operation
         /// </summary>
         /// <returns>One byte red</returns>
-        byte Read();
+        byte ReadByte();
     }
 }

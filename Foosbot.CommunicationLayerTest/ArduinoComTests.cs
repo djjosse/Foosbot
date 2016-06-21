@@ -52,7 +52,7 @@ namespace Foosbot.CommunicationLayerTest
                 .Do(x => { throw new TimeoutException(); });
 
             _arduino.Initialize();
-            _arduino.Calibrate();
+            _arduino.RequestCalibration();
         }
 
         [TestCategory(CATEGORY), TestMethod]

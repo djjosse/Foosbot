@@ -19,7 +19,7 @@ namespace Foosbot.ImageProcessingUnit.Tools.Contracts
     public interface IComputerVisionMonitorCollection
     {
         /// <summary>
-        /// Dictionary of Computer Vision Monitors to display image prcoessing data on the screen
+        /// Dictionary of Computer Vision Monitors to display image preprocessing data on the screen
         /// Where key is an enum of Computer Vision Monitor type and value is its Instance
         /// </summary>
         Dictionary<eComputerVisionMonitor, IComputerVisionMonitor> ComputerVisionMonitors { get; }

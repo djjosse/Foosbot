@@ -12,8 +12,16 @@ using Foosbot.Common.Enums;
 
 namespace Foosbot.CommunicationLayer.Contracts
 {
+    /// <summary>
+    /// Encoder is responsible for encoding data before sending to arduino
+    /// </summary>
     public interface IEncoder
     {
+        /// <summary>
+        /// Converter bits to ticks and back
+        /// </summary>
+        IRodConverter Converter { get; }
+
         /// <summary>
         /// Get encoded initialization byte to sent to Arduino
         /// </summary>
