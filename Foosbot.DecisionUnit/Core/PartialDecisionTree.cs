@@ -32,7 +32,7 @@ namespace Foosbot.DecisionUnit.Core
         /// Delay beetween actions inside sector
         /// This is used to normalize operation of Servo motor
         /// </summary>
-        private readonly TimeSpan ACTION_DELAY = TimeSpan.FromMilliseconds(200);
+        private readonly TimeSpan ACTION_DELAY = TimeSpan.FromMilliseconds(1000);
 
         /// <summary>
         /// Watches used per each rod to set actions delay for arduino servo

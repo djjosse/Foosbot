@@ -32,6 +32,7 @@ namespace Foosbot.DecisionUnit.Core
         {
             IInitializableRod rod = _controlledRods.First(x => x.RodType.Equals(rodType));
             rod.State.ServoPosition = servoState;
+            //Marks.DrawRodPlayers(rod.RodType, rod.State.DcPosition, rod.State.ServoPosition);
         }
 
         /// <summary>

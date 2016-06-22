@@ -68,6 +68,10 @@
     <Compile Include="Contracts\IPublisher.cs" />
     <Compile Include="Data\TransformAgent.cs" />
     <Compile Include="Data\TransformData.cs" />
+    <Compile Include="Drawing\DrawData.cs" />
+    <Compile Include="Drawing\DrawUtils.cs" />
+    <Compile Include="Drawing\Marks.cs" />
+    <Compile Include="Drawing\Surface.cs" />
     <Compile Include="Enums\eMarks.cs" />
     <Compile Include="Exceptions\CalibrationException.cs" />
     <Compile Include="Exceptions\ConfigurationException.cs" />
@@ -101,6 +105,7 @@
       <Name>EasyLog</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
