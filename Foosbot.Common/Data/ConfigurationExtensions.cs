@@ -108,10 +108,22 @@ namespace Foosbot
         /// <param name="configuration">Configuration</param>
         /// <param name="rodType">Rod Type</param>
         /// <returns>[True] Servo feedback should be taken from arduino, [False] it should be taken from decision</returns>
-        public static bool IsServoFeedbackPerRod(this Configuration configuration, eRod rodType)
+        public static bool IsServoExistsWithFeedback(this Configuration configuration, eRod rodType)
         {
             return Configuration.Attributes.GetValue<bool>(
                 String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_SERVO_FEEDBACK));
+        }
+
+        /// <summary>
+        /// Get Arduino Serial Port Per Rod
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        /// <param name="rodType">Rod Type</param>
+        /// <returns>Arduino Serial Port Name Per Rod as string</returns>
+        public static string GetArduinoSerialPortPerRod(this Configuration configuration, eRod rodType)
+        {
+            return Configuration.Attributes.GetValue<string>(
+                String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_COM_PORT));
         }
     }
 }

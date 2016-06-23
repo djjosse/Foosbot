@@ -224,7 +224,7 @@ namespace Foosbot.DecisionUnit.Core
         public bool ShouldSetServoStateFromTree(eRod rodType)
         {
             bool hasArduinoWithFeedback = _hasArduinoOnRod.ContainsKey(rodType) ?
-                _hasArduinoOnRod[rodType] : Configuration.Attributes.IsServoFeedbackPerRod(rodType);
+                _hasArduinoOnRod[rodType] : Configuration.Attributes.IsServoExistsWithFeedback(rodType);
 
             bool isArduinoInUse = _isArduinoInUse ?? Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_ARDUINOS_CONNECTED);
             bool isDemoMode = _isDemoMode ?? Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_DEMO_MODE);

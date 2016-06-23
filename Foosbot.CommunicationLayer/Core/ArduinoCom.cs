@@ -143,10 +143,10 @@ namespace Foosbot.CommunicationLayer.Core
                 throw new InvalidOperationException(String.Format(
                     "[{0}] Unable to initialize arduino because the port {1} is closed!",
                         MethodBase.GetCurrentMethod().Name, ComPortName));
-            
-            RequestCalibration();
 
             InvokeReadingFromArduino();
+
+            RequestCalibration();
 
             _isInitialized = true;
         }
@@ -279,7 +279,7 @@ namespace Foosbot.CommunicationLayer.Core
                         case eResponseCode.SERVO_STATE_RISE:
                         case eResponseCode.SERVO_STATE_DEFENCE:
                             SetLastServoState(code);
-                            PrintArduinoResponse(code, eCategory.Debug);
+                            PrintArduinoResponse(code, eCategory.Info);
                             break;
                         case eResponseCode.DC_RECEIVED_OK:
                             PrintArduinoResponse(code, eCategory.Debug);

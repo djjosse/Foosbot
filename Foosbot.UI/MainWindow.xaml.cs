@@ -46,11 +46,6 @@ namespace Foosbot.UI
         LogWindow logWin = new LogWindow("Foosbot Event Log", LogTag.ALL_TAGS);
 
         /// <summary>
-        /// Current Foosbot mode
-        /// </summary>
-        private bool _isArduinoConnected = false;
-
-        /// <summary>
         /// Imager Processing Pack - gui monitor, streamer, image processing unit
         /// </summary>
         private ImageProcessPack _imageProcessingPack;
@@ -88,9 +83,6 @@ namespace Foosbot.UI
             {
                 InitializeStatistics();
 
-                //get operation mode from configuration file
-                _isArduinoConnected = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_ARDUINOS_CONNECTED);
-
                 //Start Diagnostics - Processor and Memory Usage
                 StartDiagnostics();
 
@@ -106,17 +98,8 @@ namespace Foosbot.UI
                 _decisionUnit = new MainDecisionUnit(vectorCalcullationUnit.LastBallLocationPublisher);
                 _decisionUnit.Start();
 
-                
-                if (_isArduinoConnected)
-                {
-                    Dictionary<eRod, CommunicationUnit> communication = CommunicationFactory.Create(_decisionUnit.RodActionPublishers, _decisionUnit.UpdateRealTimeState);
-                    foreach (eRod key in communication.Keys)
-                    {
-                        if (communication[key] != null)
-                            communication[key].Start();
-                    }
-                }
-                 
+                CommunicationFactory.Create(_decisionUnit.RodActionPublishers, _decisionUnit.UpdateRealTimeState);
+                CommunicationFactory.Start();
             }
             catch(Exception ex)
             {

@@ -156,6 +156,11 @@ namespace Foosbot
             /// Subkey for rod: Defines if Servo position will be updated based on Arduino feedback
             /// </summary>
             public const string SUBKEY_SERVO_FEEDBACK = "_ServoFeedback";
+
+            /// <summary>
+            /// Subkey for rod: Defines if Arduino Serial Port Per Rod
+            /// </summary>
+            public const string SUBKEY_COM_PORT = "_ArduinoPort";
         }
     }
 }

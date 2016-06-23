@@ -18,46 +18,113 @@ namespace Foosbot.CommunicationLayer.Core
     /// <summary>
     /// Factory responsible for creating Arduino communication units per each connected controller
     /// </summary>
-    public class CommunicationFactory
+    public sealed class CommunicationFactory
     {
         /// <summary>
-        /// Arduino Goal Keeper rod Serial Com Port
+        /// Singleton instance
         /// </summary>
-        private const string ARDUINO_GOAL_KEEPER_PORT = "COM3";
+        private static CommunicationFactory _instance;
 
         /// <summary>
-        /// Arduino Defense rod Serial Com Port
+        /// Singleton creation token
         /// </summary>
-        private const string ARDUINO_DEFENCE_PORT = "COM5";
+        private static object _token = new object();
+        
+        /// <summary>
+        /// Singleton instance property
+        /// </summary>
+        private static CommunicationFactory Instance
+        { 
+            get
+            {
+                if (_instance == null)
+                {
+                    lock(_token)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new CommunicationFactory();
+                        }
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        /// <summary>
+        /// Arduino Serial Com Port Names
+        /// </summary>
+        private static readonly Dictionary<eRod, string> ARDUINO_PORT = new Dictionary<eRod, string>();
+
+        /// <summary>
+        /// All arduino communication ports
+        /// </summary>
+        private Dictionary<eRod, CommunicationUnit> _allArduinos = new Dictionary<eRod, CommunicationUnit>();
+
+        /// <summary>
+        /// Private Constructor for communication unit
+        /// </summary>
+        private CommunicationFactory()
+        {
+            foreach(eRod rodType in Enum.GetValues(typeof(eRod)))
+            {
+                ARDUINO_PORT.Add(rodType, Configuration.Attributes.GetArduinoSerialPortPerRod(rodType));
+            }
+        }
 
         /// <summary>
         /// Create Communication Layer for each connected Arduino
         /// </summary>
         /// <param name="publishers">Dictionary of RodActionPublishers per each rod</param>
-        /// <returns>Communication Layer per each Rod</returns>
-        public static Dictionary<eRod, CommunicationUnit> Create(Dictionary<eRod, RodActionPublisher> publishers, Action<eRod, eRotationalMove> onServoChangeState)
+        public static void Create(Dictionary<eRod, RodActionPublisher> publishers, Action<eRod, eRotationalMove> onServoChangeState)
         {
-            Dictionary<eRod, CommunicationUnit> allArduinos = new Dictionary<eRod,CommunicationUnit>();
-
-            foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
+            //get operation mode from configuration file
+            if (Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_ARDUINOS_CONNECTED))
             {
-                allArduinos.Add(rodType, null);
+                foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
+                {
+                    CommunicationFactory.Instance.Create(rodType, publishers[rodType], onServoChangeState);
+                }
             }
+        }
 
-            //TODO: Decide how to get all
-            //string[] portsList = SerialPort.GetPortNames();
-            //if (portsList.Length < 1) //change to 4
-            //    throw new NotSupportedException("Verify arduino is connected!");
+        /// <summary>
+        /// Start all communications with Arduino units on all rods
+        /// NOTE: This method must be called after Create method
+        /// </summary>
+        public static void Start()
+        {
+            foreach (eRod rodType in Instance._allArduinos.Keys)
+            {
+               Instance.Start(rodType);
+            }
+        }
 
-            //Ignore the Goal Keeper Rod till it will work
+        /// <summary>
+        /// Start communication with Arduino unit on provided rod
+        /// </summary>
+        /// <param name="rodType">Rod type</param>
+        private void Start(eRod rodType)
+        {
+            if (_allArduinos[rodType] != null)
+                _allArduinos[rodType].Start();
+        }
 
-           // allArduinos[eRod.GoalKeeper] = new CommunicationUnit(publishers[eRod.GoalKeeper], eRod.GoalKeeper, ARDUINO_GOAL_KEEPER_PORT);
-          //  allArduinos[eRod.GoalKeeper].InitializeRod();
-
-            allArduinos[eRod.Defence] = new CommunicationUnit(publishers[eRod.Defence], eRod.Defence, ARDUINO_DEFENCE_PORT, onServoChangeState);
-            allArduinos[eRod.Defence].InitializeRod();
-
-            return allArduinos;
+        /// <summary>
+        /// Create Communication Port for Arduino on rod if defined
+        /// </summary>
+        /// <param name="rodType">Rod Type</param>
+        /// <param name="publisher">Publisher for arduino actions</param>
+        /// <param name="onServoChangeState">Method to call on arduino servo state changed</param>
+        private void Create(eRod rodType, RodActionPublisher publisher, Action<eRod, eRotationalMove> onServoChangeState)
+        {
+            CommunicationUnit unit = null;
+            if (Configuration.Attributes.IsServoExistsWithFeedback(rodType))
+            {
+                unit = new CommunicationUnit(publisher, rodType, ARDUINO_PORT[rodType], onServoChangeState);
+                unit.InitializeRod();
+                _allArduinos.Add(rodType, unit);
+            }
         }
     }
 }
