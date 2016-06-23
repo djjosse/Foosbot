@@ -32,7 +32,7 @@ namespace Foosbot.DecisionUnit.Core
         /// Delay beetween actions inside sector
         /// This is used to normalize operation of Servo motor
         /// </summary>
-        private readonly TimeSpan ACTION_DELAY = TimeSpan.FromMilliseconds(1000);
+        private readonly TimeSpan ACTION_DELAY = TimeSpan.FromMilliseconds(100);
 
         /// <summary>
         /// Watches used per each rod to set actions delay for arduino servo
@@ -125,7 +125,7 @@ namespace Foosbot.DecisionUnit.Core
                                 switch (rod.State.ServoPosition)
                                 {
                                     case eRotationalMove.RISE:
-                                        action = new RodAction(rod.RodType, eRotationalMove.NA, eLinearMove.BALL_Y);
+                                        action = new RodAction(rod.RodType, eRotationalMove.RISE, eLinearMove.BALL_Y);
                                         break;
                                     case eRotationalMove.DEFENCE:
                                         action = new RodAction(rod.RodType, eRotationalMove.RISE, eLinearMove.NA);
@@ -173,7 +173,8 @@ namespace Foosbot.DecisionUnit.Core
 
             //Set last decided rod and player coordinates if it was defined
             if (action.Linear!=eLinearMove.NA) rod.State.DcPosition = action.DcCoordinate;
-            if (action.Rotation != eRotationalMove.NA) rod.State.ServoPosition = action.Rotation;
+            if (_helper.ShouldSetServoStateFromTree(rod.RodType))
+                if (action.Rotation != eRotationalMove.NA) rod.State.ServoPosition = action.Rotation;
 
             return action;
         }

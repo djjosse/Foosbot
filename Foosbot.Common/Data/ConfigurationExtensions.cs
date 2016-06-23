@@ -101,5 +101,17 @@ namespace Foosbot
             return Configuration.Attributes.GetValue<int>(
                 String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_TICKS));
         }
+
+        /// <summary>
+        /// Get Number of ticks per rod
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
+        /// <param name="rodType">Rod Type</param>
+        /// <returns>[True] Servo feedback should be taken from arduino, [False] it should be taken from decision</returns>
+        public static bool IsServoFeedbackPerRod(this Configuration configuration, eRod rodType)
+        {
+            return Configuration.Attributes.GetValue<bool>(
+                String.Format("{0}{1}", rodType.ToString(), Configuration.Names.SUBKEY_SERVO_FEEDBACK));
+        }
     }
 }

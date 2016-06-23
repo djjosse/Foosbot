@@ -63,7 +63,8 @@ namespace Foosbot.DecisionUnit.Core
 
             //Set last decided rod and player coordinates 
             rod.State.DcPosition = action.DcCoordinate;
-            rod.State.ServoPosition = action.Rotation;
+            if (_helper.ShouldSetServoStateFromTree(rod.RodType))
+                rod.State.ServoPosition = action.Rotation;
             return action;
         }
 

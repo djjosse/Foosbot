@@ -151,6 +151,11 @@ namespace Foosbot
             /// Subkey for rod: DC Encoder ticks between min and max possible positions of rod (in Ticks)
             /// </summary>
             public const string SUBKEY_TICKS = "_Ticks";
+
+            /// <summary>
+            /// Subkey for rod: Defines if Servo position will be updated based on Arduino feedback
+            /// </summary>
+            public const string SUBKEY_SERVO_FEEDBACK = "_ServoFeedback";
         }
     }
 }

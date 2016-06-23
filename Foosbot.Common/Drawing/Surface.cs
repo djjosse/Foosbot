@@ -91,29 +91,24 @@ namespace Foosbot.Common.Drawing
         /// <param name="circleColor">Ball color : optional</param>
         public void DrawBall(Point center, int radius, SolidColorBrush circleColor = null)
         {
-            try
+
+            const int key = (int)eMarks.BallMark;
+            Point presentationCenter = new Point(center.X * _data.WidthRate, center.Y * _data.HeightRate);
+            int presentationRadius = Convert.ToInt32(radius * ((_data.WidthRate + _data.HeightRate) / 2));
+
+            _dispatcher.Invoke(new ThreadStart(delegate
             {
-                const int key = (int)eMarks.BallMark;
-                Point presentationCenter = new Point(center.X * _data.WidthRate, center.Y * _data.HeightRate);
-                int presentationRadius = Convert.ToInt32(radius * ((_data.WidthRate + _data.HeightRate) / 2));
+                (_markups[key] as Shape).Fill = Brushes.White;
+                (_markups[key] as Shape).StrokeThickness = 2;
+                (_markups[key] as Shape).Stroke = (circleColor == null) ? Brushes.Red : circleColor;
 
-                _dispatcher.Invoke(new ThreadStart(delegate
-                {
-                    (_markups[key] as Shape).Fill = Brushes.White;
-                    (_markups[key] as Shape).StrokeThickness = 2;
-                    (_markups[key] as Shape).Stroke = (circleColor == null) ? Brushes.Red : circleColor;
+                _markups[key].Width = presentationRadius * 2;
+                _markups[key].Height = presentationRadius * 2;
 
-                    _markups[key].Width = presentationRadius * 2;
-                    _markups[key].Height = presentationRadius * 2;
+                Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
+                Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
+            }));
 
-                    Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
-                    Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
-                }));
-            }
-            catch (Exception e)
-            {
-                Log.Print(String.Format("Unable to draw ball mark. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
-            }
         }
 
         /// <summary>
@@ -130,53 +125,47 @@ namespace Foosbot.Common.Drawing
             SolidColorBrush circleColor = null, SolidColorBrush textColor = null, double fontSize = 12,
                 string text = "")
         {
-            try
-            {
-                Point presentationCenter = new Point(center.X * _data.WidthRate, center.Y * _data.HeightRate);
-                int presentationRadius = Convert.ToInt32(radius * ((_data.WidthRate + _data.HeightRate) / 2));
+            Point presentationCenter = new Point(center.X * _data.WidthRate, center.Y * _data.HeightRate);
+            int presentationRadius = Convert.ToInt32(radius * ((_data.WidthRate + _data.HeightRate) / 2));
 
-                _dispatcher.Invoke(new ThreadStart(delegate
+            _dispatcher.Invoke(new ThreadStart(delegate
+            {
+                int markNum = 0;
+                int textNum = 0;
+                switch (mark)
                 {
-                    int markNum = 0;
-                    int textNum = 0;
-                    switch (mark)
-                    {
-                        case eCallibrationMark.BL:
-                            markNum = (int)eMarks.ButtomLeftMark;
-                            textNum = (int)eMarks.ButtomLeftText;
-                            break;
-                        case eCallibrationMark.BR:
-                            markNum = (int)eMarks.ButtomRightMark;
-                            textNum = (int)eMarks.ButtomRightText;
-                            break;
-                        case eCallibrationMark.TL:
-                            markNum = (int)eMarks.TopLeftMark;
-                            textNum = (int)eMarks.TopLeftText;
-                            break;
-                        case eCallibrationMark.TR:
-                            markNum = (int)eMarks.TopRightMark;
-                            textNum = (int)eMarks.TopRightText;
-                            break;
-                    }
+                    case eCallibrationMark.BL:
+                        markNum = (int)eMarks.ButtomLeftMark;
+                        textNum = (int)eMarks.ButtomLeftText;
+                        break;
+                    case eCallibrationMark.BR:
+                        markNum = (int)eMarks.ButtomRightMark;
+                        textNum = (int)eMarks.ButtomRightText;
+                        break;
+                    case eCallibrationMark.TL:
+                        markNum = (int)eMarks.TopLeftMark;
+                        textNum = (int)eMarks.TopLeftText;
+                        break;
+                    case eCallibrationMark.TR:
+                        markNum = (int)eMarks.TopRightMark;
+                        textNum = (int)eMarks.TopRightText;
+                        break;
+                }
 
-                    (_markups[markNum] as Shape).StrokeThickness = 2;
-                    (_markups[markNum] as Shape).Stroke = (circleColor == null) ? Brushes.Pink : circleColor;
-                    (_markups[textNum] as TextBlock).FontSize = fontSize;
-                    (_markups[textNum] as TextBlock).Text = (String.IsNullOrEmpty(text)) ? String.Format("{0}:{1}x{2}", mark, Convert.ToInt32(center.X), Convert.ToInt32(center.Y)) : text;
-                    (_markups[textNum] as TextBlock).Foreground = (textColor == null) ? Brushes.OrangeRed : textColor;
+                (_markups[markNum] as Shape).StrokeThickness = 2;
+                (_markups[markNum] as Shape).Stroke = (circleColor == null) ? Brushes.Pink : circleColor;
+                (_markups[textNum] as TextBlock).FontSize = fontSize;
+                (_markups[textNum] as TextBlock).Text = (String.IsNullOrEmpty(text)) ? String.Format("{0}:{1}x{2}", mark, Convert.ToInt32(center.X), Convert.ToInt32(center.Y)) : text;
+                (_markups[textNum] as TextBlock).Foreground = (textColor == null) ? Brushes.OrangeRed : textColor;
 
-                    _markups[markNum].Width = presentationRadius * 2;
-                    _markups[markNum].Height = presentationRadius * 2;
-                    Canvas.SetLeft(_markups[markNum], presentationCenter.X - presentationRadius);
-                    Canvas.SetTop(_markups[markNum], presentationCenter.Y - presentationRadius);
-                    Canvas.SetLeft(_markups[textNum], presentationCenter.X - presentationRadius);
-                    Canvas.SetTop(_markups[textNum], presentationCenter.Y - presentationRadius);
-                }));
-            }
-            catch (Exception e)
-            {
-                Log.Print(String.Format("Unable to draw calibration mark. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
-            }
+                _markups[markNum].Width = presentationRadius * 2;
+                _markups[markNum].Height = presentationRadius * 2;
+                Canvas.SetLeft(_markups[markNum], presentationCenter.X - presentationRadius);
+                Canvas.SetTop(_markups[markNum], presentationCenter.Y - presentationRadius);
+                Canvas.SetLeft(_markups[textNum], presentationCenter.X - presentationRadius);
+                Canvas.SetTop(_markups[textNum], presentationCenter.Y - presentationRadius);
+            }));
+
         }
 
         /// <summary>
@@ -188,61 +177,55 @@ namespace Foosbot.Common.Drawing
         /// <param name="color">Optional color [default : Aqua]</param>
         public void DrawBallVector(Point center, Point vector, bool isLocation = true, SolidColorBrush color = null)
         {
-            try
+            if (isLocation)
             {
-                if (isLocation)
+                int x = Convert.ToInt32(center.X);
+                int y = Convert.ToInt32(center.Y);
+                _utils.ConvertToLocation(ref x, ref y);
+                center = new Point(x, y);
+
+                x = Convert.ToInt32(vector.X);
+                y = Convert.ToInt32(vector.Y);
+
+                //we don't want to convert 0 of vector
+                int convX = x;
+                int convY = y;
+                _utils.ConvertToLocation(ref convX, ref convY);
+                if (x != 0) x = convX;
+                if (y != 0) y = convY;
+                vector = new Point(x, y);
+            }
+
+            Point presentationStartPoint = new Point(center.X * _data.WidthRate, center.Y * _data.HeightRate);
+            Point presentationVector = new Point(vector.X * _data.WidthRate, vector.Y * _data.HeightRate);
+            Point presentationEndPoint = new Point(presentationStartPoint.X + presentationVector.X,
+                presentationStartPoint.Y + presentationVector.Y);
+            const int key = (int)eMarks.BallVectorArrow;
+
+            _dispatcher.Invoke(new ThreadStart(delegate
+            {
+                for (int i = key; i <= key + 2; i++)
                 {
-                    int x = Convert.ToInt32(center.X);
-                    int y = Convert.ToInt32(center.Y);
-                    _utils.ConvertToLocation(ref x, ref y);
-                    center = new Point(x, y);
-
-                    x = Convert.ToInt32(vector.X);
-                    y = Convert.ToInt32(vector.Y);
-
-                    //we don't want to convert 0 of vector
-                    int convX = x;
-                    int convY = y;
-                    _utils.ConvertToLocation(ref convX, ref convY);
-                    if (x != 0) x = convX;
-                    if (y != 0) y = convY;
-                    vector = new Point(x, y);
+                    (_markups[i] as Line).StrokeThickness = 2;
+                    (_markups[i] as Line).Stroke = (color == null) ? System.Windows.Media.Brushes.Aqua : color;
+                    (_markups[i] as Line).X1 = presentationStartPoint.X;
+                    (_markups[i] as Line).Y1 = presentationStartPoint.Y;
                 }
+                (_markups[key] as Line).X2 = presentationEndPoint.X;
+                (_markups[key] as Line).Y2 = presentationEndPoint.Y;
 
-                Point presentationStartPoint = new Point(center.X * _data.WidthRate, center.Y * _data.HeightRate);
-                Point presentationVector = new Point(vector.X * _data.WidthRate, vector.Y * _data.HeightRate);
-                Point presentationEndPoint = new Point(presentationStartPoint.X + presentationVector.X,
-                    presentationStartPoint.Y + presentationVector.Y);
-                const int key = (int)eMarks.BallVectorArrow;
+                (_markups[key + 1] as Line).X2 = presentationEndPoint.X;
+                (_markups[key + 1] as Line).Y2 = presentationEndPoint.Y;
+                (_markups[key + 2] as Line).X2 = presentationEndPoint.X;
+                (_markups[key + 2] as Line).Y2 = presentationEndPoint.Y;
 
-                _dispatcher.Invoke(new ThreadStart(delegate
+                for (int i = key; i <= key /*+ 2*/; i++)
                 {
-                    for (int i = key; i <= key + 2; i++)
-                    {
-                        (_markups[i] as Line).StrokeThickness = 2;
-                        (_markups[i] as Line).Stroke = (color == null) ? System.Windows.Media.Brushes.Aqua : color;
-                        (_markups[i] as Line).X1 = presentationStartPoint.X;
-                        (_markups[i] as Line).Y1 = presentationStartPoint.Y;
-                    }
-                    (_markups[key] as Line).X2 = presentationEndPoint.X;
-                    (_markups[key] as Line).Y2 = presentationEndPoint.Y;
+                    Canvas.SetLeft(_markups[i], 0);
+                    Canvas.SetTop(_markups[i], 0);
+                }
+            }));
 
-                    (_markups[key + 1] as Line).X2 = presentationEndPoint.X;
-                    (_markups[key + 1] as Line).Y2 = presentationEndPoint.Y;
-                    (_markups[key + 2] as Line).X2 = presentationEndPoint.X;
-                    (_markups[key + 2] as Line).Y2 = presentationEndPoint.Y;
-
-                    for (int i = key; i <= key /*+ 2*/; i++)
-                    {
-                        Canvas.SetLeft(_markups[i], 0);
-                        Canvas.SetTop(_markups[i], 0);
-                    }
-                }));
-            }
-            catch (Exception e)
-            {
-                Log.Print(String.Format("Unable to draw ball vector mark. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
-            }
         }
 
         /// <summary>
@@ -254,29 +237,23 @@ namespace Foosbot.Common.Drawing
         /// <param name="circleColor">The color of the stroke of the ricochet mark : optional</param>
         public void DrawRicochetMark(int x, int y, bool isLocation = false, SolidColorBrush circleColor = null)
         {
-            try
-            {
-                if (isLocation) _utils.ConvertToLocation(ref x, ref y);
+            if (isLocation) _utils.ConvertToLocation(ref x, ref y);
 
-                const int radius = 10;
-                const int key = (int)eMarks.RicochetMark;
-                Point presentationCenter = new Point(x * _data.WidthRate, y * _data.HeightRate);
-                int presentationRadius = Convert.ToInt32(radius * ((_data.WidthRate + _data.HeightRate) / 2));
+            const int radius = 10;
+            const int key = (int)eMarks.RicochetMark;
+            Point presentationCenter = new Point(x * _data.WidthRate, y * _data.HeightRate);
+            int presentationRadius = Convert.ToInt32(radius * ((_data.WidthRate + _data.HeightRate) / 2));
 
-                _dispatcher.Invoke(new ThreadStart(delegate
-                {
-                    (_markups[key] as Shape).StrokeThickness = 2;
-                    (_markups[key] as Shape).Stroke = (circleColor == null) ? Brushes.Chocolate : circleColor;
-                    _markups[key].Width = presentationRadius * 2;
-                    _markups[key].Height = presentationRadius * 2;
-                    Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
-                    Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
-                }));
-            }
-            catch (Exception e)
+            _dispatcher.Invoke(new ThreadStart(delegate
             {
-                Log.Print(String.Format("Unable to draw ricochet mark. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
-            }
+                (_markups[key] as Shape).StrokeThickness = 2;
+                (_markups[key] as Shape).Stroke = (circleColor == null) ? Brushes.Chocolate : circleColor;
+                _markups[key].Width = presentationRadius * 2;
+                _markups[key].Height = presentationRadius * 2;
+                Canvas.SetLeft(_markups[key], presentationCenter.X - presentationRadius);
+                Canvas.SetTop(_markups[key], presentationCenter.Y - presentationRadius);
+            }));
+
         }
 
         /// <summary>
@@ -285,9 +262,8 @@ namespace Foosbot.Common.Drawing
         /// <param name="corners"></param>
         public void DrawTableBorders(Dictionary<eCallibrationMark, Emgu.CV.Structure.CircleF> marks)
         {
-            try
-            {
-                Point[] corners = new Point[]
+
+            Point[] corners = new Point[]
                     {
                         new Point(marks[eCallibrationMark.BL].Center.X, marks[eCallibrationMark.BL].Center.Y),
                         new Point(marks[eCallibrationMark.TL].Center.X, marks[eCallibrationMark.TL].Center.Y),
@@ -295,30 +271,26 @@ namespace Foosbot.Common.Drawing
                         new Point(marks[eCallibrationMark.BR].Center.X, marks[eCallibrationMark.BR].Center.Y)
                     };
 
-                const int key = (int)eMarks.LeftBorder;
-                for (int start = 0; start < 4; start++)
-                {
-                    int end = (start + 1 > 3) ? 0 : start + 1;
-
-                    _dispatcher.Invoke(new ThreadStart(delegate
-                    {
-                        (_markups[key + start] as Shape).StrokeThickness = 2;
-                        (_markups[key + start] as Shape).Stroke = Brushes.Pink;
-
-                        (_markups[key + start] as Line).X1 = corners[start].X * _data.WidthRate;
-                        (_markups[key + start] as Line).Y1 = corners[start].Y * _data.HeightRate;
-                        (_markups[key + start] as Line).X2 = corners[end].X * _data.WidthRate;
-                        (_markups[key + start] as Line).Y2 = corners[end].Y * _data.HeightRate;
-
-                        Canvas.SetLeft(_markups[key + start], 0);
-                        Canvas.SetTop(_markups[key + start], 0);
-                    }));
-                }
-            }
-            catch (Exception e)
+            const int key = (int)eMarks.LeftBorder;
+            for (int start = 0; start < 4; start++)
             {
-                Log.Print(String.Format("Unable to draw table borders. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
+                int end = (start + 1 > 3) ? 0 : start + 1;
+
+                _dispatcher.Invoke(new ThreadStart(delegate
+                {
+                    (_markups[key + start] as Shape).StrokeThickness = 2;
+                    (_markups[key + start] as Shape).Stroke = Brushes.Pink;
+
+                    (_markups[key + start] as Line).X1 = corners[start].X * _data.WidthRate;
+                    (_markups[key + start] as Line).Y1 = corners[start].Y * _data.HeightRate;
+                    (_markups[key + start] as Line).X2 = corners[end].X * _data.WidthRate;
+                    (_markups[key + start] as Line).Y2 = corners[end].Y * _data.HeightRate;
+
+                    Canvas.SetLeft(_markups[key + start], 0);
+                    Canvas.SetTop(_markups[key + start], 0);
+                }));
             }
+
         }
 
         /// <summary>
@@ -328,42 +300,36 @@ namespace Foosbot.Common.Drawing
         /// <param name="isLocation">Optional isLocation [default : true]</param>
         public void DrawRods(int thickness = 6, bool isLocation = true)
         {
-            try
+            _dispatcher.Invoke(new ThreadStart(() =>
             {
-                _dispatcher.Invoke(new ThreadStart(() =>
+                const int key = (int)eMarks.GoalKeeper;
+
+                for (int eMarksCounter = 0; eMarksCounter < 4; eMarksCounter++)
                 {
-                    const int key = (int)eMarks.GoalKeeper;
 
-                    for (int eMarksCounter = 0; eMarksCounter < 4; eMarksCounter++)
+                    int buttomX = _data.XTableToDeviceCoordinates(_data.Rods[(eMarksCounter + eMarks.GoalKeeper)]);
+                    int buttomY = ((int)_data.DEVICE_MAX_Y);
+                    int topX = buttomX;
+                    int topY = 0;
+
+                    if (isLocation)
                     {
-
-                        int buttomX = _data.XTableToDeviceCoordinates(_data.Rods[(eMarksCounter + eMarks.GoalKeeper)]);
-                        int buttomY = ((int)_data.DEVICE_MAX_Y);
-                        int topX = buttomX;
-                        int topY = 0;
-
-                        if (isLocation)
-                        {
-                            _utils.ConvertToLocation(ref buttomX, ref buttomY);
-                            _utils.ConvertToLocation(ref topX, ref topY);
-                        }
-
-                        (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
-                        (_markups[key + eMarksCounter] as Shape).Stroke = Brushes.White;
-                        (_markups[key + eMarksCounter] as Line).X1 = topX * _data.WidthRate;
-                        (_markups[key + eMarksCounter] as Line).Y1 = topY * _data.HeightRate;
-                        (_markups[key + eMarksCounter] as Line).X2 = buttomX * _data.WidthRate;
-                        (_markups[key + eMarksCounter] as Line).Y2 = buttomY * _data.HeightRate;
-
-                        Canvas.SetLeft(_markups[key + eMarksCounter], 0);
-                        Canvas.SetTop(_markups[key + eMarksCounter], 0);
+                        _utils.ConvertToLocation(ref buttomX, ref buttomY);
+                        _utils.ConvertToLocation(ref topX, ref topY);
                     }
-                }));
-            }
-            catch (Exception e)
-            {
-                Log.Print(String.Format("Unable to draw rods marks. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
-            }
+
+                    (_markups[key + eMarksCounter] as Shape).StrokeThickness = thickness;
+                    (_markups[key + eMarksCounter] as Shape).Stroke = Brushes.White;
+                    (_markups[key + eMarksCounter] as Line).X1 = topX * _data.WidthRate;
+                    (_markups[key + eMarksCounter] as Line).Y1 = topY * _data.HeightRate;
+                    (_markups[key + eMarksCounter] as Line).X2 = buttomX * _data.WidthRate;
+                    (_markups[key + eMarksCounter] as Line).Y2 = buttomY * _data.HeightRate;
+
+                    Canvas.SetLeft(_markups[key + eMarksCounter], 0);
+                    Canvas.SetTop(_markups[key + eMarksCounter], 0);
+                }
+            }));
+
         }
 
         /// <summary>
@@ -375,73 +341,67 @@ namespace Foosbot.Common.Drawing
         /// <param name="isLocation">Optional isLocation [default : true]</param>
         public void DrawSector(eRod rod, int dynamicSectorWidth, int thickness = 2, bool isLocation = true)
         {
-            try
+            Brush color = null;
+            eMarks mark;
+            Enum.TryParse<eMarks>(rod.ToString(), out mark);
+
+            int key = (int)mark * 10;
+            int x = _data.XTableToDeviceCoordinates(_data.Rods[mark]);
+
+            int sectorStart = Convert.ToInt32(x - dynamicSectorWidth / 2.0);
+            int sectorStartTop = sectorStart;
+            int sectorStartButtom = sectorStart;
+
+            int sectorEnd = Convert.ToInt32(x + dynamicSectorWidth / 2.0);
+            int sectorEndTop = sectorEnd;
+            int sectorEndButtom = sectorEnd;
+
+            int yTop = 0;
+            int yButtom = ((int)_data.DEVICE_MAX_Y);
+
+            _dispatcher.Invoke(new ThreadStart(delegate
             {
-                Brush color = null;
-                eMarks mark;
-                Enum.TryParse<eMarks>(rod.ToString(), out mark);
 
-                int key = (int)mark * 10;
-                int x = _data.XTableToDeviceCoordinates(_data.Rods[mark]);
-
-                int sectorStart = Convert.ToInt32(x - dynamicSectorWidth / 2.0);
-                int sectorStartTop = sectorStart;
-                int sectorStartButtom = sectorStart;
-
-                int sectorEnd = Convert.ToInt32(x + dynamicSectorWidth / 2.0);
-                int sectorEndTop = sectorEnd;
-                int sectorEndButtom = sectorEnd;
-
-                int yTop = 0;
-                int yButtom = ((int)_data.DEVICE_MAX_Y);
-
-                _dispatcher.Invoke(new ThreadStart(delegate
+                switch (mark)
                 {
+                    case eMarks.GoalKeeper: color = Brushes.Yellow; break;
+                    case eMarks.Defence: color = Brushes.Pink; break;
+                    case eMarks.Midfield: color = Brushes.Red; break;
+                    case eMarks.Attack: color = Brushes.DarkRed; break;
+                    default: break;
+                }
 
-                    switch (mark)
-                    {
-                        case eMarks.GoalKeeper: color = Brushes.Yellow; break;
-                        case eMarks.Defence: color = Brushes.Pink; break;
-                        case eMarks.Midfield: color = Brushes.Red; break;
-                        case eMarks.Attack: color = Brushes.DarkRed; break;
-                        default: break;
-                    }
+                if (isLocation)
+                {
+                    int yButtomTemp = yButtom;
+                    int yTopTemp = yTop;
+                    _utils.ConvertToLocation(ref sectorStartTop, ref yTop);
+                    _utils.ConvertToLocation(ref sectorStartButtom, ref yButtom);
+                    _utils.ConvertToLocation(ref sectorEndTop, ref yTopTemp);
+                    _utils.ConvertToLocation(ref sectorEndButtom, ref yButtomTemp);
+                }
 
-                    if (isLocation)
-                    {
-                        int yButtomTemp = yButtom;
-                        int yTopTemp = yTop;
-                        _utils.ConvertToLocation(ref sectorStartTop, ref yTop);
-                        _utils.ConvertToLocation(ref sectorStartButtom, ref yButtom);
-                        _utils.ConvertToLocation(ref sectorEndTop, ref yTopTemp);
-                        _utils.ConvertToLocation(ref sectorEndButtom, ref yButtomTemp);
-                    }
+                (_markups[key] as Shape).StrokeThickness = thickness;
+                (_markups[key] as Shape).Stroke = color;
+                (_markups[key] as Line).X1 = sectorStartTop * _data.WidthRate;
+                (_markups[key] as Line).Y1 = yTop * _data.HeightRate;
+                (_markups[key] as Line).X2 = sectorStartButtom * _data.WidthRate;
+                (_markups[key] as Line).Y2 = yButtom * _data.HeightRate;
 
-                    (_markups[key] as Shape).StrokeThickness = thickness;
-                    (_markups[key] as Shape).Stroke = color;
-                    (_markups[key] as Line).X1 = sectorStartTop * _data.WidthRate;
-                    (_markups[key] as Line).Y1 = yTop * _data.HeightRate;
-                    (_markups[key] as Line).X2 = sectorStartButtom * _data.WidthRate;
-                    (_markups[key] as Line).Y2 = yButtom * _data.HeightRate;
+                (_markups[key + 1] as Shape).StrokeThickness = thickness;
+                (_markups[key + 1] as Shape).Stroke = color;
+                (_markups[key + 1] as Line).X1 = sectorEndTop * _data.WidthRate;
+                (_markups[key + 1] as Line).Y1 = yTop * _data.HeightRate;
+                (_markups[key + 1] as Line).X2 = sectorEndButtom * _data.WidthRate;
+                (_markups[key + 1] as Line).Y2 = yButtom * _data.HeightRate;
 
-                    (_markups[key + 1] as Shape).StrokeThickness = thickness;
-                    (_markups[key + 1] as Shape).Stroke = color;
-                    (_markups[key + 1] as Line).X1 = sectorEndTop * _data.WidthRate;
-                    (_markups[key + 1] as Line).Y1 = yTop * _data.HeightRate;
-                    (_markups[key + 1] as Line).X2 = sectorEndButtom * _data.WidthRate;
-                    (_markups[key + 1] as Line).Y2 = yButtom * _data.HeightRate;
+                Canvas.SetLeft(_markups[key], 0);
+                Canvas.SetTop(_markups[key], 0);
+                Canvas.SetLeft(_markups[key + 1], 0);
+                Canvas.SetTop(_markups[key + 1], 0);
 
-                    Canvas.SetLeft(_markups[key], 0);
-                    Canvas.SetTop(_markups[key], 0);
-                    Canvas.SetLeft(_markups[key + 1], 0);
-                    Canvas.SetTop(_markups[key + 1], 0);
+            }));
 
-                }));
-            }
-            catch (Exception e)
-            {
-                Log.Print(String.Format("Unable to draw rod dynamic sector marks. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
-            }
         }
 
         /// <summary>
@@ -452,43 +412,37 @@ namespace Foosbot.Common.Drawing
         /// <param name="rotationalMove">eRotationalMove of the rod : DEFENCE, RISE, ATTACK</param>
         public void DrawRodPlayers(eRod rod, int linearMoveDestination, eRotationalMove rotationalMove, bool isLocation = true)
         {
-            try
+            eMarks playersBase = 0;
+            eMarks mark;
+            Enum.TryParse<eMarks>(rod.ToString(), out mark);
+
+            int eMarkType = ((int)mark);
+            int rodPlayersCount = _data.PlayerCount[mark];
+            int yDistance = _data.PlayersDistance[mark];
+            int firstPlayerOffsetY = _data.OffsetY[mark];
+            int x = _data.XTableToDeviceCoordinates(_data.Rods[mark]);
+
+            switch (eMarkType)
             {
-                eMarks playersBase = 0;
-                eMarks mark;
-                Enum.TryParse<eMarks>(rod.ToString(), out mark);
-
-                int eMarkType = ((int)mark);
-                int rodPlayersCount = _data.PlayerCount[mark];
-                int yDistance = _data.PlayersDistance[mark];
-                int firstPlayerOffsetY = _data.OffsetY[mark];
-                int x = _data.XTableToDeviceCoordinates(_data.Rods[mark]);
-
-                switch (eMarkType)
-                {
-                    case (int)eMarks.GoalKeeper: playersBase = eMarks.GoalKeeperPlayer; break;
-                    case (int)eMarks.Defence: playersBase = eMarks.DefencePlayer1; break;
-                    case (int)eMarks.Midfield: playersBase = eMarks.MidfieldPlayer1; break;
-                    case (int)eMarks.Attack: playersBase = eMarks.AttackPlayer1; break;
-                    default: break;
-                }
-
-                for (int rodPlayer = 0; rodPlayer < rodPlayersCount; rodPlayer++)
-                {
-                    int y = linearMoveDestination + firstPlayerOffsetY + yDistance * rodPlayer;
-                    int y1 = y;
-                    int x1 = x;
-                    if (isLocation)
-                    {
-                        _utils.ConvertToLocation(ref x1, ref y);
-                    }
-                    DrawPlayer(playersBase + rodPlayer, new Point(x1 * _data.WidthRate, y1 * _data.HeightRate), 12, rotationalMove);
-                }
+                case (int)eMarks.GoalKeeper: playersBase = eMarks.GoalKeeperPlayer; break;
+                case (int)eMarks.Defence: playersBase = eMarks.DefencePlayer1; break;
+                case (int)eMarks.Midfield: playersBase = eMarks.MidfieldPlayer1; break;
+                case (int)eMarks.Attack: playersBase = eMarks.AttackPlayer1; break;
+                default: break;
             }
-            catch (Exception e)
+
+            for (int rodPlayer = 0; rodPlayer < rodPlayersCount; rodPlayer++)
             {
-                Log.Print(String.Format("Unable to draw rods players mark. Reason: {0}", e.Message), eCategory.Warn, LogTag.COMMON);
+                int y = linearMoveDestination + firstPlayerOffsetY + yDistance * rodPlayer;
+                int y1 = y;
+                int x1 = x;
+                if (isLocation)
+                {
+                    _utils.ConvertToLocation(ref x1, ref y);
+                }
+                DrawPlayer(playersBase + rodPlayer, new Point(x1 * _data.WidthRate, y1 * _data.HeightRate), 12, rotationalMove);
             }
+
         }
 
         /// <summary>
@@ -503,7 +457,8 @@ namespace Foosbot.Common.Drawing
         {
             try
             {
-                if (_utils.IsMarkOfFirstPlayerInRod(eNumKey)) _data[eNumKey] = center;
+                if (_utils.IsMarkOfFirstPlayerInRod(eNumKey)) _data[eNumKey] = new Point(center.X / Convert.ToInt32(_data.WidthRate),
+                                                                                                     center.Y / Convert.ToInt32(_data.HeightRate));
 
                 int key = (int)eNumKey;
                 int rotationalMoveFactor = 0;

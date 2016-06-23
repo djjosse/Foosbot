@@ -167,11 +167,16 @@ namespace Foosbot.DecisionUnit.Core
                 RespondingPlayer = minIndexFirst + 1;
                 movement = movements[minIndexFirst];
             }
-            else
+            else if (_helper.IsEnoughSpaceToMove(currentRod, currentRod.State.DcPosition, movements[minIndexSecond]))
             {
                 //as index starts from 0 => first one is 1
                 RespondingPlayer = minIndexSecond + 1;
                 movement = movements[minIndexSecond];
+            }
+            else //In case we have no way to move for all the players
+            {
+                RespondingPlayer = minIndexFirst + 1;
+                movement = 0;
             }
 
             //In case we reach the ball - no move needed
@@ -194,6 +199,7 @@ namespace Foosbot.DecisionUnit.Core
         /// <returns>New rod coordinate to move to (Axe Y)</returns>
         protected int CalculateNewRodCoordinate(IRod rod, int respondingPlayer, BallCoordinates bfc, eLinearMove desiredLinearMove)
         {
+            int pos;
             //Define actual desired rod coordinate to move to
             //NOTE: responding player might be undefined will be -1
             switch (desiredLinearMove)
@@ -203,9 +209,11 @@ namespace Foosbot.DecisionUnit.Core
                 //    return bfc.Y - _helper.CalculateCurrentPlayerYCoordinate(rod, _currentRodYCoordinate[rod.RodType], respondingPlayer);
 
                 case eLinearMove.LEFT_BALL_DIAMETER:
-                    return _helper.LocateRespondingPlayer(rod, bfc.Y, respondingPlayer) + (-1) * 2 * BALL_RADIUS;
+                    pos = rod.NearestPossibleDcPosition(_helper.LocateRespondingPlayer(rod, bfc.Y, respondingPlayer));
+                    return pos + (-1) * 2 * BALL_RADIUS;
                 case eLinearMove.RIGHT_BALL_DIAMETER:
-                    return _helper.LocateRespondingPlayer(rod, bfc.Y, respondingPlayer) + 2 * BALL_RADIUS;
+                    pos = rod.NearestPossibleDcPosition(_helper.LocateRespondingPlayer(rod, bfc.Y, respondingPlayer));
+                    return pos + 2 * BALL_RADIUS;
                 case eLinearMove.VECTOR_BASED:
                     if (rod.Intersection.IsDefined)
                     {

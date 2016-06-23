@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Enums;
 using System;
@@ -90,5 +91,14 @@ namespace Foosbot.DecisionUnit.Contracts
         /// <param name="respondingPlayer">One-Based Player Index in rod</param>
         /// <returns>Y coordinate of rod stopper to bring palyer to desired Y coordinate</returns>
         int LocateRespondingPlayer(IRod rod, int desiredY, int respondingPlayer);
+
+        /// <summary>
+        /// If Arduino is connected per current rod and it has feedbacks on servo state
+        /// this method should return false about the rod.
+        /// If we are in demo mode without arduino state should be set in the tree
+        /// because no one else will update it
+        /// </summary>
+        /// <returns>[True] If servo state should be set by decision try for current rod, [False] otherwise</returns>
+        bool ShouldSetServoStateFromTree(eRod rodType);
     }
 }

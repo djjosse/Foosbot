@@ -75,8 +75,8 @@ namespace Foosbot.DecisionUnit.Core
                     RodActionPublishers[action.RodType].UpdateAndNotify(action);
 
                     Marks.DrawRods();
-                    //Marks.DrawRodPlayers(action.RodType, action.DcCoordinate, eRotationalMove.NA);
-                    Marks.DrawRodPlayers(action.RodType, action.DcCoordinate, action.Rotation);
+                    
+                    /* NOTE: Marks of player postions will be drawn from main decision unit */
 
                     Log.Print(String.Format("Decision per rod {0}: {1}:{2}; {3}", 
                         action.RodType, action.Linear, action.DcCoordinate, action.Rotation),

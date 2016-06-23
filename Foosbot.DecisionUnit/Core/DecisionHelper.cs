@@ -8,6 +8,7 @@
 // **																				   **
 // **************************************************************************************
 
+using Foosbot.Common.Enums;
 using Foosbot.Common.Protocols;
 using Foosbot.DecisionUnit.Contracts;
 using Foosbot.DecisionUnit.Enums;
@@ -207,6 +208,28 @@ namespace Foosbot.DecisionUnit.Core
                         playerIndex, rod.RodType, rod.PlayerCount));
 
             return rod.OffsetY + currentRodYCoordinate + rod.PlayerDistance * (playerIndex - 1);
+        }
+
+        private Dictionary<eRod, bool> _hasArduinoOnRod = new Dictionary<eRod, bool>();
+        private bool? _isArduinoInUse = null;
+        private bool? _isDemoMode = null;
+
+        /// <summary>
+        /// If Arduino is connected per current rod and it has feedbacks on servo state
+        /// this method should return false about the rod.
+        /// If we are in demo mode without arduino state should be set in the tree
+        /// because no one else will update it
+        /// </summary>
+        /// <returns>[True] If servo state should be set by decision try for current rod, [False] otherwise</returns>
+        public bool ShouldSetServoStateFromTree(eRod rodType)
+        {
+            bool hasArduinoWithFeedback = _hasArduinoOnRod.ContainsKey(rodType) ?
+                _hasArduinoOnRod[rodType] : Configuration.Attributes.IsServoFeedbackPerRod(rodType);
+
+            bool isArduinoInUse = _isArduinoInUse ?? Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_ARDUINOS_CONNECTED);
+            bool isDemoMode = _isDemoMode ?? Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_IS_DEMO_MODE);
+
+            return !(!isDemoMode && isArduinoInUse && hasArduinoWithFeedback);
         }
     }
 }

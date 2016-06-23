@@ -135,7 +135,9 @@ namespace Foosbot.DecisionUnit.Core
                 //Decide on action
                 RodAction action = _decisionTree.Decide(rod, bfc);
                 actions.Add(action);
-                //if (rod.RodType == eRod.GoalKeeper) Log.Common.Debug(action.Linear + ": " + action.DcCoordinate);
+                
+                Marks.DrawRodPlayers(rod.RodType, rod.State.DcPosition,
+                    rod.State.ServoPosition);
             }
             return actions;
         }

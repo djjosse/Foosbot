@@ -157,8 +157,8 @@ namespace Foosbot.DevelopmentDemo
         }
 
 
-        double playerTempX;
-        double playerTempY;
+        double ballX;
+        double ballY;
         double deltaX = 5;
         double deltaY = 20000;
         object token = new object();
@@ -174,33 +174,35 @@ namespace Foosbot.DevelopmentDemo
                 while (true)
                 {
                     //generate vector if previous are 0
-                    if (Convert.ToInt32(_velocityX) == 0 && Convert.ToInt32(_velocityY) == 0)
+                    if (Convert.ToInt32(_velocityX) == 0) //&& Convert.ToInt32(_velocityY) == 0)
                     {
                         Log.Print("Demo generating ball kick!", eCategory.Info, LogTag.IMAGE);
-                        Thread.Sleep(100);
+                        Thread.Sleep(500);
                         _velocityX = _random.Next(-10, 10);
                         _velocityX *= 4;
                         _velocityY = _random.Next(-10, 10);
                         _velocityY *= 4;
                     }
 
-                    playerTempX = _x +_velocityX;
-                    playerTempY = _y +_velocityY;
+                    ballX = _x;// +_velocityX;
+                    ballY = _y;// +_velocityY;
                     foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
                     {
-                        Point point = Marks.PlayerPosition(rodType);
-                            point = TransformAgent.Data.InvertTransform(point);
-                            if (playerTempX < point.X + deltaX && playerTempX > point.X - deltaX &&
-                                playerTempY < point.Y + deltaY && playerTempY > point.Y - deltaY &&
+                        if (rodType == eRod.Attack)
+                        {
+                            Point player = Marks.PlayerPosition(rodType);
+                            //player = TransformAgent.Data.Transform(player);
+                            if (ballX < player.X + deltaX && ballX > player.X - deltaX &&
+                                ballY < player.Y + deltaY && ballY > player.Y - deltaY &&
                                 _velocityX < 0)
                             {
                                 if (random.Next(0, 100) > 30)
                                 {
-                                    _x = Ricochet(_x, point.X, ref _velocityX, ref _velocityY);
-                                    Log.Print(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()), eCategory.Info, LogTag.COMMON);
+                                    _x = Ricochet(_x, player.X + deltaX, ref _velocityX, ref _velocityY);
+                                    Log.Print(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()), eCategory.Debug, LogTag.COMMON);
                                 }
                             }
-                        
+                        }
                     }
 
                     //check if we passed the border and set new X coordinate

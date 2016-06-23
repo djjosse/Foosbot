@@ -89,6 +89,22 @@ namespace EasyLog
         }
 
         /// <summary>
+        /// Print message with exception description
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="exception"></param>
+        /// <param name="module"></param>
+        /// <param name="category"></param>
+        /// <param name="method"></param>
+        /// <param name="sourceFile"></param>
+        /// <param name="lineNumber"></param>
+        public static void Print(string message, Exception exception, string module, eCategory category = eCategory.Warn,
+            [CallerMemberName]string method = "", [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
+        {
+            Log.Print(String.Format("{0}\nReason: {1}", message, exception.Message), category, module, method, sourceFile, lineNumber);
+        }
+
+        /// <summary>
         /// Attach message listener to all log prints to receive log messages
         /// </summary>
         /// <param name="messageListener">New message listener to be attached</param>

@@ -8,8 +8,10 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Drawing;
 using Foosbot.Common.Enums;
+using Foosbot.Common.Logs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,13 +46,13 @@ namespace Foosbot
         /// <summary>
         /// Singleton Picture instance property
         /// </summary>
-        private static Surface Instance 
+        private static Surface Instance
         {
             get
             {
-                if (_instance==null)
+                if (_instance == null)
                 {
-                    lock(_token)
+                    lock (_token)
                     {
                         if (_instance == null)
                         {
@@ -94,10 +96,17 @@ namespace Foosbot
         /// <param name="circleColor">Ball color : optional</param>
         public static void DrawBall(Point center, int radius, SolidColorBrush circleColor = null)
         {
-            Instance.DrawBall(center, radius, circleColor);
+            try
+            {
+                Instance.DrawBall(center, radius, circleColor);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw ball mark.", ex, LogTag.COMMON);
+            }
         }
 
-         /// <summary>
+        /// <summary>
         /// Draw the calibration circles on the canvas
         /// </summary>
         /// <param name="mark">The wanted calibration mark for drawing</param>
@@ -111,7 +120,14 @@ namespace Foosbot
             SolidColorBrush circleColor = null, SolidColorBrush textColor = null, double fontSize = 12,
                 string text = "")
         {
-            Instance.DrawCallibrationCircle(mark, center, radius, circleColor, textColor, fontSize, text);
+            try
+            {
+                Instance.DrawCallibrationCircle(mark, center, radius, circleColor, textColor, fontSize, text);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw calibration mark.", ex, LogTag.COMMON);
+            }
         }
 
         /// <summary>
@@ -123,7 +139,14 @@ namespace Foosbot
         /// <param name="color">Optional color [default : Aqua]</param>
         public static void DrawBallVector(Point center, Point vector, bool isLocation = true, SolidColorBrush color = null)
         {
-            Instance.DrawBallVector(center, vector, isLocation, color);
+            try
+            {
+                Instance.DrawBallVector(center, vector, isLocation, color);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw ball vector mark.", ex, LogTag.COMMON);
+            }
         }
 
         /// <summary>
@@ -135,7 +158,14 @@ namespace Foosbot
         /// <param name="circleColor">The color of the stroke of the ricochet mark : optional</param>
         public static void DrawRicochetMark(int x, int y, bool isLocation = false, SolidColorBrush circleColor = null)
         {
-            Instance.DrawRicochetMark(x, y, isLocation, circleColor);
+            try
+            {
+                Instance.DrawRicochetMark(x, y, isLocation, circleColor);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw ricochet mark.", ex, LogTag.COMMON);
+            }
         }
 
         /// <summary>
@@ -144,7 +174,14 @@ namespace Foosbot
         /// <param name="corners"></param>
         public static void DrawTableBorders(Dictionary<eCallibrationMark, Emgu.CV.Structure.CircleF> marks)
         {
-            Instance.DrawTableBorders(marks);
+            try
+            {
+                Instance.DrawTableBorders(marks);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw table borders.", ex, LogTag.COMMON);
+            }
         }
 
         /// <summary>
@@ -154,7 +191,14 @@ namespace Foosbot
         /// <param name="isLocation">Optional isLocation [default : true]</param>
         public static void DrawRods(int thickness = 6, bool isLocation = true)
         {
-            Instance.DrawRods(thickness, isLocation);
+            try
+            {
+                Instance.DrawRods(thickness, isLocation);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw rods marks.", ex, LogTag.COMMON);
+            }
         }
 
         /// <summary>
@@ -166,7 +210,14 @@ namespace Foosbot
         /// <param name="isLocation">Optional isLocation [default : true]</param>
         public static void DrawSector(eRod rod, int dynamicSectorWidth, int thickness = 2, bool isLocation = true)
         {
-            Instance.DrawSector(rod, dynamicSectorWidth, thickness, isLocation);
+            try
+            {
+                Instance.DrawSector(rod, dynamicSectorWidth, thickness, isLocation);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw rod dynamic sector marks.", ex, LogTag.COMMON);
+            }
         }
 
         /// <summary>
@@ -177,7 +228,14 @@ namespace Foosbot
         /// <param name="rotationalMove">eRotationalMove of the rod : DEFENCE, RISE, ATTACK</param>
         public static void DrawRodPlayers(eRod rod, int linearMoveDestination, eRotationalMove rotationalMove, bool isLocation = true)
         {
-            Instance.DrawRodPlayers(rod, linearMoveDestination, rotationalMove, isLocation);
+            try
+            {
+                Instance.DrawRodPlayers(rod, linearMoveDestination, rotationalMove, isLocation);
+            }
+            catch (Exception ex)
+            {
+                Log.Print("Unable to draw rods players mark.", ex, LogTag.COMMON);
+            }
         }
     }
 }
