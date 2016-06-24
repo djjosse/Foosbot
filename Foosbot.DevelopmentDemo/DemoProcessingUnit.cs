@@ -257,5 +257,7 @@ namespace Foosbot.DevelopmentDemo
             secondVelocity *= _ricochectFactor;
             return coordinate;
         }
+
+        
     }
 }

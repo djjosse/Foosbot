@@ -1,0 +1,13 @@
+﻿<Window x:Class="Foosbot.UI.Winner"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Winner" Height="300" Width="524">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="../Resources/win.jpg"/>
+        </Grid.Background>
+        <Label Name="WinnerLabel" Content="WINNER" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60" Foreground="Yellow" Margin="0,0,0,80"></Label>
+        <Label Name="ScoreLabel" Content="SCORE" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="60" Foreground="Yellow" Margin="0,40,0,0"></Label>
+
+    </Grid>
+</Window>

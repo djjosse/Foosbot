@@ -119,7 +119,7 @@ namespace Foosbot.UI.ImageExtensions
             {
                 _dispatcher.BeginInvoke(new ThreadStart(delegate
                         {
-                            _canvas.Background = System.Windows.Media.Brushes.Green;
+                            //_canvas.Background = System.Windows.Media.Brushes.Green;
                         }));
 
                 IsInitialized = true;

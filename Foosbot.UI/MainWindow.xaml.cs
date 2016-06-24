@@ -26,6 +26,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Media;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -55,7 +56,17 @@ namespace Foosbot.UI
         /// </summary>
         private ImageProcessingTool _iTool;
 
+        /// <summary>
+        /// Winner View GUI
+        /// </summary>
+        private Winner _winner;
+
         private MainDecisionUnit _decisionUnit;
+
+        private int _player1Score = 0;
+        private int _player2Score = 0;
+        private string _player1Name = "PLAYER1";
+        private string _player2Name = "PLAYER2";
 
         #endregion private members
 
@@ -228,6 +239,95 @@ namespace Foosbot.UI
             _imageProcessingPack.Resume();
         }
 
+
+        /// <summary>
+        /// Set Player 1 Name
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetPlayer1Name(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            Label label = (Label)this.FindName("Player1NameLabel");
+            _player1Name = (!textBox.Text.Equals(string.Empty)) ? _player1Name = textBox.Text.ToUpper() : _player1Name = "PLAYER1";
+            label.Content = _player1Name;
+        }
+
+        /// <summary>
+        /// Set Player 2 Name
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetPlayer2Name(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            Label label = (Label)this.FindName("Player2NameLabel");
+            _player2Name = (!textBox.Text.Equals(string.Empty)) ? _player2Name = textBox.Text.ToUpper() : _player2Name = "PLAYER2";
+            label.Content = _player2Name;
+        }
+
+        /// <summary>
+        /// Set Player 1 Score
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetPlayer1Score(object sender, RoutedEventArgs e)
+        {
+            SoundPlayer audio = new SoundPlayer(Properties.Resources.Sound_Goal);
+            audio.Play();
+            Label label = (Label)this.FindName("Player1ScoreLabel");
+            _player1Score++;
+            label.Content = _player1Score.ToString();
+            if (_player1Score == 3)
+            {
+                _winner = new Winner(_player1Name, _player1Score.ToString(), _player2Score.ToString());
+                _winner.Show();
+            }
+        }
+
+        /// <summary>
+        /// Set Player 2 Score
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetPlayer2Score(object sender, RoutedEventArgs e)
+        {
+            SoundPlayer audio = new SoundPlayer(Properties.Resources.Sound_Goal);
+            audio.Play();
+
+            Label label = (Label)this.FindName("Player2ScoreLabel");
+            _player2Score++;
+            label.Content = _player2Score.ToString();
+            if (_player2Score == 3)
+            {
+                _winner = new Winner(_player2Name, _player1Score.ToString(), _player2Score.ToString());
+                _winner.Show();
+            }
+        }
+
+        /// <summary>
+        /// Reset all GUI Components of the game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReMatch(object sender, RoutedEventArgs e)
+        {
+            Label player1Name = (Label)this.FindName("Player1NameLabel");
+            Label player2Name = (Label)this.FindName("Player2NameLabel");
+            Label player1Score = (Label)this.FindName("Player1ScoreLabel");
+            Label player2Score = (Label)this.FindName("Player2ScoreLabel");
+            _player1Name = "PLAYER1";
+            _player2Name = "PLAYER2";
+            _player1Score = 0;
+            _player2Score = 0;
+            player1Name.Content = _player1Name;
+            player2Name.Content = _player2Name;
+            player1Score.Content = _player1Score.ToString();
+            player2Score.Content = _player2Score.ToString();
+        }
+
         #endregion GUI Buttons and Events
+
+
     }
 }
