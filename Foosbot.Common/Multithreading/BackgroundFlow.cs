@@ -8,7 +8,9 @@
 // **																				   **
 // **************************************************************************************
 
+using EasyLog;
 using Foosbot.Common.Contracts;
+using Foosbot.Common.Logs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,9 +41,16 @@ namespace Foosbot
         /// </summary>
         public virtual void Start()
         {
-            _thread = new Thread(() => { Flow(); });
-            _thread.IsBackground = true;
-            _thread.Start();
+            try
+            {
+                _thread = new Thread(() => { Flow(); });
+                _thread.IsBackground = true;
+                _thread.Start();
+            }
+            catch(Exception ex)
+            {
+                Log.Print("Unable to start thread. ", ex, LogTag.COMMON, eCategory.Error, true);
+            }
         }
     }
 }

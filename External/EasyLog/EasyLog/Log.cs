@@ -98,10 +98,14 @@ namespace EasyLog
         /// <param name="method"></param>
         /// <param name="sourceFile"></param>
         /// <param name="lineNumber"></param>
-        public static void Print(string message, Exception exception, string module, eCategory category = eCategory.Warn,
+        public static void Print(string message, Exception exception, string module, eCategory category = eCategory.Warn, bool printStack = false,
             [CallerMemberName]string method = "", [CallerFilePath] string sourceFile = "", [CallerLineNumber] int lineNumber = 0)
         {
             Log.Print(String.Format("{0}\nReason: {1}", message, exception.Message), category, module, method, sourceFile, lineNumber);
+            if (printStack)
+            {
+                Log.Print(String.Format("Stack trace: {0}", exception.StackTrace), category, module, method, sourceFile, lineNumber);
+            }
         }
 
         /// <summary>
