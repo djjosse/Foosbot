@@ -97,7 +97,6 @@
     <Compile Include="Protocols\RodAction.cs" />
     <Compile Include="Protocols\RodActionPublisher.cs" />
     <Compile Include="Protocols\Vector2D.cs" />
-    <Compile Include="Diagnostics\Marks.cs" />
     <Compile Include="Diagnostics\Statistics.cs" />
     <Compile Include="Extensions\PointFExtensions.cs" />
     <Compile Include="Wrappers\DateTimeWrapper.cs" />

@@ -10,6 +10,9 @@
 
 namespace Foosbot.Common.Enums
 {
+    /// <summary>
+    /// Keys used to represent statistics in GUI
+    /// </summary>
     public enum eStatisticsKey
     {
         /// <summary>

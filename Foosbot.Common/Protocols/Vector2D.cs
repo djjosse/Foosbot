@@ -61,11 +61,20 @@ namespace Foosbot.Common.Protocols
             throw new Exception("Vector coordinates is undefined, no value stored in X and Y to define angle");
         }
 
+        /// <summary>
+        /// vector and another 2D coordinate scalar product
+        /// </summary>
+        /// <param name="coord"></param>
+        /// <returns></returns>
         public double ScalarProduct(DefinableCartesianCoordinate<double> coord)
         {
             return X * coord.X + Y * coord.Y;
         }
 
+        /// <summary>
+        /// Vector to string method
+        /// </summary>
+        /// <returns>Vector as string</returns>
         public override string ToString()
         {
             return String.Format("{0}x{1}", X, Y);

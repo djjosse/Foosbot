@@ -34,6 +34,16 @@ namespace Foosbot.Common.Multithreading
         private T _data;
 
         /// <summary>
+        /// Observers list to update
+        /// </summary>
+        private List<IWorkingObserver<T>> _observerList = new List<IWorkingObserver<T>>();
+
+        /// <summary>
+        /// Token used for observers list modification
+        /// </summary>
+        private object _observerListModificationToken = new object();
+
+        /// <summary>
         /// Stored Data property to take on update
         /// </summary>
         public T Data
@@ -53,13 +63,6 @@ namespace Foosbot.Common.Multithreading
                 }
             }
         }
-
-        /// <summary>
-        /// Observers list to update
-        /// </summary>
-        private List<IWorkingObserver<T>> _observerList = new List<IWorkingObserver<T>>();
-
-        private object _observerListModificationToken = new object();
 
         /// <summary>
         /// Attach new observer

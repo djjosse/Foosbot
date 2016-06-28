@@ -12,11 +12,7 @@ using EasyLog;
 using Foosbot.Common.Contracts;
 using Foosbot.Common.Logs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Foosbot
 {

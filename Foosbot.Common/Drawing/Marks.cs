@@ -24,6 +24,9 @@ using System.Windows.Threading;
 
 namespace Foosbot
 {
+    /// <summary>
+    /// Singleton used to draw data on canvas to present current system state in GUI
+    /// </summary>
     public sealed class Marks
     {
         #region private members

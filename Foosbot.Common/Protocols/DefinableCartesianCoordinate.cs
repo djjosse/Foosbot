@@ -18,7 +18,14 @@ namespace Foosbot.Common.Protocols
     /// <typeparam name="T">Non-nullable comparable type to store</typeparam>
     public abstract class DefinableCartesianCoordinate<T> where T : struct, IComparable
     {
+        /// <summary>
+        /// X Coordinates
+        /// </summary>
         protected T _x;
+
+        /// <summary>
+        /// Y Coordinate
+        /// </summary>
         protected T _y;
 
         /// <summary>

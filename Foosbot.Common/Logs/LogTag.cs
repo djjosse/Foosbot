@@ -1,13 +1,25 @@
-﻿using System;
+﻿// **************************************************************************************
+// **																				   **
+// **		(C) FOOSBOT - Final Software Engineering Project, 2015 - 2016			   **
+// **		(C) Authors: M.Toubian, M.Shimon, E.Kleinman, O.Sasson, J.Gleyzer          **
+// **			Advisors: Mr.Resh Amit & Dr.Hoffner Yigal							   **
+// **		The information and source code here belongs to Foosbot project			   **
+// **		and may not be reproduced or used without authors explicit permission.	   **
+// **																				   **
+// **************************************************************************************
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foosbot.Common.Logs
 {
+    /// <summary>
+    /// Logger Tags (Modules)
+    /// </summary>
     public static class LogTag
     {
+        /// <summary>
+        /// All tags
+        /// </summary>
         public static List<string> ALL_TAGS = new List<string>() 
         {
             COMMON, 
@@ -28,12 +40,24 @@ namespace Foosbot.Common.Logs
         /// </summary>
         public const string IMAGE = "Image";
 
+        /// <summary>
+        /// Vector Calculation Unit Logs
+        /// </summary>
         public const string VECTOR = "Vector";
 
+        /// <summary>
+        /// Decision Unit Logs
+        /// </summary>
         public const string DECISION = "Decision";
 
+        /// <summary>
+        /// Communication Unit Local Logs
+        /// </summary>
         public const string COMMUNICATION = "Communication";
 
+        /// <summary>
+        /// Arduino Controller (Communication Unit Remote) Logs
+        /// </summary>
         public const string ARDUINO = "Arduino";
     }
 }
