@@ -14,6 +14,9 @@ using System;
 
 namespace Foosbot.CommunicationLayer.Core
 {
+    /// <summary>
+    /// Action encoder used to encode actions before sending to controller
+    /// </summary>
     public class ActionEncoder : IEncoder
     {
         /// <summary>

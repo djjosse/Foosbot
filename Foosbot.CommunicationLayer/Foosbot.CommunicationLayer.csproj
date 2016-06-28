@@ -40,13 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contracts\ISerialController.cs" />
     <Compile Include="Enums\eResponseCode.cs" />
     <Compile Include="Core\ActionEncoder.cs" />
-    <Compile Include="Core\ArduinoCom.cs" />
+    <Compile Include="Core\ArduinoController.cs" />
     <Compile Include="Core\Communication.cs" />
     <Compile Include="Core\CommunicationFactory.cs" />
     <Compile Include="Core\CommunicationUnit.cs" />
-    <Compile Include="Core\ArduinoConverter.cs" />
+    <Compile Include="Core\RodActionConverter.cs" />
     <Compile Include="Contracts\IEncoder.cs" />
     <Compile Include="Contracts\IRodConverter.cs" />
     <Compile Include="Contracts\ISerialPort.cs" />

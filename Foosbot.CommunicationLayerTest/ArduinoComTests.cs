@@ -8,6 +8,7 @@ using Foosbot.Common.Protocols;
 using Foosbot.Common.Enums;
 using Foosbot.CommunicationLayer.Contracts;
 using Foosbot.CommunicationLayer.Core;
+using Foosbot.CommunicationLayer.Enums;
 
 namespace Foosbot.CommunicationLayerTest
 {
@@ -17,7 +18,7 @@ namespace Foosbot.CommunicationLayerTest
         private const string CATEGORY = "ArduinoCom";
 
         ISerialPort _mockPort;
-        ArduinoCom _arduino;
+        ISerialController _arduino;
         IEncoder _mockEncoder;
         int MAX_TICKS = 3100;
 
@@ -26,7 +27,7 @@ namespace Foosbot.CommunicationLayerTest
         {
             _mockPort = Substitute.For<ISerialPort>();
             _mockEncoder = Substitute.For<IEncoder>();
-            _arduino = new ArduinoCom(_mockPort, _mockEncoder)
+            _arduino = new ArduinoController(_mockPort, _mockEncoder)
             {
                 RodType = eRod.GoalKeeper
             };
@@ -74,7 +75,7 @@ namespace Foosbot.CommunicationLayerTest
         public void OpenArduinoComPort_Positive()
         {
             _mockPort.IsOpen.Returns(true);
-            _arduino.OpenArduinoComPort();
+            _arduino.OpenSerialPort();
             _mockPort.Received(1).Open();
         }
 
@@ -86,7 +87,7 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort
                  .When(x => x.Open())
                  .Do(x => { throw new IOException(); });
-            _arduino.OpenArduinoComPort();
+            _arduino.OpenSerialPort();
         }
 
         #endregion OpenArduinoComPort
@@ -106,6 +107,7 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort.IsOpen.Returns(true);
             _arduino.Initialize();
             _arduino.Move(200, eRotationalMove.DEFENCE);
+            _arduino.SetLastServoState(eResponseCode.SERVO_STATE_DEFENCE);
             _arduino.Move(200, eRotationalMove.DEFENCE);
             //one in Initialize and one in move
             _mockPort.Received(2).Write(Arg.Any<byte>());

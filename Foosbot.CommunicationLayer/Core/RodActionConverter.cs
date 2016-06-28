@@ -18,7 +18,7 @@ namespace Foosbot.CommunicationLayer.Core
     /// Arduino Conversion Unit
     /// Responsible for converting ticks to bits sent to arduino
     /// </summary>
-    public class ArduinoConverter : IRodConverter
+    public class RodActionConverter : IRodConverter
     {
         /// <summary>
         /// Current Rod Type
@@ -44,7 +44,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// Constructor
         /// </summary>
         /// <param name="rodType">Current rod type</param>
-        public ArduinoConverter(eRod rodType)
+        public RodActionConverter(eRod rodType)
         {
             RodType = rodType;
         }

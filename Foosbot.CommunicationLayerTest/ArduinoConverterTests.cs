@@ -28,7 +28,7 @@ namespace Foosbot.CommunicationLayerTest
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            _testAsset = new ArduinoConverter(ROD_TYPE);
+            _testAsset = new RodActionConverter(ROD_TYPE);
             _testAsset.Initialize(TICKS_PER_ROD, MIN_STOPPER_COORD_MM, TABLE_HEIGHT, STOPPER_DIST);
         }
 

@@ -36,24 +36,24 @@ namespace Foosbot.ArduinoManualTests
             }
             else
             {
-                IRodConverter converterGoalKeeper = new ArduinoConverter(eRod.GoalKeeper);
-                ArduinoCom arduinoGoalKeeper = new ArduinoCom("COM3", new ActionEncoder(converterGoalKeeper))
+                IRodConverter converterGoalKeeper = new RodActionConverter(eRod.GoalKeeper);
+                ISerialController arduinoGoalKeeper = new ArduinoController("COM3", new ActionEncoder(converterGoalKeeper))
                 {
                     RodType = eRod.GoalKeeper
                 };
 
-                IRodConverter converterDefence = new ArduinoConverter(eRod.Defence);
-                ArduinoCom arduinoDefence = new ArduinoCom("COM5", new ActionEncoder(converterDefence))
+                IRodConverter converterDefence = new RodActionConverter(eRod.Defence);
+                ISerialController arduinoDefence = new ArduinoController("COM5", new ActionEncoder(converterDefence))
                 {
                     RodType = eRod.Defence
                 };
 
                 try
                 {
-                    arduinoGoalKeeper.OpenArduinoComPort();
+                    arduinoGoalKeeper.OpenSerialPort();
                     Console.WriteLine("Arduino port {0} is open!", "COM3");
 
-                    arduinoDefence.OpenArduinoComPort();
+                    arduinoDefence.OpenSerialPort();
                     Console.WriteLine("Arduino port {0} is open!", "COM5");
 
                     arduinoGoalKeeper.Initialize();

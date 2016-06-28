@@ -26,7 +26,7 @@ namespace Foosbot.CommunicationLayer.Core
     /// Arduino Communication Unit
     /// This unit is responsible for connection to arduino serial port
     /// </summary>
-    public class ArduinoCom : IInitializable
+    public class ArduinoController : ISerialController
     {
         #region constants
 
@@ -77,9 +77,14 @@ namespace Foosbot.CommunicationLayer.Core
         
         #endregion private members
 
-
+        /// <summary>
+        /// Delegate for a Method to be called on arduino servo state changed
+        /// </summary>
         public Action<eRod, eRotationalMove> OnServoChangeState { get; set; }
 
+        /// <summary>
+        /// Rod Type of current controller
+        /// </summary>
         public eRod RodType { get; set; }
 
         #region Constructors
@@ -89,7 +94,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// </summary>
         /// <param name="comPort">COM port to open as string</param>
         /// <param name="encoder">Encoder for actions</param>
-        public ArduinoCom(string comPort, IEncoder encoder)
+        public ArduinoController(string comPort, IEncoder encoder)
         {
             _comPort = null;
             ComPortName = comPort;
@@ -103,7 +108,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// </summary>
         /// <param name="openPort"></param>
         /// <param name="encoder">Encoder for actions</param>
-        public ArduinoCom(ISerialPort openPort, IEncoder encoder)
+        public ArduinoController(ISerialPort openPort, IEncoder encoder)
         {
             _comPort = openPort;
             _encoder = encoder;
@@ -188,7 +193,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// Open Arduino Com Port
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown in case of error while opening port</exception>
-        public void OpenArduinoComPort()
+        public void OpenSerialPort()
         {
             if (_comPort == null)
                 _comPort = new SerialPortWrapper(ComPortName, Communication.BAUDRATE);
@@ -249,6 +254,24 @@ namespace Foosbot.CommunicationLayer.Core
                     Log.Print(String.Format("[Local: {0}] DC: {1} SERVO: {2}", ComPortName, dc, servo.ToString()), eCategory.Info, LogTag.COMMUNICATION);
                     
                     _lastDc = dc;
+            }
+        }
+
+        /// <summary>
+        /// Update last arduino servo state
+        /// </summary>
+        /// <param name="newState">Servo state as arduino response code</param>
+        public void SetLastServoState(eResponseCode newState)
+        {
+            eRotationalMove state = ResponseCodeToServoState(newState);
+
+            if (!state.Equals(eRotationalMove.NA))
+            {
+                _lastServo = state;
+                if (OnServoChangeState != null)
+                {
+                    OnServoChangeState(RodType, _lastServo);
+                }
             }
         }
 
@@ -315,10 +338,15 @@ namespace Foosbot.CommunicationLayer.Core
             }
         }
 
-        private void SetLastServoState(eResponseCode newState)
+        /// <summary>
+        /// Convert arduino response code to state
+        /// </summary>
+        /// <param name="code">Arduino response code</param>
+        /// <returns>Servo state</returns>
+        private eRotationalMove ResponseCodeToServoState(eResponseCode code)
         {
             eRotationalMove state = eRotationalMove.NA;
-            switch(newState)
+            switch (code)
             {
                 case eResponseCode.SERVO_STATE_KICK:
                     state = eRotationalMove.KICK;
@@ -330,15 +358,7 @@ namespace Foosbot.CommunicationLayer.Core
                     state = eRotationalMove.DEFENCE;
                     break;
             }
-
-            if (!state.Equals(eRotationalMove.NA))
-            {
-                _lastServo = state;
-                if (OnServoChangeState != null)
-                {
-                    OnServoChangeState(RodType, _lastServo);
-                }
-            }
+            return state;
         }
     }
 

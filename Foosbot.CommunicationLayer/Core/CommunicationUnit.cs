@@ -35,7 +35,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// <summary>
         /// Arduino Communication Unit
         /// </summary>
-        private ArduinoCom _arduino;
+        private ISerialController _arduino;
 
         /// <summary>
         /// Current rod type
@@ -74,10 +74,10 @@ namespace Foosbot.CommunicationLayer.Core
             //set rod type for current rod
             _rodType = rodType;
 
-            _converter = new ArduinoConverter(rodType);
+            _converter = new RodActionConverter(rodType);
 
             //Create arduino com object
-            _arduino = new ArduinoCom(comPort, new ActionEncoder(_converter))
+            _arduino = new ArduinoController(comPort, new ActionEncoder(_converter))
             {
                 OnServoChangeState = onServoChangeState,
                 RodType = rodType
@@ -93,7 +93,7 @@ namespace Foosbot.CommunicationLayer.Core
             if (!_isInitialized)
             {
                 //Create and Initialize Arduino to work with
-                _arduino.OpenArduinoComPort();
+                _arduino.OpenSerialPort();
                 _arduino.Initialize();
 
                 //get rod length in mm and ticks from configuration file
