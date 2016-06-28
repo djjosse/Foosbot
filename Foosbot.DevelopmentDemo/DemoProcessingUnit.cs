@@ -57,6 +57,31 @@ namespace Foosbot.DevelopmentDemo
         }
 
         /// <summary>
+        /// Generate a new ball coordinates and vector
+        /// </summary>
+        /// <param name="x">Ball x coordinate to start from [default 0]</param>
+        /// <param name="y">Ball y coordinate to start from [default 0]</param>
+        public void GenerateCoordinates(int x=0, int y=0)
+        {
+            Log.Print("Demo generating ball kick!", eCategory.Info, LogTag.IMAGE);
+            _x = x;
+            _y = y;
+            _velocityX = _random.Next(-10, 10);
+            _velocityX *= 4;
+            _velocityY = _random.Next(-10, 10);
+            _velocityY *= 4;
+        }
+
+        /// <summary>
+        /// Resumes/Restarts the demo from center of a table
+        /// </summary>
+        public override void Resume()
+        {
+            GenerateCoordinates(Convert.ToInt32(_rightBorder / 2), Convert.ToInt32(_buttomBorder / 2));
+            base.Resume();
+        }
+
+        /// <summary>
         /// Initialization method
         /// </summary>
         public override void Initialize()
@@ -106,26 +131,30 @@ namespace Foosbot.DevelopmentDemo
         {
             Initialize();
 
-            //Detach from streamer
-            _publisher.Detach(this);
+            if (!IsPaused)
+            {
 
-            //get current ball coordinates
-            BallCoordinates coordinates = SampleCoordinates();
+                //Detach from streamer
+                _publisher.Detach(this);
 
-            //show current ball coordinates on screen and GUI
-            System.Drawing.PointF p = TransformAgent.Data.InvertTransform(new System.Drawing.PointF(_x, _y));
-            Marks.DrawBall(new Point(p.X, p.Y), _ballRadius);
+                //get current ball coordinates
+                BallCoordinates coordinates = SampleCoordinates();
 
-            Statistics.TryUpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
+                //show current ball coordinates on screen and GUI
+                System.Drawing.PointF p = TransformAgent.Data.InvertTransform(new System.Drawing.PointF(_x, _y));
+                Marks.DrawBall(new Point(p.X, p.Y), _ballRadius);
 
-            //set current coordinates to update
-            ImagingData.BallCoords = coordinates;
+                Statistics.TryUpdateBasicImageProcessingInfo(String.Format("Generated coordinates: {0}x{1}", _x, _y));
 
-            //set current coordinates and publish new ball coordinates
-            BallLocationUpdater.UpdateAndNotify();
+                //set current coordinates to update
+                ImagingData.BallCoords = coordinates;
 
-            //attach back to streamer
-            _publisher.Attach(this);
+                //set current coordinates and publish new ball coordinates
+                BallLocationUpdater.UpdateAndNotify();
+
+                //attach back to streamer
+                _publisher.Attach(this);
+            }
         }
 
         /// <summary>
@@ -162,7 +191,6 @@ namespace Foosbot.DevelopmentDemo
         double deltaX = 5;
         double deltaY = 20000;
         object token = new object();
-        Random random = new Random();
 
         /// <summary>
         /// Running in separate thread and generate ball locations
@@ -176,12 +204,8 @@ namespace Foosbot.DevelopmentDemo
                     //generate vector if previous are 0
                     if (Convert.ToInt32(_velocityX) == 0) //&& Convert.ToInt32(_velocityY) == 0)
                     {
-                        Log.Print("Demo generating ball kick!", eCategory.Info, LogTag.IMAGE);
                         Thread.Sleep(500);
-                        _velocityX = _random.Next(-10, 10);
-                        _velocityX *= 4;
-                        _velocityY = _random.Next(-10, 10);
-                        _velocityY *= 4;
+                        GenerateCoordinates(_x, _y);
                     }
 
                     ballX = _x;// +_velocityX;
@@ -196,7 +220,7 @@ namespace Foosbot.DevelopmentDemo
                                 ballY < player.Y + deltaY && ballY > player.Y - deltaY &&
                                 _velocityX < 0)
                             {
-                                if (random.Next(0, 100) > 30)
+                                if (_random.Next(0, 100) > 30)
                                 {
                                     _x = Ricochet(_x, player.X + deltaX, ref _velocityX, ref _velocityY);
                                     Log.Print(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()), eCategory.Debug, LogTag.COMMON);

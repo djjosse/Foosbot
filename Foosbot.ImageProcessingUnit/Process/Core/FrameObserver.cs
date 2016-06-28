@@ -37,7 +37,7 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
         /// <summary>
         /// Pause the observer
         /// </summary>
-        public void Pause()
+        public virtual void Pause()
         {
             if (!IsPaused)
             {
@@ -48,7 +48,7 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
         /// <summary>
         /// Resume the observer from pause
         /// </summary>
-        public void Resume()
+        public virtual void Resume()
         {
             if (IsPaused)
             {
