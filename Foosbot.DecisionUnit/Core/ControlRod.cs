@@ -25,8 +25,20 @@ namespace Foosbot.DecisionUnit.Core
     /// </summary>
     public class ControlRod : IInitializableRod
     {
+        /// <summary>
+        /// Table Height (max Y coordinate)
+        /// </summary>
         private readonly int TABLE_HEIGHT;
+
+        /// <summary>
+        /// Minimal rod stopper position
+        /// </summary>
         private readonly int ROD_STOPPER_MIN;
+
+        /// <summary>
+        /// Freez before new dynamic sector calculation
+        /// </summary>
+        public readonly TimeSpan DYNAMIC_SECTOR_FREEZ = TimeSpan.FromMilliseconds(1000);
 
         /// <summary>
         /// Used in for range check vector intersection calculation
@@ -90,6 +102,11 @@ namespace Foosbot.DecisionUnit.Core
         /// (Predictions after this timespan from current time will be irrelevant in Intersection calculation)
         /// </summary>
         private int _predictIntersectionTimespan;
+
+        /// <summary>
+        /// Time Stamp of last dynamic sector calculation
+        /// </summary>
+        private DateTime _lastDynamicSectorTimestamp = DateTime.Now;
 
         #endregion IRod private members
 
@@ -380,20 +397,33 @@ namespace Foosbot.DecisionUnit.Core
         /// <returns>Dynamic Sector Width</returns>
         public int CalculateDynamicSector(BallCoordinates currentCoordinates)
         {
-            return DynamicSector;
+            //Set calculated dynamic sector as minimal sector width
+            int dynamicSector = _minSectorWidth;
 
-            /*
-             * //This makes Dynamic Sector to jump - for Alpha no Dynamic Sectors calculated
-             * 
-             * if (currentCoordinates != null && currentCoordinates.Vector != null 
-             *      && currentCoordinates.IsDefined && currentCoordinates.Vector.IsDefined
-             *          && currentCoordinates.X > _rodXCoordinate)
-             *  DynamicSector = Convert.ToInt32(_minSectorWidth + Math.Abs(currentCoordinates.Vector.X) * _sectorFactor);
-             * else
-             *   DynamicSector = _minSectorWidth;
-             * return DynamicSector;
-             * 
-             */
+            //check if:
+            //* received coordinates were set
+            //* ball is beyond the rod
+            //* ball direction is to the rod
+            if (BallCoordinates.NotNullAndDefined(currentCoordinates)
+                     && currentCoordinates.X > _rodXCoordinate &&
+                        currentCoordinates.Vector.X < 0)
+            {
+                //calculate dynamic sector based on ball speed
+                dynamicSector = Convert.ToInt32(_minSectorWidth + Math.Abs(currentCoordinates.Vector.X) * _sectorFactor);
+            }
+
+            //In order to make transition smooth while increasing sector
+            //last dynamic sector calculation time stamp is used
+            if (dynamicSector > DynamicSector || DYNAMIC_SECTOR_FREEZ < DateTime.Now - _lastDynamicSectorTimestamp)
+            {
+                DynamicSector = dynamicSector;
+                if (dynamicSector != _minSectorWidth)
+                {
+                    _lastDynamicSectorTimestamp = DateTime.Now;
+                }
+            }
+            return DynamicSector;
+            
         }
 
         /// <summary>

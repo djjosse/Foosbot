@@ -68,5 +68,17 @@ namespace Foosbot.Common.Protocols
         {
             return String.Format("Coordinates: {0}x{1} Time: {2} Vector: {3}", X, Y, Timestamp.ToString("HH:mm:ss.ff"), Vector.ToString());
         }
+
+        /// <summary>
+        /// Check if coordinates are not null and defined, vector is not null and is defined
+        /// </summary>
+        /// <param name="coordinates">Ball coordinates to check</param>
+        /// <returns>[True] if coordinates are not null and are defined and vector is not null and is defined, [False] otherwise</returns>
+        public static bool NotNullAndDefined(BallCoordinates coordinates)
+        {
+            return (coordinates != null) && 
+                (coordinates.Vector != null) &&
+                (coordinates.IsDefined && coordinates.Vector.IsDefined);
+        }
     }
 }

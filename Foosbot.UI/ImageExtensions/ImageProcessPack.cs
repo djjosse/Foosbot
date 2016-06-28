@@ -264,6 +264,7 @@ namespace Foosbot.UI.ImageExtensions
                 else
                 {
                     imagingProcess = new DemoProcessingUnit(framePublisher);
+                    imagingProcess.Initialize();
                 }
 
                 return new ImageProcessPack(framePublisher, uiMonitor, imagingProcess);

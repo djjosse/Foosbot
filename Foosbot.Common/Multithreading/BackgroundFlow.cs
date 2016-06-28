@@ -46,6 +46,7 @@ namespace Foosbot
             catch(Exception ex)
             {
                 Log.Print("Unable to start thread. ", ex, LogTag.COMMON, eCategory.Error, true);
+                Thread.Sleep(1000);
             }
         }
     }

@@ -129,7 +129,7 @@ namespace Foosbot.DevelopmentDemo
         /// </summary>
         public override void Job()
         {
-            Initialize();
+           
 
             if (!IsPaused)
             {
@@ -167,29 +167,36 @@ namespace Foosbot.DevelopmentDemo
         /// <param name="worldHeight">Foosbot world height</param>
         private void InitializeTransformation(float frameWidth, float frameHeight, float worldWidth, float worldHeight)
         {
-            //Create corners of frame
-            System.Drawing.PointF[] originalPoints = new System.Drawing.PointF[4];
-            originalPoints[0] = new System.Drawing.PointF(0, 0);
-            originalPoints[1] = new System.Drawing.PointF(frameWidth, 0);
-            originalPoints[2] = new System.Drawing.PointF(0, frameHeight);
-            originalPoints[3] = new System.Drawing.PointF(frameWidth, frameHeight);
+            try
+            {
+                //Create corners of frame
+                System.Drawing.PointF[] originalPoints = new System.Drawing.PointF[4];
+                originalPoints[0] = new System.Drawing.PointF(0, 0);
+                originalPoints[1] = new System.Drawing.PointF(frameWidth, 0);
+                originalPoints[2] = new System.Drawing.PointF(0, frameHeight);
+                originalPoints[3] = new System.Drawing.PointF(frameWidth, frameHeight);
 
-            //Create corners of foosbot world
-            System.Drawing.PointF[] transformedPoints = new System.Drawing.PointF[4];
-            transformedPoints[0] = new System.Drawing.PointF(0, 0);
-            transformedPoints[1] = new System.Drawing.PointF(worldWidth, 0);
-            transformedPoints[2] = new System.Drawing.PointF(0, worldHeight);
-            transformedPoints[3] = new System.Drawing.PointF(worldWidth, worldHeight);
+                //Create corners of foosbot world
+                System.Drawing.PointF[] transformedPoints = new System.Drawing.PointF[4];
+                transformedPoints[0] = new System.Drawing.PointF(0, 0);
+                transformedPoints[1] = new System.Drawing.PointF(worldWidth, 0);
+                transformedPoints[2] = new System.Drawing.PointF(0, worldHeight);
+                transformedPoints[3] = new System.Drawing.PointF(worldWidth, worldHeight);
 
-            //Calculate transformation matrix and store in static class
-            TransformAgent.Data.Initialize(originalPoints, transformedPoints);
+                //Calculate transformation matrix and store in static class
+                TransformAgent.Data.Initialize(originalPoints, transformedPoints);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Unable to initialize transformation. Reason: " + e.Message + "\n" + e.StackTrace);
+            }
         }
 
 
         double ballX;
         double ballY;
         double deltaX = 5;
-        double deltaY = 20000;
+        double deltaY = 200;
         object token = new object();
 
         /// <summary>
@@ -212,8 +219,8 @@ namespace Foosbot.DevelopmentDemo
                     ballY = _y;// +_velocityY;
                     foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
                     {
-                        if (rodType == eRod.Attack)
-                        {
+                        //if (rodType == eRod.Attack)
+                        //{
                             Point player = Marks.PlayerPosition(rodType);
                             //player = TransformAgent.Data.Transform(player);
                             if (ballX < player.X + deltaX && ballX > player.X - deltaX &&
@@ -226,7 +233,7 @@ namespace Foosbot.DevelopmentDemo
                                     Log.Print(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()), eCategory.Debug, LogTag.COMMON);
                                 }
                             }
-                        }
+                        //}
                     }
 
                     //check if we passed the border and set new X coordinate
