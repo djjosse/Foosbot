@@ -282,47 +282,17 @@ namespace Foosbot.Common.Drawing
 
                 DrawPlayer(playerMark, center, rotationalMove);
             }
-
-
-
-            //eMarks playersBase = 0;
-            //eMarks mark;
-            //Enum.TryParse<eMarks>(rod.ToString(), out mark);
-
-            //int eMarkType = ((int)mark);
-            //int rodPlayersCount = _data.PlayerCount[mark];
-            //int yDistance = _data.PlayersDistance[mark];
-            //int firstPlayerOffsetY = _data.OffsetY[mark];
-            //int x = _data.XTableToDeviceCoordinates(_data.Rods[mark]);
-
-            //switch (eMarkType)
-            //{
-            //    case (int)eMarks.GoalKeeper: playersBase = eMarks.GoalKeeperPlayer; break;
-            //    case (int)eMarks.Defence: playersBase = eMarks.DefencePlayer1; break;
-            //    case (int)eMarks.Midfield: playersBase = eMarks.MidfieldPlayer1; break;
-            //    case (int)eMarks.Attack: playersBase = eMarks.AttackPlayer1; break;
-            //    default: break;
-            //}
-
-            //for (int rodPlayer = 0; rodPlayer < rodPlayersCount; rodPlayer++)
-            //{
-            //    int y = linearMoveDestination + firstPlayerOffsetY + yDistance * rodPlayer;
-            //    int y1 = y;
-            //    int x1 = x;
-            //    if (isLocation)
-            //    {
-            //        _utils.ConvertToLocation(ref x1, ref y);
-            //    }
-            //    DrawPlayer(playersBase + rodPlayer, new Point(x1 * _data.WidthRate, y1 * _data.HeightRate), 12, rotationalMove);
-            //}
-
         }
 
+        /// <summary>
+        /// Get Player (Stopper) position of current rod
+        /// </summary>
+        /// <param name="type">Rod Type</param>
+        /// <returns>Player (Stopper) position of current rod in Foosbot world</returns>
         public Point PlayerPosition(eRod type)
         {
             return _state.Get(type);
         }
-
 
         /// <summary>
         /// Drawing a single player at a time , used by the DrawRodPlayers method to draw all rods players
