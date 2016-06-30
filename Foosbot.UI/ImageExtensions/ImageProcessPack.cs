@@ -251,9 +251,7 @@ namespace Foosbot.UI.ImageExtensions
                 FrameUiMonitor uiMonitor = new FrameUiMonitor(framePublisher, dispatcher, screen);
 
                 //Initialize Marks
-                double widthRate = screen.Width / framePublisher.FrameWidth;
-                double heightRate = screen.Height / framePublisher.FrameHeight;
-                Marks.Initialize(dispatcher, screen, widthRate, heightRate);
+                Marks.Initialize(dispatcher, screen, framePublisher.FrameWidth, framePublisher.FrameHeight);
 
                 //Image/Demo processing unit
                 ImagingProcess imagingProcess;

@@ -201,8 +201,6 @@ namespace Foosbot.VectorCalculation
             {
                 Coordinates2D intersectionPoint = FindNearestIntersectionPoint(ballCoordinates);
 
-                //Marks.DrawRicochetMark(Convert.ToInt32(intersectionPoint.X), Convert.ToInt32(intersectionPoint.Y), true);
-                
                 DateTime ricocheTime = FindRicochetTime(ballCoordinates, intersectionPoint);
                 
                 Vector2D vector = FindIntersectionVector(ballCoordinates.Vector, intersectionPoint);
