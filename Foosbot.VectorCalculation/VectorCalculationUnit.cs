@@ -136,7 +136,7 @@ namespace Foosbot.VectorCalculation
                 }
                 else
                 {
-                   Marks.DrawBallVector(new Point(0,0), new Point(0, 0), false);
+                   Marks.DrawBallVector(new Point(0,0), new Point(0, 0), eCoordinatesType.Screen);
                 }
             }
             catch (ThreadInterruptedException)
