@@ -66,7 +66,7 @@ namespace Foosbot.UI
         private int _player1Score = 0;
         private int _player2Score = 0;
         private string _player1Name = "PLAYER1";
-        private string _player2Name = "PLAYER2";
+        private string _player2Name = "FOOSBOT";
 
         #endregion private members
 
@@ -262,7 +262,7 @@ namespace Foosbot.UI
         {
             TextBox textBox = sender as TextBox;
             Label label = (Label)this.FindName("Player2NameLabel");
-            _player2Name = (!textBox.Text.Equals(string.Empty)) ? _player2Name = textBox.Text.ToUpper() : _player2Name = "PLAYER2";
+            _player2Name = (!textBox.Text.Equals(string.Empty)) ? _player2Name = textBox.Text.ToUpper() : _player2Name = "FOOSBOT";
             label.Content = _player2Name;
         }
 
@@ -317,7 +317,7 @@ namespace Foosbot.UI
             Label player1Score = (Label)this.FindName("Player1ScoreLabel");
             Label player2Score = (Label)this.FindName("Player2ScoreLabel");
             _player1Name = "PLAYER1";
-            _player2Name = "PLAYER2";
+            _player2Name = "FOOSBOT";
             _player1Score = 0;
             _player2Score = 0;
             player1Name.Content = _player1Name;
@@ -327,6 +327,11 @@ namespace Foosbot.UI
         }
 
         #endregion GUI Buttons and Events
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
 
 
     }

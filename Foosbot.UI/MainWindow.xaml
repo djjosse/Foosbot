@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="1000" Width="1400"
         Padding="100"
-        ResizeMode="CanMinimize">
+        MinHeight="1000" MinWidth="1400">
 
     <DockPanel>
 
@@ -21,8 +21,14 @@
 
         <Grid>
             <Grid.Background>
-                <ImageBrush ImageSource="Resources/bg.png"/>
+                <ImageBrush ImageSource="Resources/floor.jpg" />
             </Grid.Background>
+
+            <Grid VerticalAlignment="Top" Height="875" Margin="0,0,10,0">
+                <Grid.Background>
+                    <ImageBrush ImageSource="Resources/bg-table.png" Stretch="None"/>
+                </Grid.Background>
+            </Grid>
 
             <Grid Height="60" VerticalAlignment="Top">
                 <Grid.Background>
@@ -42,11 +48,11 @@
                 <Label Grid.Column="1" Name="Player1ScoreLabel" Content="0" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
                 <Label Grid.Column="2" Content="-" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
                 <Label Grid.Column="3" Name="Player2ScoreLabel" Content="0" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
-                <Label Grid.Column="4" Name="Player2NameLabel" Content="PLAYER2" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="Red"/>
+                <Label Grid.Column="4" Name="Player2NameLabel" Content="FOOSBOT" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="Red"/>
             </Grid>
 
 
-            <Canvas Name="_guiImage" HorizontalAlignment="Center" Height="630" Width="1120" Margin="0,100,0,0" VerticalAlignment="Top" >
+            <Canvas Name="_guiImage" HorizontalAlignment="Center" Height="630" Width="1120" Margin="139,122,134.6,0" VerticalAlignment="Top" >
                 <Canvas.Background>
                     <ImageBrush ImageSource="Resources/canvasBg.png"/>
                 </Canvas.Background>
@@ -81,30 +87,100 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="Pause" DockPanel.Dock="Left" Click="PauseGame"></Button>
-                    <Button Grid.Column="1" Content="Resume" DockPanel.Dock="Right" Click="ResumeGame"/>
+                    <Button Grid.Column="0" Content="&#9612;  &#9612; " DockPanel.Dock="Left" Click="PauseGame">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="Black"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Yellow"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Grid.Column="1" Content="&#9654; " DockPanel.Dock="Right" Click="ResumeGame" FontSize="16">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="Black"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Yellow"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </Grid>
 
             </Grid>
-            
+
             <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="100" Margin="30,0,30,60"  Width="800">
-                
+
                 <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Height="80" Margin="0,0,0,0"  Width="300">
+
                     <Grid.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="Gray" Offset="0" />
-                            <GradientStop Color="White" Offset="1" />
-                        </LinearGradientBrush>  
+                            <GradientStop Color="Black" Offset="0" />
+                            <GradientStop Color="DarkBlue" Offset="1" />
+                        </LinearGradientBrush>
                     </Grid.Background>
+
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="PLAYER 1 NAME:" Margin="0" HorizontalAlignment="Center"/>
+                    <Label Content="PLAYER 1 NAME:" Margin="0" HorizontalAlignment="Center" Foreground="White"/>
                     <TextBox Grid.Row="1" Name="Player1NameTextBox" Margin="10,0,10,0" TextChanged="SetPlayer1Name"/>
-                    <Button Grid.Row="2" Content="GOAL!" Margin="0" Click="SetPlayer1Score"/>
+                    <Button Grid.Row="2" Content="GOAL!" Margin="0" Click="SetPlayer1Score" BorderThickness="0" Foreground="White">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="DarkBlue"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Blue"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
                 </Grid>
 
@@ -129,8 +205,8 @@
                 <Grid HorizontalAlignment="Right" VerticalAlignment="Center" Height="80" Margin="0,0,0,0"  Width="300">
                     <Grid.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="Gray" Offset="0" />
-                            <GradientStop Color="White" Offset="1" />
+                            <GradientStop Color="Black" Offset="0" />
+                            <GradientStop Color="DarkRed" Offset="1" />
                         </LinearGradientBrush>
                     </Grid.Background>
                     <Grid.RowDefinitions>
@@ -139,9 +215,29 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="PLAYER 2 NAME:" Margin="0" HorizontalAlignment="Center"/>
+                    <Label Content="PLAYER 2 NAME:" Margin="0" HorizontalAlignment="Center" Foreground="White"/>
                     <TextBox Grid.Row="1" Name="Player2NameTextBox" Margin="10,0,10,0" TextChanged="SetPlayer2Name"/>
-                    <Button Grid.Row="2" Content="GOAL!" Margin="0" Click="SetPlayer2Score"/>
+                    <Button Grid.Row="2" Content="GOAL!" Margin="0" Click="SetPlayer2Score" Foreground="White" BorderThickness="0">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="DarkRed"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Red"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
                 </Grid>
 

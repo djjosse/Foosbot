@@ -39,6 +39,10 @@ namespace Foosbot.DevelopmentDemo
         private double _rightBorder = 0;
         private double _upeerBorder = 0;
         private double _leftBorder = 0;
+        double ballX;
+        double ballY;
+        double deltaX = 20;
+        double deltaY = 20;
         private volatile int _x = 0;
         private volatile int _y = 0;
         private int _ballRadius = 20;
@@ -112,7 +116,6 @@ namespace Foosbot.DevelopmentDemo
                 //Set start ball coordinates
                 _x = Convert.ToInt32(_rightBorder / 2);
                 _y = Convert.ToInt32(_buttomBorder / 2);
-
 
                 //Instantiate random generator
                 _random = new Random();
@@ -194,11 +197,68 @@ namespace Foosbot.DevelopmentDemo
         }
 
 
-        double ballX;
-        double ballY;
-        double deltaX = 20;
-        double deltaY = 20;
-        object token = new object();
+        /// <summary>
+        /// Checks if one of the player and the ball coordinates intercept, if they are kick the ball
+        /// </summary>
+        private void CheckIfPlayerKickedTheBall()
+        {
+            ballX = _x + _velocityX;
+            ballY = _y + _velocityY;
+            foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
+            {
+                Point player = Marks.PlayerPosition(rodType);
+                if (ballX < player.X + deltaX && ballX > player.X - deltaX &&
+                    ballY < player.Y + deltaY && ballY > player.Y - deltaY &&
+                    _velocityX < 0)
+                {
+                    if (_random.Next(0, 100) > 30)
+                    {
+                        _x = Ricochet(_x, _x, ref _velocityX, ref _velocityY);
+                        Log.Print(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()), eCategory.Debug, LogTag.COMMON);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the ball hits on of the two X borders , if hits calculate ricochet
+        /// </summary>
+        private void CheckIfBallXHitBorders()
+        {
+            double tempX = _x + _velocityX;
+            if (tempX <= _leftBorder)
+            {
+                _x = Ricochet(_x, _leftBorder, ref _velocityX, ref _velocityY);
+            }
+            else if (tempX >= _rightBorder)
+            {
+                _x = Ricochet(_x, _rightBorder, ref _velocityX, ref _velocityY);
+            }
+            else
+            {
+                _x = Convert.ToInt32(tempX);
+            }
+        }
+
+        /// <summary>
+        /// Checks if the ball hits on of the two Y borders , if hits calculate ricochet
+        /// </summary>
+        private void CheckIfBallYHitBorders()
+        {
+            double tempY = _y + _velocityY;
+            if (tempY <= _upeerBorder)
+            {
+                _y = Ricochet(_y, _upeerBorder, ref _velocityY, ref _velocityX);
+            }
+            else if (tempY >= _buttomBorder)
+            {
+                _y = Ricochet(_y, _buttomBorder, ref _velocityY, ref _velocityX);
+            }
+            else
+            {
+                _y = Convert.ToInt32(tempY);
+            }
+        }
 
         /// <summary>
         /// Running in separate thread and generate ball locations
@@ -210,55 +270,33 @@ namespace Foosbot.DevelopmentDemo
                 while (true)
                 {
                     //generate vector if previous are 0
-                    if (Convert.ToInt32(_velocityX) == 0) //&& Convert.ToInt32(_velocityY) == 0)
+                    if (Convert.ToInt32(_velocityX) == 0)
                     {
                         Thread.Sleep(500);
                         GenerateCoordinates(_x, _y);
                     }
 
-                    ballX = _x +_velocityX;
-                    ballY = _y +_velocityY;
-                    foreach (eRod rodType in Enum.GetValues(typeof(eRod)))
-                    {
-                        Point player = Marks.PlayerPosition(rodType);
-                        if (ballX < player.X + deltaX && ballX > player.X - deltaX &&
-                            ballY < player.Y + deltaY && ballY > player.Y - deltaY &&
-                            _velocityX < 0)
-                        {
-                            if (_random.Next(0, 100) > 30)
-                            {
-                                //  Point p = TransformAgent.Data.Transform(new Point(player.X, _y));
-                                _x = Ricochet(_x, _x, ref _velocityX, ref _velocityY);
-                                Log.Print(String.Format("Rod [{0}] responding to the ball!", rodType.ToString()), eCategory.Debug, LogTag.COMMON);
-                            }
-                        }
-                    }
+                    CheckIfPlayerKickedTheBall();
+                    CheckIfBallXHitBorders();
+                    CheckIfBallYHitBorders();
 
-                    //check if we passed the border and set new X coordinate
-                    double tempX = _x + _velocityX;
-                    if (tempX <= _leftBorder)
-                        _x = Ricochet(_x, _leftBorder, ref _velocityX, ref _velocityY);
-                    else if (tempX >= _rightBorder)
-                        _x = Ricochet(_x, _rightBorder, ref _velocityX, ref _velocityY);
-                    else
-                        _x = Convert.ToInt32(tempX);
-
-                    //check if we passed the border and set new Y coordinate
-                    double tempY = _y + _velocityY;
-                    if (tempY <= _upeerBorder)
-                        _y = Ricochet(_y, _upeerBorder, ref _velocityY, ref _velocityX);
-                    else if (tempY >= _buttomBorder)
-                        _y = Ricochet(_y, _buttomBorder, ref _velocityY, ref _velocityX);
-                    else
-                        _y = Convert.ToInt32(tempY);
-
-                    //Sleep before next generation
                     Thread.Sleep(10);
                 }
             });
             t.IsBackground = true;
             t.Start();
         }
+
+        void GenerateVector()
+        {
+            //generate vector if previous are 0
+            if (Convert.ToInt32(_velocityX) == 0) //&& Convert.ToInt32(_velocityY) == 0)
+            {
+                Thread.Sleep(500);
+                GenerateCoordinates(_x, _y);
+            }
+        }
+
 
         /// <summary>
         /// Get sample coordinates
@@ -280,8 +318,7 @@ namespace Foosbot.DevelopmentDemo
         private int Ricochet(int coordinate, double currentBorder,
             ref double directVelocity, ref double secondVelocity)
         {
-            coordinate = Convert.ToInt32((2 * currentBorder - coordinate - directVelocity)
-                + (currentBorder - coordinate) * _ricochectFactor);
+            coordinate = Convert.ToInt32((2 * currentBorder - coordinate - directVelocity) + (currentBorder - coordinate) * _ricochectFactor);
             directVelocity = directVelocity * (-1) * _ricochectFactor;
             secondVelocity *= _ricochectFactor;
             return coordinate;
