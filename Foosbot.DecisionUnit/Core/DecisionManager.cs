@@ -28,13 +28,6 @@ namespace Foosbot.DecisionUnit.Core
     /// </summary>
     public class DecisionManager : IInitializableDecisionManager
     {
-        public void UpdateRealTimeState(eRod rodType, eRotationalMove servoState)
-        {
-            IInitializableRod rod = _controlledRods.First(x => x.RodType.Equals(rodType));
-            rod.State.ServoPosition = servoState;
-            //Marks.DrawRodPlayers(rod.RodType, rod.State.DcPosition, rod.State.ServoPosition);
-        }
-
         /// <summary>
         /// Mechanical, Calculation and other delays
         /// </summary>
@@ -140,6 +133,18 @@ namespace Foosbot.DecisionUnit.Core
                     rod.State.ServoPosition);
             }
             return actions;
+        }
+
+        /// <summary>
+        /// Updates real time servo position
+        /// This method is used as delegate in Communication Layer
+        /// </summary>
+        /// <param name="rodType">Current Rod Type</param>
+        /// <param name="servoState">Current Servo Position</param>
+        public void UpdateRealTimeState(eRod rodType, eRotationalMove servoState)
+        {
+            IInitializableRod rod = _controlledRods.First(x => x.RodType.Equals(rodType));
+            rod.State.ServoPosition = servoState;
         }
 
         #region Initialization Related

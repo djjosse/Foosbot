@@ -106,6 +106,12 @@ namespace Foosbot.DecisionUnit.Core
             }
         }
 
+        /// <summary>
+        /// Updates real time servo position
+        /// This method is used as delegate in Communication Layer
+        /// </summary>
+        /// <param name="rodType">Current Rod Type</param>
+        /// <param name="servoState">Current Servo Position</param>
         public void UpdateRealTimeState(eRod rodType, eRotationalMove servoState)
         {
             _manager.UpdateRealTimeState(rodType, servoState);

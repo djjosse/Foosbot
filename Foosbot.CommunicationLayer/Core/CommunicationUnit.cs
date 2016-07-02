@@ -125,7 +125,7 @@ namespace Foosbot.CommunicationLayer.Core
                 _publisher.Detach(this);
 
                 //received command
-                RodAction action = _publisher.Data;
+                RodAction action = _currentData;// _publisher.Data;
 
                 //Convert mm to ticks
                 int proportinalMove = _converter.MmToTicks(action.DcCoordinate);

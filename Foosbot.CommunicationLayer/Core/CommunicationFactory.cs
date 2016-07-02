@@ -76,6 +76,7 @@ namespace Foosbot.CommunicationLayer.Core
         /// Create Communication Layer for each connected Arduino
         /// </summary>
         /// <param name="publishers">Dictionary of RodActionPublishers per each rod</param>
+        /// <param name="onServoChangeState">Delegates of methods in Decision Unit to update state of Servo Position per Communication Unit</param>
         public static void Create(Dictionary<eRod, RodActionPublisher> publishers, Action<eRod, eRotationalMove> onServoChangeState)
         {
             //get operation mode from configuration file

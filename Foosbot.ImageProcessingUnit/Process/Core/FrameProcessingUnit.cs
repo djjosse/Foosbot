@@ -205,9 +205,10 @@ namespace Foosbot.ImageProcessingUnit.Process.Core
                 try
                 {
                     _publisher.Detach(this);
+                    
+                    //get data from publisher by Copy and Dispose at the end
                     using (_currentFrame = _publisher.Data.Clone())
                     {
-
                         VerifyDifferentFrameByTimeStamp(_currentFrame.Timestamp);
 
                         //Performs calibration if required
