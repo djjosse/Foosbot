@@ -249,7 +249,7 @@ namespace Foosbot.UI
         {
             TextBox textBox = sender as TextBox;
             Label label = (Label)this.FindName("Player1NameLabel");
-            _player1Name = (!textBox.Text.Equals(string.Empty)) ? _player1Name = textBox.Text.ToUpper() : _player1Name = "PLAYER1";
+            _player1Name = (!textBox.Text.Equals(string.Empty)) ? _player1Name = textBox.Text.ToUpper() : _player1Name = "FOOSBOT";
             label.Content = _player1Name;
         }
 
@@ -262,7 +262,7 @@ namespace Foosbot.UI
         {
             TextBox textBox = sender as TextBox;
             Label label = (Label)this.FindName("Player2NameLabel");
-            _player2Name = (!textBox.Text.Equals(string.Empty)) ? _player2Name = textBox.Text.ToUpper() : _player2Name = "FOOSBOT";
+            _player2Name = (!textBox.Text.Equals(string.Empty)) ? _player2Name = textBox.Text.ToUpper() : _player2Name = "PLAYER1";
             label.Content = _player2Name;
         }
 
@@ -316,8 +316,8 @@ namespace Foosbot.UI
             Label player2Name = (Label)this.FindName("Player2NameLabel");
             Label player1Score = (Label)this.FindName("Player1ScoreLabel");
             Label player2Score = (Label)this.FindName("Player2ScoreLabel");
-            _player1Name = "PLAYER1";
-            _player2Name = "FOOSBOT";
+            _player1Name = "FOOSBOT";            
+            _player2Name = "PLAYER1";
             _player1Score = 0;
             _player2Score = 0;
             player1Name.Content = _player1Name;

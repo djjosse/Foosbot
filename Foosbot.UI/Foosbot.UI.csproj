@@ -209,8 +209,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resources\bg-table.png" />
     <Resource Include="Resources\floor.jpg" />
+    <Resource Include="Resources\TableBackGroundFinal.png" />
     <Content Include="Sounds\Sound_Goal.wav" />
     <Content Include="Sounds\Sound_Win.wav" />
   </ItemGroup>

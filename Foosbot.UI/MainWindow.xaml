@@ -24,9 +24,9 @@
                 <ImageBrush ImageSource="Resources/floor.jpg" />
             </Grid.Background>
 
-            <Grid VerticalAlignment="Top" Height="875" Margin="0,0,10,0">
+            <Grid VerticalAlignment="Top" Height="875" Margin="0,0,20,0">
                 <Grid.Background>
-                    <ImageBrush ImageSource="Resources/bg-table.png" Stretch="None"/>
+                    <ImageBrush ImageSource="Resources/TableBackGroundFinal.png" Stretch="None"/>
                 </Grid.Background>
             </Grid>
 
@@ -44,15 +44,15 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Name="Player1NameLabel" Content="PLAYER1" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="Blue"/>
+                <Label Grid.Column="0" Name="Player1NameLabel" Content="FOOSBOT" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="#0099ff"/>
                 <Label Grid.Column="1" Name="Player1ScoreLabel" Content="0" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
                 <Label Grid.Column="2" Content="-" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
                 <Label Grid.Column="3" Name="Player2ScoreLabel" Content="0" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
-                <Label Grid.Column="4" Name="Player2NameLabel" Content="FOOSBOT" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="Red"/>
+                <Label Grid.Column="4" Name="Player2NameLabel" Content="PLAYER1" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="Red"/>
             </Grid>
 
 
-            <Canvas Name="_guiImage" HorizontalAlignment="Center" Height="630" Width="1120" Margin="139,122,134.6,0" VerticalAlignment="Top" >
+            <Canvas Name="_guiImage" HorizontalAlignment="Center"  Height="630" Width="1120" Margin="139,122,134.6,0" VerticalAlignment="Top" >
                 <Canvas.Background>
                     <ImageBrush ImageSource="Resources/canvasBg.png"/>
                 </Canvas.Background>
