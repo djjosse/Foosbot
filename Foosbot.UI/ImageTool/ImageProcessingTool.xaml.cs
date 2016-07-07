@@ -95,7 +95,7 @@ namespace Foosbot.UI.ImageTool
         /// <summary>
         /// Is Initialized property
         /// </summary>
-        public bool IsInitialized { get; private set; }
+        public new bool IsInitialized { get; private set; }
 
         public void Initialize()
         {

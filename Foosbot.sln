@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foosbot.ImageProcessingUnit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyLog", "External\EasyLog\EasyLog\EasyLog.csproj", "{1C39DD88-9B43-4B0F-8CBC-226470B761A6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OperationalRod", "Foosbot.Embedded\OperationalRod.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,12 +116,10 @@ Global
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CE009BFA-5EF6-4153-B2A1-2FA79698A9AE}.Release|Win32.ActiveCfg = Release|Any CPU
 		{F4AE2316-359B-4A83-9361-2C1EBD701A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4AE2316-359B-4A83-9361-2C1EBD701A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -201,6 +201,14 @@ Global
 		{1C39DD88-9B43-4B0F-8CBC-226470B761A6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1C39DD88-9B43-4B0F-8CBC-226470B761A6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1C39DD88-9B43-4B0F-8CBC-226470B761A6}.Release|Win32.ActiveCfg = Release|Any CPU
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Win32.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Win32.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,51 +23,51 @@ namespace Foosbot.CommunicationLayer.Enums
         /// <summary>
         /// Initialization required
         /// </summary>
-        INIT_REQUERED = 100,
+        INIT_REQUERED = 'i',
 
         /// <summary>
         /// Initialization requested
         /// </summary>
-        INIT_REQUESTED = 101,
+        INIT_REQUESTED = 'r',
 
         /// <summary>
         /// Initialization started
         /// </summary>
-        INIT_STARTED = 102,
+        INIT_STARTED = 's',
 
         /// <summary>
         /// Initialization operations finished
         /// </summary>
-        INIT_FINISHED = 103,
+        INIT_FINISHED = 'f',
 
         /// <summary>
         /// Servo State is KICK
         /// </summary>
-        SERVO_STATE_KICK = 110,
+        SERVO_STATE_KICK = 'K',
 
         /// <summary>
         /// Servo State is DEFENSE
         /// </summary>
-        SERVO_STATE_DEFENCE = 111,
+        SERVO_STATE_DEFENCE = 'D',
 
         /// <summary>
         /// Servo State is RISE
         /// </summary>
-        SERVO_STATE_RISE = 112,
+        SERVO_STATE_RISE = 'R',
 
         /// <summary>
         /// Invalid Range for DC was requested
         /// </summary>
-        DC_RANGE_INVALID = 120,
+        DC_RANGE_INVALID = 'E',
 
         /// <summary>
         /// DC was set as requested
         /// </summary>
-        DC_RECEIVED_OK = 121,
+        DC_RECEIVED_OK = 'O',
 
         /// <summary>
         /// DC was calibrated
         /// </summary>
-        DC_CALIBRATED = 122
+        DC_CALIBRATED = 'C'
     }
 }
