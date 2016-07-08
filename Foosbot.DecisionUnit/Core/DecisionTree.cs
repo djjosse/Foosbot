@@ -249,7 +249,7 @@ namespace Foosbot.DecisionUnit.Core
             double distanceFactor = Convert.ToDouble(TABLE_WIDTH) / Math.Abs(ballCoords.X - currentRod.RodXCoordinate);
 
             double speedFactor = 1;
-            if (ballCoords.Vector != null && ballCoords.Vector.IsDefined)
+            if (Vector2D.NotNullAndDefined(ballCoords.Vector))
             {
                 speedFactor += Math.Abs(ballCoords.Vector.X / BALL_MAX_SPEED);
             }

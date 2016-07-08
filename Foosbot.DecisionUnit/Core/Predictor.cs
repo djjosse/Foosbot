@@ -64,7 +64,7 @@ namespace Foosbot.DecisionUnit.Core
 
             BallCoordinates bfc;
 
-            if (currentCoordinates.Vector == null || !currentCoordinates.Vector.IsDefined)
+            if (!Vector2D.NotNullAndDefined(currentCoordinates.Vector))
             {
                 bfc = new BallCoordinates(currentCoordinates.X, currentCoordinates.Y, actionTime);
                 bfc.Vector = currentCoordinates.Vector;

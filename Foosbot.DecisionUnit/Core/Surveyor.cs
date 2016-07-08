@@ -76,7 +76,7 @@ namespace Foosbot.DecisionUnit.Core
                 return pts;
             }
 
-            if (pts.Vector != null && pts.Vector.IsDefined)
+            if (Vector2D.NotNullAndDefined(pts.Vector))
             {
                 double xMm = pts.Vector.X * (double)XMaxMm / (double)XMaxPts;
                 double yMm = pts.Vector.Y * (double)YMaxMm / (double)YMaxPts;
