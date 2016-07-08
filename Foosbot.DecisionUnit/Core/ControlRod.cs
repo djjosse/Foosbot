@@ -104,6 +104,11 @@ namespace Foosbot.DecisionUnit.Core
         private int _predictIntersectionTimespan;
 
         /// <summary>
+        /// [True] if DynamicSector is in use, [False] otherwise
+        /// </summary>
+        private bool _useDynamicSector = false;
+
+        /// <summary>
         /// Time Stamp of last dynamic sector calculation
         /// </summary>
         private DateTime _lastDynamicSectorTimestamp = DateTime.Now;
@@ -374,6 +379,7 @@ namespace Foosbot.DecisionUnit.Core
                 _stopperDistance = Configuration.Attributes.GetRodDistanceBetweenStoppers(_rodType);
                 _bestEffort = Configuration.Attributes.GetFirstPlayerBestEffort(_rodType);
                 _predictIntersectionTimespan = Configuration.Attributes.GetValue<int>(Configuration.Names.KEY_ROD_INTERSECTION_MAX_TIMESPAN_SEC);
+                _useDynamicSector = Configuration.Attributes.GetValue<bool>(Configuration.Names.KEY_USE_DYNAMIC_SECTOR);
 
                 MinimumPossibleStartStopperY = ROD_STOPPER_MIN;
                 MaximumPossibleStartStopperY = TABLE_HEIGHT - ROD_STOPPER_MIN - _stopperDistance;
@@ -441,25 +447,19 @@ namespace Foosbot.DecisionUnit.Core
             try
             {
                 //If unable to calculate OR no intersection - set Intersection as undefined and exit
-                if (currentCoordinates == null || !currentCoordinates.IsDefined
-                    || currentCoordinates.Vector == null || !currentCoordinates.Vector.IsDefined
-                        || currentCoordinates.Vector.X == 0)
+                if (!BallCoordinates.NotNullAndDefined(currentCoordinates) || currentCoordinates.Vector.X == 0)
                 {
                     Intersection = new TimedPoint();
                     return;
                 }
-                
-                /*
-                 * After practical simulations it seems we don't want to define
-                 * intersection with X using sector definition. Anyway if this need
-                 * to be changed, following code can be used:
-                 * 
-                 *  int xintersection = (RodXCoordinate > currentCoordinates.X) ?
-                 *      Convert.ToInt32(RodXCoordinate - DynamicSector / 2.0) :
-                 *      Convert.ToInt32(RodXCoordinate + DynamicSector / 2.0);
-                 * 
-                 */
+
                 int xintersection = RodXCoordinate;
+                if (_useDynamicSector)
+                {
+                    xintersection = (RodXCoordinate > currentCoordinates.X) ?
+                        Convert.ToInt32(RodXCoordinate - DynamicSector / 2.0) :
+                        Convert.ToInt32(RodXCoordinate + DynamicSector / 2.0);
+                }
 
                 //find intersection time using: T = dX/V in seconds
                 double intersectionTimestamp = (xintersection - currentCoordinates.X) / currentCoordinates.Vector.X;

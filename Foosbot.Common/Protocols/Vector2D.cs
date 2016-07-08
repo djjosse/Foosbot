@@ -79,5 +79,15 @@ namespace Foosbot.Common.Protocols
         {
             return String.Format("{0}x{1}", X, Y);
         }
+
+        /// <summary>
+        /// Check if vector is not null and defined
+        /// </summary>
+        /// <param name="vector">Vector to check</param>
+        /// <returns>[True] if vector is not null and is defined, [False] otherwise</returns>
+        public static bool NotNullAndDefined(Vector2D vector)
+        {
+            return (vector != null) && vector.IsDefined;
+        }
     }
 }

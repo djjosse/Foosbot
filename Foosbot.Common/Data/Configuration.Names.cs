@@ -123,6 +123,11 @@ namespace Foosbot
             public const string KEY_ROD_INTERSECTION_MAX_TIMESPAN_SEC = "RodIntersectionMaxTimespan";
 
             /// <summary>
+            /// Key for Dynamic Sector, [True] if in use, [False] otherwise
+            /// </summary>
+            public const string KEY_USE_DYNAMIC_SECTOR = "DynamicSector";
+
+            /// <summary>
             /// Subkey for rod: Distance between 2 players on rod (in mm)
             /// </summary>
             public const string SUBKEY_DISTANCE = "_Distance";
