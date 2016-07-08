@@ -60,7 +60,6 @@
     <Compile Include="Core\RodStateTest.cs" />
     <Compile Include="Core\SurveyorTest.cs" />
     <Compile Include="Core\DecisionHelperTest.cs" />
-    <Compile Include="DecisionTreeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

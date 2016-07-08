@@ -113,37 +113,6 @@ namespace Foosbot.CommunicationLayerTest
             _mockPort.Received(2).Write(Arg.Any<byte>());
         }
 
-        //FIX Following tests:
-        //[TestCategory(CATEGORY), TestMethod]
-        //public void Move_Write250_0()
-        //{
-        //    _mockPort.IsOpen.Returns(true);
-        //    _arduino.Initialize();
-        //    _arduino.Move(250, eRotationalMove.NA);
-        //    //todo:
-        //    //_mockPort.Received(1).Write("250&0");
-        //}
-
-        //[TestCategory(CATEGORY), TestMethod]
-        //public void Move_WriteMinus1_2()
-        //{
-        //    _mockPort.IsOpen.Returns(true);
-        //    _arduino.Initialize();
-        //    _arduino.Move(-1, eRotationalMove.DEFENCE);
-        //    //todo:
-        //    //_mockPort.Received(1).Write("-1&2");
-        //}
-
-        //[TestCategory(CATEGORY), TestMethod]
-        //public void Move_Write333_1()
-        //{
-        //    _mockPort.IsOpen.Returns(true);
-        //    _arduino.Initialize();
-        //    _arduino.Move(333, eRotationalMove.KICK);
-        //    //todo:
-        //    //_mockPort.Received(1).Write("333&1");
-        //}
-
         [TestCategory(CATEGORY), TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Move_DcSmallerThanMinus1()
