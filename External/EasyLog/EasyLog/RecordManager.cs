@@ -10,6 +10,7 @@ namespace EasyLog
 {
     public class RecordManager
     {
+        private const string LOG_DIRECTORY = "Logs";
         private const string LOG_FILE_TIME_FORMAT = "yyyy-MM-dd_HH-mm-ss.ff";
         private const string LOG_FILE_PREFIX = "log_";
         private const string LOG_FILE_EXTENSION = ".log";
@@ -21,20 +22,25 @@ namespace EasyLog
 
         private readonly string _logFileName;
 
-        private RecordManager(string fileName)
+        private RecordManager(string logDirectory, string fileName)
         {
-            _logFileName = fileName;
+            //Create logs directory if it does not exists
+            if (!Directory.Exists(logDirectory))
+                Directory.CreateDirectory(logDirectory);
+
+            //Create log file in logs directory
+            _logFileName = String.Format("{0}\\{1}", logDirectory, fileName);
             using (StreamWriter file = new StreamWriter(_logFileName, false))
             {
                 file.WriteLine("Creating Log File");
             }
         }
 
-        public static RecordManager Create()
+        public static RecordManager Create(string logDirectory = LOG_DIRECTORY)
         {
             string time = DateTime.Now.ToString(LOG_FILE_TIME_FORMAT);
             string fileName = String.Format("{0}{1}{2}", LOG_FILE_PREFIX, time, LOG_FILE_EXTENSION);
-            return new RecordManager(fileName);
+            return new RecordManager(logDirectory, fileName);
         }
 
         public void Print(string message, string method, eCategory category, DateTime time, string module)
