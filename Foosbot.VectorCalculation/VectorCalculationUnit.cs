@@ -156,8 +156,8 @@ namespace Foosbot.VectorCalculation
         /// <summary>
         /// Vector Calculation Algorithm
         /// </summary>
-        /// <param name="ballCoordinates"></param>
-        /// <returns></returns>
+        /// <param name="ballCoordinates">Current BallCoordinates</param>
+        /// <returns>Calculated Vector</returns>
         private Vector2D VectorCalculationAlgorithm(BallCoordinates ballCoordinates)
         {
             //verify ball coordinates
@@ -187,9 +187,9 @@ namespace Foosbot.VectorCalculation
         /// <summary>
         /// Calculate Vector Method
         /// </summary>
-        /// <param name="ballCoordinates"></param>
-        /// <param name="maxAngleError"></param>
-        /// <returns></returns>
+        /// <param name="ballCoordinates">Current BallCoordinates</param>
+        /// <param name="maxAngleError">Max Angle Error for Recochet Callculation if needed</param>
+        /// <returns>Calculated Vector</returns>
         private Vector2D CalculateVector(BallCoordinates ballCoordinates, double maxAngleError = 1.0)
         {
             if (ballCoordinates.Timestamp == _storedBallCoordinates.Timestamp)

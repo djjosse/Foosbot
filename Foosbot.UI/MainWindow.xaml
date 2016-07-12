@@ -48,7 +48,7 @@
                 <Label Grid.Column="1" Name="Player1ScoreLabel" Content="0" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
                 <Label Grid.Column="2" Content="-" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
                 <Label Grid.Column="3" Name="Player2ScoreLabel" Content="0" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Center"  FontSize="40" Foreground="White"/>
-                <Label Grid.Column="4" Name="Player2NameLabel" Content="PLAYER1" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="Red"/>
+                <Label Grid.Column="4" Name="Player2NameLabel" Content="PLAYER2" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="40" Foreground="Red"/>
             </Grid>
 
 

@@ -65,10 +65,19 @@ namespace Foosbot.UI
 
         private int _player1Score = 0;
         private int _player2Score = 0;
-        private string _player1Name = "PLAYER1";
-        private string _player2Name = "FOOSBOT";
+
+        private string _foosbotOpponentPlayerName = DEFAULT_FOOSBOT_OPPONENT_PLAYER_NAME;
+        private string _foosbotPlayerName = DEFAULT_FOOSBOT_PLAYER_NAME;
+
 
         #endregion private members
+
+        #region Constants
+
+        private static readonly string DEFAULT_FOOSBOT_PLAYER_NAME = "FOOSBOT";
+        private static readonly string DEFAULT_FOOSBOT_OPPONENT_PLAYER_NAME = "PLAYER2";
+
+        #endregion Constants
 
         /// <summary>
         /// Constructor
@@ -249,8 +258,8 @@ namespace Foosbot.UI
         {
             TextBox textBox = sender as TextBox;
             Label label = (Label)this.FindName("Player1NameLabel");
-            _player1Name = (!textBox.Text.Equals(string.Empty)) ? _player1Name = textBox.Text.ToUpper() : _player1Name = "FOOSBOT";
-            label.Content = _player1Name;
+            _foosbotPlayerName = (!textBox.Text.Equals(string.Empty)) ? _foosbotPlayerName = textBox.Text.ToUpper() : _foosbotPlayerName = DEFAULT_FOOSBOT_PLAYER_NAME;
+            label.Content = _foosbotPlayerName;
         }
 
         /// <summary>
@@ -262,8 +271,8 @@ namespace Foosbot.UI
         {
             TextBox textBox = sender as TextBox;
             Label label = (Label)this.FindName("Player2NameLabel");
-            _player2Name = (!textBox.Text.Equals(string.Empty)) ? _player2Name = textBox.Text.ToUpper() : _player2Name = "PLAYER1";
-            label.Content = _player2Name;
+            _foosbotOpponentPlayerName = (!textBox.Text.Equals(string.Empty)) ? _foosbotOpponentPlayerName = textBox.Text.ToUpper() : _foosbotOpponentPlayerName = DEFAULT_FOOSBOT_OPPONENT_PLAYER_NAME;
+            label.Content = _foosbotOpponentPlayerName;
         }
 
         /// <summary>
@@ -280,8 +289,9 @@ namespace Foosbot.UI
             label.Content = _player1Score.ToString();
             if (_player1Score == 3)
             {
-                _winner = new Winner(_player1Name, _player1Score.ToString(), _player2Score.ToString());
+                _winner = new Winner(_foosbotPlayerName, _player1Score.ToString(), _player2Score.ToString());
                 _winner.Show();
+                ResetScore();
             }
         }
 
@@ -300,8 +310,9 @@ namespace Foosbot.UI
             label.Content = _player2Score.ToString();
             if (_player2Score == 3)
             {
-                _winner = new Winner(_player2Name, _player1Score.ToString(), _player2Score.ToString());
+                _winner = new Winner(_foosbotOpponentPlayerName, _player1Score.ToString(), _player2Score.ToString());
                 _winner.Show();
+                ResetScore();
             }
         }
 
@@ -314,24 +325,24 @@ namespace Foosbot.UI
         {
             Label player1Name = (Label)this.FindName("Player1NameLabel");
             Label player2Name = (Label)this.FindName("Player2NameLabel");
+            _foosbotOpponentPlayerName = DEFAULT_FOOSBOT_OPPONENT_PLAYER_NAME;
+            _foosbotPlayerName = DEFAULT_FOOSBOT_PLAYER_NAME;
+            player1Name.Content = _foosbotPlayerName;
+            player2Name.Content = _foosbotOpponentPlayerName;
+            ResetScore();
+        }
+
+        private void ResetScore()
+        {
             Label player1Score = (Label)this.FindName("Player1ScoreLabel");
             Label player2Score = (Label)this.FindName("Player2ScoreLabel");
-            _player1Name = "FOOSBOT";            
-            _player2Name = "PLAYER1";
             _player1Score = 0;
             _player2Score = 0;
-            player1Name.Content = _player1Name;
-            player2Name.Content = _player2Name;
             player1Score.Content = _player1Score.ToString();
             player2Score.Content = _player2Score.ToString();
         }
 
         #endregion GUI Buttons and Events
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-        }
 
 
     }

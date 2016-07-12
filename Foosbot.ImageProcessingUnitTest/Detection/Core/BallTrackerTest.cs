@@ -10,6 +10,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 
 namespace Foosbot.ImageProcessingUnitTest.Detection.Core
 {
